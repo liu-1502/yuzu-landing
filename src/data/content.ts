@@ -3,9 +3,12 @@
    Sửa text ở đây, không cần chạm component.
    ========================================================================== */
 
-/** Assets tạm trỏ về domain gốc. Chạy `npm run fetch-assets` để tải về /public. */
-export const ASSET_BASE =
-  import.meta.env.VITE_ASSET_BASE ?? "https://yuzu-landing-test.vercel.app";
+/** Assets nằm trong /public, phục vụ theo `base` của Vite (GitHub Pages là
+ * /<repo>/). Đặt VITE_ASSET_BASE nếu muốn trỏ sang CDN hay domain khác. */
+const ASSET_OVERRIDE = import.meta.env.VITE_ASSET_BASE;
+// Chuỗi rỗng cũng coi như không đặt: .env.local đang để `VITE_ASSET_BASE=` và `??`
+// sẽ giữ nguyên "" — thế thì build cho Pages sẽ mất tiền tố /<repo>/.
+export const ASSET_BASE = (ASSET_OVERRIDE || import.meta.env.BASE_URL).replace(/\/$/, "");
 
 export const asset = (p: string) => (p.startsWith("http") ? p : `${ASSET_BASE}${p}`);
 
