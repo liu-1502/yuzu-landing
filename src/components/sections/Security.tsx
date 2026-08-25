@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import { useMotionValueEvent } from "motion/react";
 import { cn } from "@/lib/utils";
 import { asset, securityIntro, securityPanels } from "@/data/content";
 import { ExternalLink } from "@/components/ui/Icons";
@@ -28,7 +28,10 @@ const STRIP = 103;
 /** Item cao thêm 1 bậc so với viewport (xem chú thích ở `StackingCardItem`). */
 const EXTRA = 104;
 
-/** Thẻ ghim ở 96px = 64 header + 32 hở. Đổi số này phải đổi cả `md:top-24` dưới. */
+/** Chiều cao header dính. */
+const HEADER = 64;
+
+/** Vị trí ghim của cả chồng thẻ SAU khi tiêu đề đã bị đẩy đi: 64 header + 32 hở. */
 const STICKY_TOP = 96;
 
 /** Đuôi trống 100svh nối sau thẻ cuối. Nhờ nó thẻ số 5 còn ghim thêm đúng một màn
@@ -267,47 +270,88 @@ export function Security() {
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
 
-  /* Mốc scroll mà thẻ 3 (DeFi Suite) ghim xong — cũng là lúc khối tiêu đề thôi ghim.
-   * Không dùng được containing block của CSS: sticky bị chặn bởi content box của cha,
-   * mà cha ở đây là cả section nên tiêu đề sẽ dính tới tận cuối. Vì vậy để CSS ghim
-   * bình thường rồi đẩy ngược bằng translateY sau mốc — mượt, không nhảy. */
-  const [releaseAt, setReleaseAt] = useState(0);
+  /* Tiêu đề ghim ở 64, cả chồng thẻ ghim ngay DƯỚI chân nó; tới thẻ 3 thì cả cụm
+   * (tiêu đề + thẻ 1 + thẻ 2) trượt lên, tiêu đề đi hẳn còn chồng thẻ hạ về 96.
+   *
+   * Không làm bằng CSS thuần được: vị trí ghim của thẻ phải đổi theo scroll, mà
+   * `top` của sticky là giá trị tĩnh. Nên ghi thẳng vào biến CSS --yz-stack-top
+   * trong một vòng rAF — không đụng tới state nên không re-render theo scroll.
+   *
+   * Cụm bắt đầu trượt SỚM hơn mốc thẻ 3 ghim đúng bằng quãng đường nó phải đi,
+   * để lúc thẻ 3 chạm mép thì chồng thẻ đã yên vị ở 96 — nếu không thẻ 3 sẽ ghim
+   * hụt xuống 272 rồi mới bò lên, nhìn như giật. */
   useEffect(() => {
-    const calc = () => {
-      const sec = sectionRef.current;
-      const intro = introRef.current;
-      if (!sec || !intro || !stacking || !vh) return setReleaseAt(0);
-      // offsetHeight chứ không phải rect: khi tiêu đề đang ghim thì rect đã lệch.
-      const deckTop = sec.getBoundingClientRect().top + window.scrollY + intro.offsetHeight;
-      setReleaseAt(deckTop + 2 * (vh + EXTRA) - STICKY_TOP);
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, [stacking, vh]);
+    const sec = sectionRef.current;
+    const intro = introRef.current;
+    if (!sec || !intro) return;
 
-  const { scrollY } = useScroll();
-  const introY = useTransform(scrollY, (v) =>
-    releaseAt > 0 && v > releaseAt ? releaseAt - v : 0,
-  );
+    if (!stacking || !vh) {
+      sec.style.removeProperty("--yz-stack-top");
+      intro.style.transform = "";
+      return;
+    }
+
+    const h = vh + EXTRA;
+    let pinned = 0; // đáy tiêu đề khi đang ghim = chỗ chồng thẻ đậu
+    let travel = 0; // quãng cụm phải trượt để về 96
+    let start = 0; // mốc scroll bắt đầu trượt
+
+    const measure = () => {
+      const introH = intro.offsetHeight;
+      pinned = HEADER + introH;
+      travel = Math.max(1, pinned - STICKY_TOP);
+      const deckTop = sec.getBoundingClientRect().top + window.scrollY + introH;
+      start = deckTop + 2 * h - pinned - travel;
+    };
+
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const push = Math.min(Math.max(window.scrollY - start, 0), travel);
+      sec.style.setProperty("--yz-stack-top", `${pinned - push}px`);
+      // Tiêu đề đi nhanh hơn chồng thẻ đúng tỉ lệ pinned/travel: khi chồng thẻ vừa
+      // chạm 96 thì đáy tiêu đề vừa chạm 0. Đi 1:1 thì nó dừng ở đáy = 96, kẹt lại
+      // một mẩu dòng cuối lấp ló trong dải 64–96 mà thẻ không che tới.
+      const lift = (push * pinned) / travel;
+      intro.style.transform = lift > 0 ? `translate3d(0,${-lift}px,0)` : "";
+    };
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    const onResize = () => {
+      measure();
+      apply();
+    };
+
+    measure();
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [stacking, vh]);
 
   return (
     <section
       ref={sectionRef}
       id="security"
+      style={{ "--yz-stack-top": `${STICKY_TOP}px` } as React.CSSProperties}
       /* -mt-[100svh]: kéo cả section lên đè vào màn cuối của #products. Trong quãng
          đó tấm Marketplace vẫn đang ghim (sticky chưa hết khung cha), nên Security
          trượt phủ lên nó thay vì đẩy nó đi. z-10 để nằm trên, section-tint là nền
          đục nên không lộ tấm phía sau. */
       className="section-tint relative z-10 -mt-[100svh]"
     >
-      <motion.div
+      <div
         ref={introRef}
-        style={{ y: introY }}
-        /* z-0 để nằm DƯỚI các thẻ (zIndex 1..5): thẻ 1 leo lên phủ dần tiêu đề,
-           đúng ngôn ngữ "cái sau trượt đè cái trước" của cả trang. */
+        /* md:py-6 chứ không phải py-16: chồng thẻ đậu ngay dưới chân khối này nên
+           mỗi px padding ở đây là một px bị cắt ở đáy thẻ. Xem chú thích ở Security(). */
         className={cn(
-          "relative px-6 py-8 md:px-[60px] md:py-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-line-solid before:content-['']",
+          "relative px-6 py-8 md:px-[60px] md:py-6 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-line-solid before:content-['']",
           stacking && "md:sticky md:top-16 md:z-0",
         )}
       >
@@ -320,7 +364,7 @@ export function Security() {
             {securityIntro.body}
           </p>
         </div>
-      </motion.div>
+      </div>
 
       <StackingCards
         className="relative"
@@ -342,9 +386,9 @@ export function Security() {
               // khối là N·H − vh, thẻ cuối cần ghim tại (N−1)·H). Cộng thêm 1 bậc
               // (104px) để mặt thẻ cuối — đã lệch (N−1)·STRIP = 412px — không thò ra
               // ngoài item rồi chồng lên section dưới.
-              // Lệch khỏi `top-0` của thư viện: ghim ở 96px = 64px header + 32px
+              // Lệch khỏi `top-0` của thư viện: ghim theo --yz-stack-top, chạy từ đáy
               // khoảng hở, để thẻ đầu tiên không dính vào header.
-              className="w-full px-6 lg:px-[60px] md:top-24 md:h-[calc(100svh+104px)]"
+              className="w-full px-6 lg:px-[60px] md:top-[var(--yz-stack-top)] md:h-[calc(100svh+104px)]"
               style={{ zIndex: i + 1 }}
             >
               <Panel
