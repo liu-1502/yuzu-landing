@@ -172,12 +172,14 @@
   --tint-mkt: #0b0e1a;
   --mark: #9fe870;
   --mark-2: #edc15f;
-  /* Dark mode phải TỐI đi khi nước dâng, không sáng lên. Bản cũ dùng chính
-     --accent (#9fe870) nên hover là cả ô bừng sáng. Đổi sang xanh gần đen, giữ
-     nguyên cặp alpha 4d/b8 của light mode để độ đậm nhạt của gradient như nhau. */
-  --liquid-top: #04140b4d;
-  --liquid-bottom: #04140bb8;
-  --liquid-back: #04140b;
+  /* Dùng đúng xanh đậm #3e7b18 của light mode thay vì --accent (#9fe870): trên
+     nền tối nó ra mảng nước sẫm chứ không phải vệt neon bừng sáng.
+     Đã thử đẩy hẳn xuống xanh gần đen (#04140b) — trên nền tối thì bất kỳ màu nào
+     tối hơn nền đều mất hết sắc xanh và đọc ra như mảng đen, vì nền chỉ có
+     luminance 0.014, gần như không còn chỗ để tối thêm. */
+  --liquid-top: #3e7b184d;
+  --liquid-bottom: #3e7b18b8;
+  --liquid-back: #3e7b18;
   /* Quả cầu hero — dark mode giữ nguyên màu tối như bản gốc */
   --hero-sphere-top: #12240f;
   --hero-sphere-edge: #0a1a08;
