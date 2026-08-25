@@ -10,7 +10,10 @@ export function Faq() {
   return (
     <section id="faq" className="section-tint border-t border-line-solid px-6 py-8 md:py-16 lg:px-[60px]">
       {/* Tiêu đề bên trái, danh sách câu hỏi bên phải — xếp ngang từ lg */}
-      <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-start lg:gap-16">
+      {/* Cùng công thức cột với Concierge (Contact.tsx): khối trắng bên phải của hai
+          section liền nhau phải rộng bằng nhau ở mọi bề ngang, nên cột phải cố định
+          580 và cột tiêu đề bên trái ăn phần còn lại — không phải ngược lại. */}
+      <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,580px)] lg:items-start lg:gap-16">
         <div className="text-center lg:text-left">
           <span className="kicker mb-4">{faq.kicker}</span>
           <h2 className="text-[30px] font-semibold text-foreground md:text-[40px] md:leading-[1.15]">
