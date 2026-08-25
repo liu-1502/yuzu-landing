@@ -142,6 +142,17 @@ function useProductMode() {
 
 /* ---------------------------------- pinned ---------------------------------- */
 
+/** Màn cuối của khung cuộn KHÔNG dành cho tab nào: đó là quãng Security trượt đè
+ * lên tấm Marketplace vẫn đang ghim. Trừ nó ra thì mỗi tab giữ nguyên quãng cuộn
+ * như trước, phần thêm vào là overlap thuần tuý. */
+const OVERLAP_SCREENS = 1;
+
+/** Quãng cuộn thực sự chia cho 3 tab = chiều cao khung − phần thẻ ghim − overlap. */
+function tabRange(el: HTMLElement) {
+  const vh = window.innerHeight;
+  return el.offsetHeight - (vh - 64) - OVERLAP_SCREENS * vh;
+}
+
 function Pinned() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -151,7 +162,7 @@ function Pinned() {
     const onScroll = () => {
       const el = wrapRef.current;
       if (!el) return;
-      const total = el.offsetHeight - (window.innerHeight - 64);
+      const total = tabRange(el);
       const progress = Math.min(Math.max(-el.getBoundingClientRect().top / Math.max(1, total), 0), 0.9999);
       setIndex(Math.floor(progress * products.length));
     };
@@ -170,15 +181,17 @@ function Pinned() {
   const goTo = useCallback((i: number) => {
     const el = wrapRef.current;
     if (!el) return;
-    const total = el.offsetHeight - (window.innerHeight - 64);
+    const total = tabRange(el);
     window.scrollTo({
       top: el.offsetTop + (total * (i + 0.5)) / products.length,
       behavior: "smooth",
     });
   }, []);
 
+  // 400svh = 3 màn cho 3 tab + 1 màn để Security trượt đè lên (xem OVERLAP_SCREENS).
+  // Đổi số này thì phải đổi cả -mt-[100svh] bên Security.
   return (
-    <div id="products" ref={wrapRef} className="relative h-[300svh]">
+    <div id="products" ref={wrapRef} className="relative h-[400svh]">
       <section
         className={cn(
           // justify-start, KHONG phai center: ba tab cao khac nhau, can giua thi khoi tieu de
