@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { useMotionValueEvent } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import { cn } from "@/lib/utils";
 import { asset, securityIntro, securityPanels } from "@/data/content";
 import { ExternalLink } from "@/components/ui/Icons";
 import {
@@ -27,8 +28,8 @@ const STRIP = 103;
 /** Item cao thêm 1 bậc so với viewport (xem chú thích ở `StackingCardItem`). */
 const EXTRA = 104;
 
-/** Thẻ ghim ở 128px = 64 header + 64 hở. */
-const STICKY_TOP = 128;
+/** Thẻ ghim ở 96px = 64 header + 32 hở. Đổi số này phải đổi cả `md:top-24` dưới. */
+const STICKY_TOP = 96;
 
 /** Đuôi trống 100svh nối sau thẻ cuối. Nhờ nó thẻ số 5 còn ghim thêm đúng một màn
  * để Transparency (-mt-[100svh]) trượt phủ lên, thay vì đẩy nó đi.
@@ -263,9 +264,36 @@ function Panel({
 
 export function Security() {
   const { on: stacking, vh } = useStacking();
+  const sectionRef = useRef<HTMLElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+
+  /* Mốc scroll mà thẻ 3 (DeFi Suite) ghim xong — cũng là lúc khối tiêu đề thôi ghim.
+   * Không dùng được containing block của CSS: sticky bị chặn bởi content box của cha,
+   * mà cha ở đây là cả section nên tiêu đề sẽ dính tới tận cuối. Vì vậy để CSS ghim
+   * bình thường rồi đẩy ngược bằng translateY sau mốc — mượt, không nhảy. */
+  const [releaseAt, setReleaseAt] = useState(0);
+  useEffect(() => {
+    const calc = () => {
+      const sec = sectionRef.current;
+      const intro = introRef.current;
+      if (!sec || !intro || !stacking || !vh) return setReleaseAt(0);
+      // offsetHeight chứ không phải rect: khi tiêu đề đang ghim thì rect đã lệch.
+      const deckTop = sec.getBoundingClientRect().top + window.scrollY + intro.offsetHeight;
+      setReleaseAt(deckTop + 2 * (vh + EXTRA) - STICKY_TOP);
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    return () => window.removeEventListener("resize", calc);
+  }, [stacking, vh]);
+
+  const { scrollY } = useScroll();
+  const introY = useTransform(scrollY, (v) =>
+    releaseAt > 0 && v > releaseAt ? releaseAt - v : 0,
+  );
 
   return (
     <section
+      ref={sectionRef}
       id="security"
       /* -mt-[100svh]: kéo cả section lên đè vào màn cuối của #products. Trong quãng
          đó tấm Marketplace vẫn đang ghim (sticky chưa hết khung cha), nên Security
@@ -273,7 +301,16 @@ export function Security() {
          đục nên không lộ tấm phía sau. */
       className="section-tint relative z-10 -mt-[100svh]"
     >
-      <div className="relative px-6 py-8 md:px-[60px] md:py-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-line-solid before:content-['']">
+      <motion.div
+        ref={introRef}
+        style={{ y: introY }}
+        /* z-0 để nằm DƯỚI các thẻ (zIndex 1..5): thẻ 1 leo lên phủ dần tiêu đề,
+           đúng ngôn ngữ "cái sau trượt đè cái trước" của cả trang. */
+        className={cn(
+          "relative px-6 py-8 md:px-[60px] md:py-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-line-solid before:content-['']",
+          stacking && "md:sticky md:top-16 md:z-0",
+        )}
+      >
         <div className="mx-auto max-w-[1280px] text-center">
           <span className="kicker mb-5">{securityIntro.kicker}</span>
           <h2 className="text-[30px] font-semibold text-foreground md:text-[40px] md:leading-[1.15]">
@@ -283,7 +320,7 @@ export function Security() {
             {securityIntro.body}
           </p>
         </div>
-      </div>
+      </motion.div>
 
       <StackingCards
         className="relative"
@@ -305,9 +342,9 @@ export function Security() {
               // khối là N·H − vh, thẻ cuối cần ghim tại (N−1)·H). Cộng thêm 1 bậc
               // (104px) để mặt thẻ cuối — đã lệch (N−1)·STRIP = 412px — không thò ra
               // ngoài item rồi chồng lên section dưới.
-              // Lệch khỏi `top-0` của thư viện: ghim ở 128px = 64px header + 64px
+              // Lệch khỏi `top-0` của thư viện: ghim ở 96px = 64px header + 32px
               // khoảng hở, để thẻ đầu tiên không dính vào header.
-              className="w-full px-6 lg:px-[60px] md:top-32 md:h-[calc(100svh+104px)]"
+              className="w-full px-6 lg:px-[60px] md:top-24 md:h-[calc(100svh+104px)]"
               style={{ zIndex: i + 1 }}
             >
               <Panel
