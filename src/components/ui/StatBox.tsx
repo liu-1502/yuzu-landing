@@ -32,7 +32,7 @@ export function StatBox({ stat, active = true }: { stat: Stat; active?: boolean 
         <LiquidSurface
           level={stat.level}
           active={active}
-          tone="var(--accent)"
+          tone="var(--liquid-back)"
           uid={uid}
           reduced={reduced}
         />

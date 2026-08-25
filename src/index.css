@@ -87,6 +87,8 @@
   --mark-2: #7a5609;
   --liquid-top: #3e7b184d;
   --liquid-bottom: #3e7b18b8;
+  /* Sóng nền, gợn nước và bong bóng — cùng tông với mặt nước. */
+  --liquid-back: var(--accent);
   --radius: 0.625rem;
 
   /* Quả cầu hero — light mode dùng xanh nhạt */
@@ -170,8 +172,12 @@
   --tint-mkt: #0b0e1a;
   --mark: #9fe870;
   --mark-2: #edc15f;
-  --liquid-top: #9fe87029;
-  --liquid-bottom: #9fe87066;
+  /* Dark mode phải TỐI đi khi nước dâng, không sáng lên. Bản cũ dùng chính
+     --accent (#9fe870) nên hover là cả ô bừng sáng. Đổi sang xanh gần đen, giữ
+     nguyên cặp alpha 4d/b8 của light mode để độ đậm nhạt của gradient như nhau. */
+  --liquid-top: #04140b4d;
+  --liquid-bottom: #04140bb8;
+  --liquid-back: #04140b;
   /* Quả cầu hero — dark mode giữ nguyên màu tối như bản gốc */
   --hero-sphere-top: #12240f;
   --hero-sphere-edge: #0a1a08;
