@@ -261,8 +261,8 @@ export function Security() {
       /* -mt-[100svh]: kéo cả section lên đè vào màn cuối của #products. Trong quãng
          đó tấm Marketplace vẫn đang ghim (sticky chưa hết khung cha), nên Security
          trượt phủ lên nó thay vì đẩy nó đi. z-10 để nằm trên, section-tint là nền
-         đục nên không lộ tấm phía sau. Bóng đổ ngược lên trên cho thấy rõ lớp. */
-      className="section-tint relative z-10 -mt-[100svh] shadow-[0_-24px_48px_-32px_color-mix(in_srgb,var(--foreground)_30%,transparent)]"
+         đục nên không lộ tấm phía sau. */
+      className="section-tint relative z-10 -mt-[100svh]"
     >
       <div className="relative px-6 py-8 md:px-[60px] md:py-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-line-solid before:content-['']">
         <div className="mx-auto max-w-[1280px] text-center">
