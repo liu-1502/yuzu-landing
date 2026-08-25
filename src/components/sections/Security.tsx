@@ -30,6 +30,15 @@ const EXTRA = 104;
 /** Thẻ ghim ở 128px = 64 header + 64 hở. */
 const STICKY_TOP = 128;
 
+/** Đuôi trống 100svh nối sau thẻ cuối. Nhờ nó thẻ số 5 còn ghim thêm đúng một màn
+ * để Transparency (-mt-[100svh]) trượt phủ lên, thay vì đẩy nó đi.
+ *
+ * Phải là một div rỗng thật, KHÔNG dùng padding-bottom trên deck: sticky bị chặn
+ * bởi content box của cha, padding không tính — đã thử và thẻ 5 vẫn nhả đúng chỗ cũ.
+ * Đuôi cũng kéo dài dải scroll mà useScroll đo, nên mốc `covered` phải cộng nó vào
+ * mẫu số. */
+const TAIL_SCREENS = 1;
+
 /** Bật xếp thẻ khi màn đủ rộng và người dùng không tắt animation. */
 function useStacking() {
   const [on, setOn] = useState(false);
@@ -92,7 +101,7 @@ function Panel({
   const last = index === totalCards - 1;
   const at =
     ((last ? index : index + 1) * h - STICKY_TOP) /
-    Math.max(1, totalCards * h - vh);
+    Math.max(1, totalCards * h + TAIL_SCREENS * vh - vh);
 
   useMotionValueEvent(progress, "change", (p) =>
     setCovered(enabled && vh > 0 && p >= at),
@@ -311,6 +320,9 @@ export function Security() {
             </StackingCardItem>
           );
         })}
+
+        {/* Đuôi giữ thẻ cuối còn ghim — xem TAIL_SCREENS. */}
+        <div aria-hidden className="h-[100svh]" />
       </StackingCards>
     </section>
   );

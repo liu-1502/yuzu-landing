@@ -89,7 +89,13 @@ function Card({ card }: { card: (typeof transparency.cards)[number] }) {
 
 export function Transparency() {
   return (
-    <section id="transparency" className="section-tint relative px-6 py-8 md:px-[60px] md:py-16">
+    <section
+      id="transparency"
+      /* Cùng cách với Security đè lên Products: kéo lên đúng phần đuôi 100svh của
+         deck Security, quãng đó thẻ số 5 vẫn đang ghim nên bị phủ dần thay vì bị
+         đẩy đi. z-20 vì Security đã chiếm z-10. */
+      className="section-tint relative z-20 -mt-[100svh] px-6 py-8 md:px-[60px] md:py-16"
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
