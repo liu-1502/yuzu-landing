@@ -1,0 +1,575 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   YUZU — DESIGN TOKENS (copy 1:1 từ trang gốc)
+   Sửa màu ở đây là đổi cả trang. Light = :root, Dark = .dark
+   ========================================================================== */
+
+:root {
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  /* Token "mono" giờ trỏ sang Instrument Sans — mọi chỗ dùng var(--font-mono)
+     và utility font-mono đều đổi theo (theo yêu cầu, khác bản gốc). */
+  --font-mono: "Instrument Sans", system-ui, sans-serif;
+
+  --background: #f3f6f0;
+  --foreground: #152e12;
+  --surface: #fcfdfa;
+  --surface-2: #e8eee3;
+  --card: #fcfdfa;
+  --card-foreground: #14211a;
+  --popover: #fcfdfa;
+  --popover-foreground: #14211a;
+  --line: #dbe4d580;
+  --line-solid: #dbe4d5;
+  --line-strong: #c2d0ba;
+  --border: #dbe4d5;
+  --input: #dbe4d5;
+  --border-prominent: #c2d0ba;
+  --muted: #e8eee3;
+  --muted-foreground: #5c6e60;
+  --faint: #617565;
+  --text-neutral: #5c6e60;
+  --warm-muted-foreground: #617565;
+  --neutral-400: #617565;
+  --citrus: #3e7b18;
+  --citrus-ink: #f7fbf2;
+  --alpha: #3e7b18;
+  --alpha-ink: #f7fbf2;
+  --prime: #93690b;
+  --prime-ink: #fffdf4;
+  --mkt: #4a4fb5;
+  --mkt-ink: #f4f4ff;
+  --primary: #3e7b18;
+  --primary-foreground: #f7fbf2;
+  --secondary: #e8eee3;
+  --secondary-foreground: #14211a;
+  --accent: #3e7b18;
+  --accent-foreground: #f7fbf2;
+  --ring: #3e7b18;
+  --good: #2f7d46;
+  --risk: #b5502f;
+  --destructive: #b5502f;
+  --destructive-foreground: #f7fbf2;
+  --green-accent: #3e7b18;
+  --sun-amber: #93690b;
+  --yuzu-brand: #3e7b18;
+  --yuzu-dark: #2e5c11;
+  --yuzu-neutral: #14211a;
+  --yuzu-gold: #93690b;
+  --badge-info-bg: #e9eaf7;
+  --badge-info-text: #4a4fb5;
+  --chart-1: #3e7b18;
+  --chart-2: #93690b;
+  --chart-3: #4a4fb5;
+  --chart-4: #14211a;
+  --chart-5: #8ca090;
+  --green-yuzu-50: #f1f7ec;
+  --green-yuzu-100: #e1efd6;
+  --green-yuzu-200: #c9e2b4;
+  --green-yuzu-300: #a6ce85;
+  --green-yuzu-400: #7fb253;
+  --green-yuzu-600: #3e7b18;
+  --green-yuzu-900: #23480e;
+  --green-yuzu-950: #142b06;
+  --yellow-yuzu-50: #fbf7ea;
+  --yellow-yuzu-100: #f6eed2;
+  --yellow-yuzu-200: #eddfae;
+  --yellow-yuzu-300: #d9be68;
+  --yellow-yuzu-600: #93690b;
+  --yellow-yuzu-700: #7a5609;
+  --yellow-yuzu-900: #4a3405;
+  --yellow-yuzu-950: #2c1f03;
+  --tint-alpha: #f3f6f0;
+  --tint-prime: #f9f7f0;
+  --tint-mkt: #f7faff;
+  --mark: #2e5c11;
+  --mark-2: #7a5609;
+  --liquid-top: #3e7b184d;
+  --liquid-bottom: #3e7b18b8;
+  --radius: 0.625rem;
+
+  /* Quả cầu hero — light mode dùng xanh nhạt */
+  --hero-sphere-top: #e9f7d8;
+  --hero-sphere-edge: #c3e39b;
+  /* nền badge chìa khoá (Fordefi) — light trắng, dark giữ đen như gốc */
+  --key-badge: #fcfdfa;
+}
+
+.dark {
+  --background: #0a120c;
+  --foreground: #eef5ec;
+  --surface: #101a12;
+  --surface-2: #16221a;
+  --card: #101a12;
+  --card-foreground: #eef5ec;
+  --popover: #101a12;
+  --popover-foreground: #eef5ec;
+  --line: #1f2e2380;
+  --line-solid: #1f2e23;
+  --line-strong: #2e4434;
+  --border: #1f2e23;
+  --input: #1f2e23;
+  --border-prominent: #2e4434;
+  --muted: #16221a;
+  --muted-foreground: #9db3a0;
+  --faint: #708674;
+  --text-neutral: #9db3a0;
+  --warm-muted-foreground: #708674;
+  --neutral-400: #708674;
+  --citrus: #9fe870;
+  --citrus-ink: #0b1505;
+  --alpha: #9fe870;
+  --alpha-ink: #0b1505;
+  --prime: #edc15f;
+  --prime-ink: #171003;
+  --mkt: #a8adff;
+  --mkt-ink: #0d0e1f;
+  --primary: #9fe870;
+  --primary-foreground: #0b1505;
+  --secondary: #16221a;
+  --secondary-foreground: #eef5ec;
+  --accent: #9fe870;
+  --accent-foreground: #0b1505;
+  --ring: #9fe870;
+  --good: #8bd69b;
+  --risk: #e8845e;
+  --destructive: #e8845e;
+  --destructive-foreground: #171003;
+  --green-accent: #9fe870;
+  --sun-amber: #edc15f;
+  --yuzu-brand: #9fe870;
+  --yuzu-dark: #7fcb52;
+  --yuzu-neutral: #eef5ec;
+  --yuzu-gold: #edc15f;
+  --badge-info-bg: #1b1d34;
+  --badge-info-text: #a8adff;
+  --chart-1: #9fe870;
+  --chart-2: #edc15f;
+  --chart-3: #a8adff;
+  --chart-4: #eef5ec;
+  --chart-5: #5f7263;
+  --green-yuzu-50: #0d1a08;
+  --green-yuzu-100: #16290f;
+  --green-yuzu-200: #22401a;
+  --green-yuzu-300: #4e8c33;
+  --green-yuzu-400: #9fe870;
+  --green-yuzu-600: #b6ee92;
+  --green-yuzu-900: #d2f5bc;
+  --green-yuzu-950: #e7fada;
+  --yellow-yuzu-50: #1a1405;
+  --yellow-yuzu-100: #241b06;
+  --yellow-yuzu-200: #3a2c0b;
+  --yellow-yuzu-300: #edc15f;
+  --yellow-yuzu-600: #edc15f;
+  --yellow-yuzu-700: #d9a93f;
+  --yellow-yuzu-900: #f3d48f;
+  --yellow-yuzu-950: #f8e6bc;
+  --tint-alpha: #0b1610;
+  --tint-prime: #16120a;
+  --tint-mkt: #0b0e1a;
+  --mark: #9fe870;
+  --mark-2: #edc15f;
+  --liquid-top: #9fe87029;
+  --liquid-bottom: #9fe87066;
+  /* Quả cầu hero — dark mode giữ nguyên màu tối như bản gốc */
+  --hero-sphere-top: #12240f;
+  --hero-sphere-edge: #0a1a08;
+  --key-badge: #000;
+}
+
+/* Product colour scopes — dùng cho section Products khi đổi tab */
+.prime-scope {
+  --accent: var(--prime);
+  --accent-foreground: var(--prime-ink);
+  --citrus: var(--prime);
+  --mark: var(--mark-2);
+  /* Nền section đổi theo tab — trước đây chỉ khai trong `.dark`, light mode không đổi. */
+  --background: var(--tint-prime);
+  --liquid-top: #93690b33;
+  --liquid-bottom: #93690b99;
+}
+.dark .prime-scope {
+  --liquid-top: #edc15f29;
+  --liquid-bottom: #edc15f66;
+  --background: var(--tint-prime);
+  --surface: #1a1610;
+  --surface-2: #221d16;
+  --card: #1a1610;
+  --muted: #221d16;
+  --line: #2e281f80;
+  --line-solid: #2e281f;
+  --line-strong: #443b2e;
+  --border: #2e281f;
+  --border-prominent: #443b2e;
+  --foreground: #f5f1ec;
+}
+.mkt-scope {
+  --accent: var(--mkt);
+  --accent-foreground: var(--mkt-ink);
+  --citrus: var(--mkt);
+  --mark: var(--mkt);
+  --liquid-top: #4a4fb533;
+  --liquid-bottom: #4a4fb599;
+  /* Nền section đổi theo tab — xem chú thích ở `.prime-scope`. */
+  --background: var(--tint-mkt);
+}
+.dark .mkt-scope {
+  --background: var(--tint-mkt);
+  --surface: #101223;
+  --surface-2: #171a2e;
+  --card: #101223;
+  --muted: #171a2e;
+  --line-solid: #232744;
+  --line-strong: #333a5e;
+  --border: #232744;
+  --foreground: #eceefa;
+}
+
+/* ==========================================================================
+   Tailwind theme bridge — để dùng bg-surface / text-faint / border-line-solid…
+   ========================================================================== */
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-card: var(--card);
+  --color-popover: var(--popover);
+  --color-line: var(--line);
+  --color-line-solid: var(--line-solid);
+  --color-line-strong: var(--line-strong);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-border-prominent: var(--border-prominent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
+  --color-citrus: var(--citrus);
+  --color-yuzu-brand: var(--yuzu-brand);
+  --color-alpha: var(--alpha);
+  --color-prime: var(--prime);
+  --color-mkt: var(--mkt);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-good: var(--good);
+  --color-risk: var(--risk);
+  --color-destructive: var(--destructive);
+  --color-mark: var(--mark);
+  --color-mark-2: var(--mark-2);
+  --color-sun-amber: var(--sun-amber);
+
+  /* Thang bo góc copy 1:1 từ trang gốc (đo từ CSS build của bản gốc). */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+@layer base {
+  /* Heading siết chữ -0.015em như trang gốc; con của heading kế thừa giá trị px này.
+     Đặt trong @layer base để utility Tailwind (vd tracking-*) vẫn ghi đè được. */
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.015em;
+  }
+
+  /* Cho phép ngắt giữa từ trên các thẻ chứa chữ — copy nguyên rule của trang gốc.
+     Đây là thứ khiến số như "11.8%" xuống dòng được khi flex co lại. */
+  h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  * {
+    border-color: var(--line-solid);
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* Chặn scroll ngang do tooltip stat box (w-64, canh giữa) tràn ở mobile.
+       Dùng `clip` chứ không phải `hidden` — `hidden` tạo scroll container và
+       làm hỏng position: sticky của section Products. Giống trang gốc. */
+    overflow-x: clip;
+  }
+  body {
+    overflow-x: clip;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap; border-width: 0;
+  }
+}
+
+/* ==========================================================================
+   Utilities lấy nguyên từ trang gốc
+   ========================================================================== */
+.data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+/* Số lớn trong stat box dùng Instrument Sans thay vì mono.
+   Phải đứng sau .data (cùng specificity) mới ghi đè được font-family. */
+.stat-value {
+  font-family: var(--font-sans);
+}
+/* Nút "Launch app" — copy style nút Connect Wallet của app.yuzu.money
+   (đo trực tiếp: #1A1A1A / trắng, 14px/500, radius 6px, inset shadow, đảo màu ở dark). */
+.launch-btn {
+  background: #1a1a1a;
+  color: #ffffff;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.11);
+}
+.launch-btn:hover { background: #2a2a2a; }
+.dark .launch-btn {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+.dark .launch-btn:hover { background: #e6e6e6; }
+
+.microlabel {
+  font-family: var(--font-sans);
+  letter-spacing: 0.1em;
+  color: var(--foreground);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/**
+ * Biến thể màu phụ. Phải là class riêng chứ không dùng `text-muted-foreground`:
+ * `.microlabel` khai ngoài `@layer` nên thắng mọi utility của Tailwind.
+ */
+.microlabel-muted {
+  color: var(--muted-foreground);
+}
+
+/** Nét mảnh hơn — cũng phải là class riêng vì lý do layer nói trên. */
+.microlabel-regular {
+  font-weight: 400;
+}
+/**
+ * Nền dùng chung cho các section — đúng `--background`, tức xanh lá nhạt như hero.
+ * Vẫn giữ class riêng vì trong `prime-scope` / `mkt-scope` thì `--background` đổi
+ * sang tint của sản phẩm, nên section Products tự ngả nâu / xanh tím theo tab.
+ */
+.section-tint {
+  background: var(--background);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mark);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  /* pill nền trắng, chữ xanh đậm */
+  background: var(--surface);
+  border-radius: 9999px;
+  padding: 5px 14px;
+}
+
+
+/**
+ * Biến thể cho section có nền trắng (Partners): pill trắng trên nền trắng thì
+ * tàng hình, nên đổi sang xanh nhạt. Chữ vẫn `--mark`.
+ */
+.kicker-on-light {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+/* Stat box */
+.stat-box:hover .microlabel,
+.stat-box:focus-within .microlabel { color: var(--foreground); }
+.stat-box:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Logo squeeze */
+.squeeze { transform-origin: 50% 60%; transition: transform 0.2s; }
+.squeeze:hover { animation: squeeze 0.55s ease; }
+@keyframes squeeze {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.06, 0.9); }
+  60% { transform: scale(0.96, 1.06); }
+}
+
+/* Footer links */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  transition: color 0.16s, transform 0.16s;
+}
+.footer-link::before {
+  content: "";
+  background: var(--accent);
+  opacity: 0;
+  border-radius: 1px;
+  width: 5px;
+  height: 5px;
+  transition: opacity 0.16s, transform 0.16s;
+  transform: translateX(-4px) rotate(45deg);
+}
+.footer-link:hover::before,
+.footer-link:focus-visible::before { opacity: 1; transform: translateX(0) rotate(45deg); }
+
+/* Orbit */
+@keyframes orbit-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@property --light-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes rotate-light { 100% { --light-angle: 360deg; } }
+@keyframes slice-detail-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tranche-bounce {
+  0%, 70%, 100% { transform: translateY(0px); }
+  30% { transform: translateY(-10px); }
+  45% { transform: translateY(2px); }
+}
+@keyframes fordefi-spin {
+  0% { transform: rotateY(0deg) scale(0.55); }
+  50% { transform: rotateY(180deg) scale(0.8); }
+  100% { transform: rotateY(360deg) scale(1); }
+}
+@keyframes bounce-pill {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes orbit-counter-spin { to { transform: rotate(-360deg); } }
+@keyframes ringspin { to { transform: rotate(360deg); } }
+.ring.spin { animation: ringspin 90s linear infinite; }
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes liquid-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Accordion */
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--acc-h); opacity: 1; }
+}
+@keyframes accordion-up {
+  from { height: var(--acc-h); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring.spin { animation: none; }
+  *, ::before, ::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+  .security-panel { height: auto !important; position: static !important; }
+}
+
+/**
+ * Nước trong logo footer gợn nhẹ. Sóng vẽ dài hơn viewBox đúng một chu kỳ
+ * (179 / 2.5 = 71.6 user unit) nên trượt hết chu kỳ là khớp lại, không thấy mối nối.
+ */
+@keyframes yz-juice-drift {
+  to {
+    transform: translateX(-71.6px);
+  }
+}
+
+.juice-drift {
+  animation: yz-juice-drift 9s linear infinite;
+}
+
+.juice-drift-slow {
+  animation: yz-juice-drift 14s linear infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .juice-drift,
+  .juice-drift-slow {
+    animation: none;
+  }
+}
+
+/**
+ * Băng logo partner chạy ngang. Hai track giống hệt nhau đặt cạnh nhau, mỗi track
+ * trượt đúng 100% bề rộng của chính nó nên hết chu kỳ là khớp lại, không thấy mối nối.
+ */
+@keyframes partner-scroll {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.partner-track {
+  animation: partner-scroll var(--marquee-dur, 40s) linear infinite;
+}
+
+.partner-marquee:hover .partner-track {
+  animation-play-state: paused;
+}
+
+/** Hai đầu băng mờ dần về màu nền để logo trôi vào / ra thay vì bị cắt cụt. */
+.partner-marquee::before,
+.partner-marquee::after {
+  content: "";
+  position: absolute;
+  /* Phủ trọn chiều cao băng: đường kẻ của lưới nằm ở khe gap-px GIỮA các ô, tức
+     ngoài hộp của băng — gradient không thể chạm tới. Thụt vào dù chỉ 1px là hở
+     một lát logo ở mép trên/dưới. */
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 88px;
+  pointer-events: none;
+}
+
+.partner-marquee::before {
+  left: 0;
+  background: linear-gradient(to right, var(--surface) 15%, transparent);
+}
+
+.partner-marquee::after {
+  right: 0;
+  background: linear-gradient(to left, var(--surface) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-track {
+    animation: none;
+  }
+}
