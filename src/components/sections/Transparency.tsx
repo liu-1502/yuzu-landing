@@ -93,8 +93,12 @@ export function Transparency() {
       id="transparency"
       /* Cùng cách với Security đè lên Products: kéo lên đúng phần đuôi 100svh của
          deck Security, quãng đó thẻ số 5 vẫn đang ghim nên bị phủ dần thay vì bị
-         đẩy đi. z-20 vì Security đã chiếm z-10. */
-      className="section-tint relative z-20 -mt-[100svh] px-6 py-8 md:px-[60px] md:py-16"
+         đẩy đi. z-20 vì Security đã chiếm z-10.
+         min-h-[100svh] là BẮT BUỘC, không phải để cho đẹp: -mt kéo lên cả những
+         section phía sau. Section này chỉ cao 661px nên Concierge bị hụt vào 187px
+         cuối của deck, và thẻ số 5 (trong Security z-10) vẽ đè lên nó. Cao đúng
+         100svh thì Concierge bắt đầu khít ngay điểm deck kết thúc. */
+      className="section-tint relative z-20 -mt-[100svh] flex min-h-[100svh] flex-col justify-center px-6 py-8 md:px-[60px] md:py-16"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"
