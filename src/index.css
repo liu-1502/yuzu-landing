@@ -222,6 +222,10 @@
   --heading-accent: #c97e05;
   --liquid-top: #93690b33;
   --liquid-bottom: #93690b99;
+
+  /* Lớp nước SAU và 8 bong bóng đọc --liquid-back; thiếu dòng này thì chúng
+     vẫn xanh lá giữa trang Prime. */
+  --liquid-back: #93690b;
 }
 
 .dark .prime-scope {
@@ -255,6 +259,10 @@
   --faint: #586a5c;
   --liquid-top: #4a4fb533;
   --liquid-bottom: #4a4fb599;
+
+  /* Lớp nước SAU và 8 bong bóng đọc --liquid-back; thiếu dòng này thì chúng
+     vẫn xanh lá giữa trang Marketplace. */
+  --liquid-back: #4a4fb5;
 }
 
 /**
@@ -398,6 +406,18 @@
 }
 /* Nút "Launch app" — copy style nút Connect Wallet của app.yuzu.money
    (đo trực tiếp: #1A1A1A / trắng, 14px/500, radius 6px, inset shadow, đảo màu ở dark). */
+/* Illustration của Prime: bộ PNG gốc là art NỀN TỐI (vàng trên gần đen), nên ở
+   light mode phải nghịch đảo mới ra vàng trên nền kem — đúng cách bản dev làm.
+   Dán ảnh thô lên thẻ kem thì nó ra một khối xám, đó là màu sai mà bạn thấy.
+   hue-rotate(180deg) bù lại phần đảo màu của invert() để giữ nguyên tông vàng.
+   Dark mode dùng ảnh gốc, không lọc. */
+.prime-art {
+  filter: invert(1) hue-rotate(180deg) brightness(1.07);
+}
+.dark .prime-art {
+  filter: none;
+}
+
 .launch-btn {
   background: #1a1a1a;
   color: #ffffff;

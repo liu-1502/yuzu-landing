@@ -10,9 +10,10 @@ import {
   TokenSet,
   WRAP,
 } from "@/components/product/ProductShell";
+import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
 import { CitrusField } from "@/components/product/CitrusField";
 import { Reveal } from "@/components/product/Reveal";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as const;
@@ -89,71 +90,36 @@ function Note({
   );
 }
 
-/**
- * Danh sách trọng số của Alpha — bản dev KHÔNG dùng biểu đồ tròn ở trang sản
- * phẩm, mà là từng dòng có thanh tiến trình chạy từ 0 tới đúng tỉ lệ khi cuộn
- * tới. Thanh lệch pha nhau 90ms cho có nhịp.
- */
-function WeightList({ p }: { p: Product }) {
-  const ref = useRef<HTMLUListElement>(null);
-  const [run, setRun] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setRun(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setRun(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: "-60px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <ul ref={ref} className="mt-9">
-      {p.slices.map((s, i) => (
-        <li key={s.label} className="border-t border-line-solid py-4 first:border-t-0">
-          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-baseline sm:gap-6">
-            <span className="w-14 shrink-0 font-mono text-[15px] font-semibold tabular-nums text-accent">
-              {s.weight !== null ? `${s.weight}%` : "—"}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[15px] font-medium text-foreground">{s.label}</span>
-              <span className="mt-0.5 block text-[13.5px] leading-[1.5] text-muted-foreground">
-                {s.detail}
-              </span>
-            </span>
-          </div>
-          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-2 sm:ml-20 sm:w-[calc(100%-5rem)]">
-            <div
-              className="h-full rounded-full"
-              style={{
-                background:
-                  "linear-gradient(90deg, color-mix(in srgb, var(--accent) 45%, transparent), var(--accent))",
-                width: run && s.weight !== null ? `${s.weight}%` : 0,
-                transition: `width 1s cubic-bezier(.22,.61,.36,1) ${i * 0.09}s`,
-              }}
-            />
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 /**
  * Marketplace: mỗi vault là một exposure riêng nên phần này là lưới 3 thẻ vault.
  * Alpha: một danh mục có trọng số nên là quả chanh + danh sách trọng số.
  */
+/**
+ * Tỉ trọng vẽ bằng QUẢ CHANH CÓ MÚI của trang chủ, không phải mấy thanh ngang.
+ * Dùng lại nguyên `CitrusChart` + `SliceDetail` và chính bộ `slices` trong
+ * content.ts mà trang chủ đang dùng, nên không phát sinh nội dung mới và hover
+ * một múi thì thẻ mô tả đổi theo y như ngoài home.
+ */
+function SliceArt({ p }: { p: Product }) {
+  const [active, setActive] = useState<number | null>(null);
+
+  return (
+    <Reveal y={24}>
+      <div className="mx-auto mt-9 max-w-[460px]">
+        <CitrusChart
+          id={`comp-${p.id}`}
+          accent={p.color}
+          slices={p.slices}
+          active={active}
+          setActive={setActive}
+        />
+        <SliceDetail slices={p.slices} accent={p.color} active={active} />
+      </div>
+    </Reveal>
+  );
+}
+
 export function Composition({
   p,
   head,
@@ -167,19 +133,20 @@ export function Composition({
     <section className={cn("relative overflow-hidden", SECTION, PAD)}>
       <CitrusField seed={2273} count={9} />
       <div className={cn("relative", WRAP)}>
-        {/* Ghi chú nằm TRONG cùng khối reveal với tiêu đề, đúng như bản dev. */}
+        {/* Khối tiêu đề canh GIỮA — nếp của web này, bản dev canh trái. */}
         <Reveal>
-          <span className="kicker">{head.kicker}</span>
-          <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
-            {head.title}
-          </h2>
-          {head.note && (
-            <p className="mt-4 max-w-[620px] text-[14.5px] leading-[1.6] text-muted-foreground">
-              <Note text={head.note} link={head.noteLink} />
-            </p>
-          )}
+          <div className="flex flex-col items-center text-center">
+            <span className="kicker">{head.kicker}</span>
+            <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
+              {head.title}
+            </h2>
+            {head.note && (
+              <p className="mt-4 max-w-[620px] text-[14.5px] leading-[1.6] text-muted-foreground">
+                <Note text={head.note} link={head.noteLink} />
+              </p>
+            )}
+          </div>
         </Reveal>
-
 
         {vaults ? (
           /* Cả "More on the way" cũng nằm TRONG lưới, làm thẻ thứ 4 xuống hàng
@@ -192,9 +159,8 @@ export function Composition({
             ))}
           </div>
         ) : (
-          <WeightList p={p} />
+          <SliceArt p={p} />
         )}
-
       </div>
     </section>
   );

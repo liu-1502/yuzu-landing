@@ -34,16 +34,19 @@ export const CARD =
 /** Nút hero của Alpha & Marketplace: cao 48px, chữ 15px, nút chính có vệt tối
  *  inset ở đáy. Cả HAI nút đều dùng mũi tên NGANG 18px trượt sang phải khi hover
  *  — trước đây mình để nút phụ mũi tên chéo lên và icon 16px. */
+/* Nút lấy đúng dáng nút "Launch app" trên header: class `.launch-btn` (nền
+   #1a1a1a, chữ trắng, vệt tối inset ở đáy, dark mode đảo lại) và bo `rounded-sm`
+   — KHÔNG bo tròn hết. Bản dev bo tròn hết nhưng đây là nếp của web này. */
 const BTN_PRIMARY =
-  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-5 text-[15px] font-medium text-background shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90";
+  "launch-btn group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm px-5 text-[15px] font-medium transition-colors duration-300";
 const BTN_GHOST =
-  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
 
 /** Prime dùng bộ riêng: py-2 nên chỉ cao 44px, chữ 16px, và số liệu to hơn (20px). */
 const BTN_PRIME =
-  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[var(--prime-text)] px-4 py-2 text-base font-medium text-[var(--prime-bg)] shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
+  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-sm bg-[var(--prime-text)] px-4 py-2 text-base font-medium text-[var(--prime-bg)] shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
 const BTN_PRIME_GHOST =
-  "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
+  "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-sm border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
 
 /** Mũi tên trong nút — 18px cho Alpha/Marketplace, 20px cho Prime. */
 const CTA_ARROW = "transition-transform duration-300 group-hover/cta:translate-x-0.5";
@@ -277,7 +280,7 @@ export function KpiRow({ items }: { items: Kpi[] }) {
       >
         {items.map((k, i) => (
           <Reveal key={k.label} y={18} delay={i * 0.06}>
-            <div className="group relative flex min-h-[134px] flex-col items-center justify-start gap-1 overflow-hidden rounded-lg border border-line-solid bg-surface px-3 pt-5 pb-11">
+            <div className="group relative flex min-h-[134px] flex-col items-center justify-start gap-1 overflow-hidden rounded-lg bg-surface-2 px-3 pt-5 pb-11">
               {/* Mặt nước ở đáy ô — thứ mà `pb-11` chừa chỗ cho. Bản dev dựng đúng
                   component này (viewBox 200×100, gradient --liquid-top → --liquid-bottom,
                   8 bong bóng, uid `stat-{i}`); trước đây mình chừa chỗ nhưng KHÔNG

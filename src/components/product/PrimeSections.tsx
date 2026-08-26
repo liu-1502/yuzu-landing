@@ -96,7 +96,7 @@ function ArtCard({ c }: { c: Claim }) {
     <div className={cn("flex h-full flex-col gap-6 p-6", CARD_PRIME)}>
       {c.image && (
         <div className="relative w-full overflow-hidden rounded-3xl" style={{ aspectRatio: "2 / 1" }}>
-          <img src={asset(c.image)} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
+          <img src={asset(c.image)} alt="" loading="lazy" className="prime-art absolute inset-0 size-full object-cover" />
         </div>
       )}
       <div className="flex flex-col gap-2">
