@@ -21,8 +21,10 @@ const CUBE_TRANSFORM =
 
 /** 3 khối tranche xếp chồng, mỗi khối nảy lệch pha — như trang gốc. */
 export function TrancheStack() {
+  /* p-3 và svg hẹp lại (86 -> 72px) trên mobile: `items-end` dồn chồng khối
+     xuống đáy, mà nó cao hơn khung nên thò 12px lên trên viền. */
   return (
-    <div className="flex h-full items-end justify-center p-2 sm:p-4">
+    <div className="flex h-full items-end justify-center p-3 pt-8 sm:p-4">
       <div className="flex flex-col items-center gap-y-1.5 sm:gap-y-2 md:gap-y-3">
         {TRANCHES.map((t, i) => (
           <div key={t.label} className="relative flex flex-col items-center">
@@ -41,7 +43,7 @@ export function TrancheStack() {
                 <svg
                   viewBox="0 0 112 114"
                   fill="none"
-                  className="w-[86px] sm:w-[108px] md:w-[136px]"
+                  className="w-[72px] sm:w-[108px] md:w-[136px]"
                   aria-hidden
                 >
                   <defs>
@@ -67,7 +69,7 @@ export function TrancheStack() {
                 <svg
                   viewBox="0 0 112 36"
                   fill="none"
-                  className="w-[86px] sm:w-[108px] md:w-[136px]"
+                  className="w-[72px] sm:w-[108px] md:w-[136px]"
                   aria-hidden
                 >
                   <defs>
@@ -252,9 +254,14 @@ export function WalletVisual() {
     return () => io.disconnect();
   }, []);
 
+  /* py-5 trên mobile: khung bọc là `h-full` nên nó hug lấy chính illus — thu nhỏ
+     illus thì khung co theo, hở vẫn y nguyên 2px. Chỉ padding mới tách được
+     illus khỏi viền. */
   return (
-    <div ref={hostRef} className="relative flex h-full items-center justify-center">
-      <div className="relative flex h-[220px] w-[220px] items-center justify-center sm:h-[260px] sm:w-[260px]">
+    <div ref={hostRef} className="relative flex h-full items-center justify-center py-5 sm:py-0">
+      {/* 180 chứ không phải 220 trên mobile: khung chỉ cao 224px nên vòng ngoài
+          cùng của radar hở đúng 2px với viền, nhìn như dính. */}
+      <div className="relative flex h-[180px] w-[180px] items-center justify-center sm:h-[260px] sm:w-[260px]">
         <div className="absolute inset-0">
           <svg className="absolute inset-0 size-full" viewBox="0 0 100 100" aria-hidden>
             <circle

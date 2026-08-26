@@ -229,7 +229,7 @@ function Panel({
              * Đẩy hộp sang phải nửa phần tràn (và cho tràn ngược lại đúng nửa đó)
              * để lề grid hai bên hộp bằng nhau.
              */}
-            <div className="relative ml-3 -mr-3 flex h-full w-full items-center justify-center rounded-[28px] border-2 border-line-strong bg-surface lg:ml-[30px] lg:-mr-[30px]">
+            <div className="relative ml-3 -mr-3 flex h-full w-full items-center justify-center rounded-[20px] border-2 border-line-strong bg-surface md:rounded-[28px] lg:ml-[30px] lg:-mr-[30px]">
               {panel.logos && panel.logos.length <= 3 && (
                 <div className="flex items-center justify-center gap-7 px-8 py-7 sm:gap-10 sm:px-10 sm:py-9">
                   {panel.logos.map((l) => (
@@ -237,7 +237,7 @@ function Panel({
                       key={l.name}
                       className="flex flex-col items-center justify-center gap-3 sm:gap-4"
                     >
-                      <div className="h-[92px] w-[92px] shrink-0 overflow-hidden rounded-2xl sm:h-[160px] sm:w-[160px] sm:rounded-3xl">
+                      <div className="h-[92px] w-[92px] shrink-0 overflow-hidden rounded-[12px] sm:h-[160px] sm:w-[160px] sm:rounded-3xl">
                         <img
                           src={asset(l.icon)}
                           alt={l.name}
