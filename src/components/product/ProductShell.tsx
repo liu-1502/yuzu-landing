@@ -250,7 +250,10 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
   const upper = base ? tokens.slice(0, -1) : tokens;
 
   return (
-    <section className={cn("section-tint pb-14 md:pb-20", PAD)}>
+    /* pt-9 (36px): Terms để pb-0 và khối này để pt-0 nên hai hàng thẻ dán khít
+       nhau, hở đúng 0px. Trên bản dev khối token nằm TRONG section Terms, cách
+       hàng thẻ spec đúng mt-9 — lấy lại con số đó. */
+    <section className={cn("section-tint pt-9 pb-14 md:pb-20", PAD)}>
       <div className="mx-auto max-w-[1280px]">
         <div
           className={cn(
