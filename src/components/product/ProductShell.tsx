@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
@@ -9,6 +10,7 @@ import {
   ChevronRight,
   ChevronUp,
 } from "@/components/ui/Icons";
+import VariableFontCursorProximity from "@/components/fancy/text/variable-font-cursor-proximity";
 import { LiquidSurface } from "@/components/ui/LiquidSurface";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { Reveal } from "@/components/product/Reveal";
@@ -178,7 +180,25 @@ function markIntro(text: string, marks: string[] | undefined, tone: string) {
   );
 }
 
+/**
+ * Hiệu ứng con trỏ trên H1 — giống hệt tiêu đề hero trang chủ (radius 90,
+ * gaussian), chỉ khác điểm nghỉ.
+ *
+ * Home để `wght 600` vì H1 của nó `font-semibold`; H1 trang sản phẩm là
+ * `font-bold` nên phải nghỉ ở 700, không thì chưa rê chuột chữ đã mảnh đi.
+ * Trần là 800 chứ không phải 900: font Bricolage Grotesque chặn trục ở đó — đo
+ * bề rộng cùng một chữ ở 800 và 900 ra y hệt 175.3px.
+ */
+const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
+  containerRef,
+  fromFontVariationSettings: "'wght' 700",
+  toFontVariationSettings: "'wght' 800",
+  radius: 90,
+  falloff: "gaussian" as const,
+});
+
 export function ProductHero({ page }: { page: HeroData }) {
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const prime = page.id === "prime";
   const cut = page.title.lastIndexOf(" ");
   const lead = cut > 0 ? page.title.slice(0, cut) : "";
@@ -227,9 +247,21 @@ export function ProductHero({ page }: { page: HeroData }) {
               trỏ wght 700→800 — vừa khác bản gốc, vừa cắt chữ thành từng ký tự
               nên trình đọc màn hình đọc rời rạc. */}
           <Reveal delay={prime ? 0 : 0.06}>
-            <h1 className="text-balance font-sans text-5xl font-bold leading-[1.15] tracking-tight sm:text-6xl md:text-7xl">
-              {lead && `${lead} `}
-              <span style={{ color: "var(--heading-accent, var(--accent))" }}>{tail}</span>
+            <h1
+              ref={titleRef}
+              className="text-balance font-sans text-5xl font-bold leading-[1.15] tracking-tight sm:text-6xl md:text-7xl"
+            >
+              {lead && (
+                <VariableFontCursorProximity {...titleFx(titleRef)}>
+                  {`${lead} `}
+                </VariableFontCursorProximity>
+              )}
+              <VariableFontCursorProximity
+                style={{ color: "var(--heading-accent, var(--accent))" }}
+                {...titleFx(titleRef)}
+              >
+                {tail}
+              </VariableFontCursorProximity>
             </h1>
           </Reveal>
 
