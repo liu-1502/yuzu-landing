@@ -20,7 +20,9 @@ import { MARK_PATHS } from "@/components/ui/YuzuMark";
  * render lại là một bộ số mới, hạt sẽ nhảy vị trí.
  */
 
-const COUNT = 30;
+/** Hero dùng 30 hạt; các section thân bài trên bản dev chỉ 7–9 hạt — thưa hơn
+ * nhiều để không giành chú ý với nội dung. */
+const DEFAULT_COUNT = 30;
 
 /** LCG 32-bit — cùng seed thì cùng dãy, đủ đều cho việc rải hạt. */
 function makeRandom(seed: number) {
@@ -36,11 +38,11 @@ type Particle = {
   style: CSSProperties;
 };
 
-function build(seed: number): Particle[] {
+function build(seed: number, count: number): Particle[] {
   const rand = makeRandom(seed);
   const lerp = (a: number, b: number) => a + rand() * (b - a);
 
-  return Array.from({ length: COUNT }, (_, i) => {
+  return Array.from({ length: count }, (_, i) => {
     const size = lerp(4, 26);
     const dur = lerp(16, 36);
     return {
@@ -60,8 +62,14 @@ function build(seed: number): Particle[] {
   });
 }
 
-export function CitrusField({ seed = 1 }: { seed?: number }) {
-  const particles = build(seed);
+export function CitrusField({
+  seed = 1,
+  count = DEFAULT_COUNT,
+}: {
+  seed?: number;
+  count?: number;
+}) {
+  const particles = build(seed, count);
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">

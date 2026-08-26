@@ -642,8 +642,14 @@
   animation: citrus-bob 6s ease-in-out infinite;
 }
 
+/** Bản dev cho icon trong thân bài nhấp nhanh hơn quả cầu: 4.5s. */
+.citrus-bob-fast {
+  animation: citrus-bob 4.5s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .citrus-bob,
+  .citrus-bob-fast,
   .citrus-rise {
     animation: none;
   }

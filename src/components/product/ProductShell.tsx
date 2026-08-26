@@ -368,8 +368,14 @@ export function PathIn({
   note: string;
 }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section
+      className={cn(
+        "section-tint relative overflow-hidden border-t border-line-solid py-14 md:py-20",
+        PAD,
+      )}
+    >
+      <CitrusField seed={7717} count={7} />
+      <div className="relative mx-auto max-w-[1280px]">
         <span className="kicker mb-8">{kicker}</span>
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
@@ -396,8 +402,15 @@ export function PathIn({
 /** CTA đóng trang. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-16 md:py-24", PAD)}>
-      <div className="mx-auto max-w-[1280px] text-center">
+    <section
+      className={cn(
+        "section-tint relative overflow-hidden border-t border-line-solid py-16 md:py-24",
+        PAD,
+      )}
+    >
+      {/* Bản dev rải hạt cam ở cả CTA đóng trang, 8 hạt — thưa hơn hero (30). */}
+      <CitrusField seed={4409} count={8} />
+      <div className="relative mx-auto max-w-[1280px] text-center">
         <h2 className="text-[30px] font-semibold leading-[1.08] text-foreground md:text-[40px] md:leading-[1.15]">
           {closing.title}
         </h2>

@@ -16,6 +16,8 @@ export type Vault = {
   name: string;
   desc: string;
   metrics: { label: string; value: string }[];
+  /** Icon token — bản dev cho 3 icon này nhấp nhẹ trong khối Composition. */
+  icon?: string;
   upcoming?: boolean;
 };
 
@@ -145,6 +147,7 @@ export const marketplacePage: ProductPage = {
   vaults: [
     {
       name: "yzCash",
+      icon: "/assets/tokens/yzCash.svg",
       desc: "The U.S. sovereign rate, onchain. Backed by tokenized T-Bills from leading issuers, with no lockup.",
       metrics: [
         { label: "Net APY", value: "6%" },
@@ -157,6 +160,7 @@ export const marketplacePage: ProductPage = {
     },
     {
       name: "yzSyrup",
+      icon: "/assets/tokens/yzSyrup.svg",
       desc: "Overcollateralized lending to institutional borrowers through Maple Syrup, wrapped as one yield-bearing token. Loans are secured by liquid digital assets, with recourse.",
       metrics: [
         { label: "Net APY", value: "10%" },
@@ -169,6 +173,7 @@ export const marketplacePage: ProductPage = {
     },
     {
       name: "yzmGLOBAL",
+      icon: "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png",
       desc: "This vault provides leverage exposure to Fasanara's M-Glo and M-Global, both bearing similar underlying exposure - to Fasanara Capital's Global Diversified Alternative Debt Fund (GDADF).",
       metrics: [
         { label: "Net APY", value: "11.8%" },

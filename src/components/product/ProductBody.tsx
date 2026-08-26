@@ -3,6 +3,7 @@ import type { Product } from "@/data/content";
 import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
 import { ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
 import { SectionHead } from "@/components/product/ProductShell";
+import { CitrusField } from "@/components/product/CitrusField";
 import { cn } from "@/lib/utils";
 
 const PAD = "px-6 lg:px-[60px]";
@@ -24,8 +25,9 @@ export function Composition({
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section className={cn("section-tint py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section className={cn("section-tint relative overflow-hidden py-14 md:py-20", PAD)}>
+      <CitrusField seed={2273} count={9} />
+      <div className="relative mx-auto max-w-[1280px]">
         <SectionHead kicker={head.kicker} title={head.title} />
 
         {head.note && (
@@ -104,7 +106,8 @@ export function Terms({
               >
                 <div className="shrink-0 sm:mb-2.5">
                   <span className="flex size-9 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-foreground">
-                    <Icon className="size-5" />
+                    {/* Nhấp nhẹ 4.5s — bản dev cho 3 icon của khối Terms cùng nhấp. */}
+                    <Icon className="citrus-bob-fast size-5" />
                   </span>
                 </div>
                 <div className="min-w-0">

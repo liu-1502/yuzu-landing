@@ -1,4 +1,5 @@
 import type { Claim, Era, PrimePage, Stat, Vault } from "@/data/productPages";
+import { asset } from "@/data/content";
 import { SectionHead } from "@/components/product/ProductShell";
 import { cn } from "@/lib/utils";
 
@@ -167,8 +168,19 @@ export function VaultCards({ vaults }: { vaults: Vault[] }) {
             v.upcoming ? "bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]" : "bg-surface",
           )}
         >
-          <div className="data text-[20px] font-semibold leading-none text-foreground">
-            {v.name}
+          <div className="flex items-center gap-2.5">
+            {v.icon && (
+              <img
+                src={asset(v.icon)}
+                alt=""
+                /* citrus-bob-fast: bản dev cho 3 icon vault trong khối Composition
+                   nhấp nhẹ 4.5s. */
+                className="citrus-bob-fast size-7 shrink-0 rounded-full"
+              />
+            )}
+            <div className="data text-[20px] font-semibold leading-none text-foreground">
+              {v.name}
+            </div>
           </div>
           <p className="mt-3 text-[13px] leading-[1.6] text-muted-foreground">{v.desc}</p>
           {v.metrics.length > 0 && (
