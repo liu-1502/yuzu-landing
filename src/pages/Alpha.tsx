@@ -1,6 +1,6 @@
 import { products } from "@/data/content";
 import { alphaPage } from "@/data/productPages";
-import { Partners } from "@/components/sections/Partners";
+import { ProductPartners } from "@/components/product/ProductPartners";
 import { Composition, Terms } from "@/components/product/ProductBody";
 import {
   ClosingCta,
@@ -27,7 +27,7 @@ export default function Alpha() {
       />
       <Protection {...alphaPage.protection} />
       <PathIn {...alphaPage.path} />
-      <Partners />
+      <ProductPartners />
       <ClosingCta closing={alphaPage.closing} />
     </>
   );

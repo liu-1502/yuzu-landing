@@ -681,3 +681,28 @@
   padding-top: 3.75rem;
   padding-bottom: 3.75rem;
 }
+
+/**
+ * Dải logo của trang sản phẩm — hai hàng chạy ngược chiều nhau, 25s mỗi vòng.
+ * Track được nhân đôi nên dịch đúng -50% là khớp mép, không hở đoạn nối.
+ */
+@keyframes prime-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.prime-marquee {
+  animation: prime-marquee 25s linear infinite;
+}
+
+.prime-marquee-rev {
+  animation: prime-marquee 25s linear infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prime-marquee,
+  .prime-marquee-rev {
+    animation: none;
+  }
+}

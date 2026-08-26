@@ -1,5 +1,5 @@
 import { primePage } from "@/data/productPages";
-import { Partners } from "@/components/sections/Partners";
+import { ProductPartners } from "@/components/product/ProductPartners";
 import { Clo, Lending, Sources, TBills } from "@/components/product/PrimeSections";
 import { ClosingCta, KpiRow, ProductHero } from "@/components/product/ProductShell";
 
@@ -16,7 +16,7 @@ export default function Prime() {
       <TBills data={primePage.tbills} />
       <Clo data={primePage.clo} />
       <Lending data={primePage.lending} />
-      <Partners />
+      <ProductPartners />
       <ClosingCta closing={primePage.closing} />
       <Sources data={primePage.sources} />
     </div>

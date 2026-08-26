@@ -1,6 +1,6 @@
 import { products } from "@/data/content";
 import { marketplacePage } from "@/data/productPages";
-import { Partners } from "@/components/sections/Partners";
+import { ProductPartners } from "@/components/product/ProductPartners";
 import { Composition, Terms } from "@/components/product/ProductBody";
 import {
   ClosingCta,
@@ -30,7 +30,7 @@ export default function Marketplace() {
       />
       <Protection {...marketplacePage.protection} />
       <PathIn {...marketplacePage.path} />
-      <Partners />
+      <ProductPartners />
       <ClosingCta closing={marketplacePage.closing} />
     </div>
   );

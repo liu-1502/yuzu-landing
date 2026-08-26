@@ -182,34 +182,19 @@ export function Composition({
 
 
         {vaults ? (
+          /* Cả "More on the way" cũng nằm TRONG lưới, làm thẻ thứ 4 xuống hàng
+             hai — bản dev để vậy. Tách nó ra ngoài thì section hụt 58px. */
           <div className="mt-9 grid gap-4 md:grid-cols-3">
-            {vaults
-              .filter((v) => !v.upcoming)
-              .map((v, i) => (
-                <Reveal key={v.name} y={24} delay={i * 0.08}>
-                  <VaultCard v={v} i={i} />
-                </Reveal>
-              ))}
+            {vaults.map((v, i) => (
+              <Reveal key={v.name} y={24} delay={i * 0.08}>
+                <VaultCard v={v} i={i} />
+              </Reveal>
+            ))}
           </div>
         ) : (
           <WeightList p={p} />
         )}
 
-        {/* "More on the way" — bản dev để ngoài lưới 3 thẻ, dạng một dòng nhắc. */}
-        {vaults?.some((v) => v.upcoming) && (
-          <Reveal delay={0.24}>
-            {vaults
-              .filter((v) => v.upcoming)
-              .map((v) => (
-                <div key={v.name} className={cn("mt-4 p-5", CARD)}>
-                  <h3 className="text-[17px] font-semibold text-foreground">{v.name}</h3>
-                  <p className="mt-2 text-[13.5px] leading-[1.55] text-muted-foreground">
-                    {v.desc}
-                  </p>
-                </div>
-              ))}
-          </Reveal>
-        )}
       </div>
     </section>
   );
