@@ -28,6 +28,9 @@ jobs:
         env:
           # GitHub Pages phục vụ ở /<repo>/, không phải gốc domain.
           VITE_BASE: /${{ github.event.repository.name }}/
+      # GitHub Pages khong co rewrite cho SPA: vao thang /alpha se 404. Ban sao
+      # index.html lam trang 404 khien Pages tra ve app, router tu xu ly duong dan.
+      - run: cp dist/index.html dist/404.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

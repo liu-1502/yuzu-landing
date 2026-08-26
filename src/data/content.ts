@@ -22,9 +22,9 @@ export const site = {
 
 export const nav = {
   products: [
-    { name: "Alpha", desc: "Stablecoin engine", color: "var(--alpha)", href: "#products" },
-    { name: "Prime", desc: "Tokenized fixed income", color: "var(--prime)", href: "#products" },
-    { name: "Marketplace", desc: "Curated single strategies", color: "var(--mkt)", href: "#products" },
+    { name: "Alpha", desc: "Stablecoin engine", color: "var(--alpha)", href: "/alpha" },
+    { name: "Prime", desc: "Tokenized fixed income", color: "var(--prime)", href: "/prime" },
+    { name: "Marketplace", desc: "Curated single strategies", color: "var(--mkt)", href: "/marketplace" },
   ],
   links: [
     { label: "Security", href: "#security" },

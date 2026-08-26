@@ -1,9 +1,59 @@
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { nav } from "@/data/content";
 import { ArrowUpRight, ChevronDown, Menu, X } from "@/components/ui/Icons";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { cn } from "@/lib/utils";
+
+/**
+ * Một link của nav có thể là ba loại: route (`/alpha`), neo trong trang
+ * (`#security`) hoặc link ngoài. Neo trong trang chỉ chạy được khi đang ở
+ * landing; đứng ở trang sản phẩm thì phải điều hướng về `/` kèm hash, và phải
+ * đi qua <Link> để react-router gắn basename (`/yuzu-landing/` trên Pages).
+ */
+function NavA({
+  href,
+  external,
+  onClick,
+  className,
+  children,
+}: {
+  href: string;
+  external?: boolean;
+  onClick?: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const onLanding = useLocation().pathname === "/";
+
+  if (external || href === "#") {
+    return (
+      <a href={href} onClick={onClick} className={className}>
+        {children}
+      </a>
+    );
+  }
+  if (href.startsWith("#")) {
+    if (onLanding) {
+      return (
+        <a href={href} onClick={onClick} className={className}>
+          {children}
+        </a>
+      );
+    }
+    return (
+      <Link to={{ pathname: "/", hash: href }} onClick={onClick} className={className}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <Link to={href} onClick={onClick} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export function Header() {
   const [openMenu, setOpenMenu] = useState(false);
@@ -13,9 +63,9 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-surface">
       <div className="px-6 lg:px-[60px]">
         <nav className="mx-auto flex h-16 max-w-[1280px] items-center justify-between">
-          <a href="#top" aria-label="Yuzu" className="squeeze">
+          <Link to="/" aria-label="Yuzu" className="squeeze">
             <Wordmark className="h-8" />
-          </a>
+          </Link>
 
           <ul className="hidden items-center gap-5 md:flex lg:gap-7">
             <li>
@@ -55,8 +105,9 @@ export function Header() {
                   <ul className="overflow-hidden rounded-lg bg-surface p-1.5 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.28)]">
                     {nav.products.map((p) => (
                       <li key={p.name}>
-                        <a
+                        <NavA
                           href={p.href}
+                          onClick={() => setOpenProducts(false)}
                           className="flex items-start gap-2.5 rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-surface-2 focus-visible:bg-surface-2"
                         >
                           <span
@@ -71,7 +122,7 @@ export function Header() {
                               {p.desc}
                             </span>
                           </span>
-                        </a>
+                        </NavA>
                       </li>
                     ))}
                   </ul>
@@ -81,8 +132,9 @@ export function Header() {
 
             {nav.links.map((l) => (
               <li key={l.label}>
-                <a
+                <NavA
                   href={l.href}
+                  external={l.external}
                   className="group/nav relative flex items-center gap-1 py-1 text-[13.5px] font-medium text-foreground transition-colors duration-150"
                 >
                   {l.label}
@@ -90,7 +142,7 @@ export function Header() {
                     <ArrowUpRight className="size-3.5 opacity-70" />
                   )}
                   <span className="absolute -bottom-0.5 left-0 h-[2px] w-0 rounded-full bg-accent transition-all duration-300 ease-out group-hover/nav:w-full" />
-                </a>
+                </NavA>
               </li>
             ))}
           </ul>
@@ -124,7 +176,7 @@ export function Header() {
           <ul className="flex flex-col px-6 py-3">
             {nav.products.map((p) => (
               <li key={p.name}>
-                <a
+                <NavA
                   href={p.href}
                   onClick={() => setOpenMenu(false)}
                   className="flex items-center gap-2.5 py-2.5 text-[14px] font-medium"
@@ -134,18 +186,19 @@ export function Header() {
                     style={{ background: p.color }}
                   />
                   {p.name}
-                </a>
+                </NavA>
               </li>
             ))}
             {nav.links.map((l) => (
               <li key={l.label}>
-                <a
+                <NavA
                   href={l.href}
+                  external={l.external}
                   onClick={() => setOpenMenu(false)}
                   className="block py-2.5 text-[14px] font-medium text-muted-foreground"
                 >
                   {l.label}
-                </a>
+                </NavA>
               </li>
             ))}
             <li className="pb-3 pt-3">
