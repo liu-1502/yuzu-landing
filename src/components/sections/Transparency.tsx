@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { transparency } from "@/data/content";
 import { AccountableMark, AttestIcon, SolvencyIcon, WhitelistIcon } from "@/components/ui/Icons";
-import { splitLinks } from "@/lib/utils";
+import { cn, splitLinks } from "@/lib/utils";
+import { useChoreography } from "@/lib/useChoreography";
 
 const ICONS = { solvency: SolvencyIcon, attest: AttestIcon, whitelist: WhitelistIcon };
 
@@ -88,6 +89,9 @@ function Card({ card }: { card: (typeof transparency.cards)[number] }) {
 }
 
 export function Transparency() {
+  /* Chỉ trượt đè lên thẻ cuối của Security khi cả dàn dựng đang bật — xem
+     useChoreography. */
+  const overlap = useChoreography();
   return (
     <section
       id="transparency"
@@ -98,7 +102,10 @@ export function Transparency() {
          section phía sau. Section này chỉ cao 661px nên Concierge bị hụt vào 187px
          cuối của deck, và thẻ số 5 (trong Security z-10) vẽ đè lên nó. Cao đúng
          100svh thì Concierge bắt đầu khít ngay điểm deck kết thúc. */
-      className="section-tint relative z-20 -mt-[100svh] flex min-h-[100svh] flex-col justify-center px-6 py-8 md:px-[60px] md:py-16"
+      className={cn(
+        "section-tint relative z-20 flex flex-col justify-center px-6 py-8 md:px-[60px] md:py-16",
+        overlap && "-mt-[100svh] min-h-[100svh]",
+      )}
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04]"

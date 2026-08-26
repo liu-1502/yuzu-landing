@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMotionValueEvent } from "motion/react";
 import { cn } from "@/lib/utils";
+import { useChoreography } from "@/lib/useChoreography";
 import { asset, securityIntro, securityPanels } from "@/data/content";
 import { ExternalLink } from "@/components/ui/Icons";
 import {
@@ -267,6 +268,10 @@ function Panel({
 
 export function Security() {
   const { on: stacking, vh } = useStacking();
+  /* Riêng biệt với `stacking`: `stacking` quyết việc xếp thẻ bên trong section,
+     còn cái này quyết việc section có trượt đè lên Products hay không. Trên màn
+     thấp (<620px) thẻ vẫn xếp được nhưng Products không ghim, nên không được đè. */
+  const overlap = useChoreography();
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
 
@@ -344,7 +349,7 @@ export function Security() {
          đó tấm Marketplace vẫn đang ghim (sticky chưa hết khung cha), nên Security
          trượt phủ lên nó thay vì đẩy nó đi. z-10 để nằm trên, section-tint là nền
          đục nên không lộ tấm phía sau. */
-      className="section-tint relative z-10 -mt-[100svh]"
+      className={cn("section-tint relative z-10", overlap && "-mt-[100svh]")}
     >
       <div
         ref={introRef}
@@ -402,8 +407,9 @@ export function Security() {
           );
         })}
 
-        {/* Đuôi giữ thẻ cuối còn ghim — xem TAIL_SCREENS. */}
-        <div aria-hidden className="h-[100svh]" />
+        {/* Đuôi giữ thẻ cuối còn ghim — xem TAIL_SCREENS. Không dàn dựng thì nó chỉ
+            là 100svh khoảng trống chết, vì Transparency cũng không bị kéo lên. */}
+        {overlap && <div aria-hidden className="h-[100svh]" />}
       </StackingCards>
     </section>
   );

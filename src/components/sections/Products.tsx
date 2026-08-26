@@ -3,6 +3,7 @@ import { asset, products, productsHeading, type Product } from "@/data/content";
 import { ArrowRight, ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
 import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
 import { cn } from "@/lib/utils";
+import { isChoreographyOn } from "@/lib/useChoreography";
 
 const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon };
 
@@ -118,8 +119,9 @@ type ProductMode = "carousel" | "pinned" | "stacked";
 
 function resolveMode(): ProductMode {
   if (window.innerWidth < 768) return "carousel";
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  return !reduced && window.innerHeight >= 620 ? "pinned" : "stacked";
+  // Cùng một điều kiện với Security / Transparency — xem chú thích trong
+  // useChoreography: ba section nối nhau bằng margin âm nên không được lệch nhau.
+  return isChoreographyOn() ? "pinned" : "stacked";
 }
 
 function useProductMode() {
