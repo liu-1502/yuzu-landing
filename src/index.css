@@ -199,6 +199,23 @@
      thẻ trắng trung tính. Số lấy đúng từ dev.yuzu.money/prime. */
   --surface: #fdfcfa;
   --surface-2: #efece2;
+  /* Bộ token RIÊNG của trang Prime — bản dev dùng một hệ màu khác cho trang này,
+     không dùng chung với Alpha/Marketplace. Ba màu vàng lấy nguyên giá trị; còn
+     lại trỏ vào token của mình để dark mode tự chạy.
+       --prime-accent        #c97e05  số liệu, viền badge
+       --prime-accent-strong #945d04  chữ trong pill kicker
+       --prime-accent-dark   #a9690a  chỉ số chú thích [n]
+     --prime-card-border phải khai riêng cho hai chế độ vì #e6e1d3 là nâu kem,
+     không có token nào của mình khớp. */
+  --prime-accent: #c97e05;
+  --prime-accent-strong: #945d04;
+  --prime-accent-dark: #a9690a;
+  --prime-text: var(--foreground);
+  --prime-text-subtle: var(--muted-foreground);
+  --prime-card: var(--surface);
+  --prime-card-border: #e6e1d3;
+  --prime-bg: var(--background);
+
   /* Chữ tô điểm trong H1 hero. Bản dev cho H1 Prime một class riêng
      `text-prime-accent` = #c97e05, sáng hơn --accent (#93690b) — vàng #93690b ở cỡ
      72px trên nền kem đọc ra nâu xỉn, nên đây là chủ ý.
@@ -211,6 +228,10 @@
   --liquid-bottom: #93690b99;
 }
 .dark .prime-scope {
+  --prime-accent: #edc15f;
+  --prime-accent-strong: #f3d089;
+  --prime-accent-dark: #dCA83f;
+  --prime-card-border: #2a2418;
   --liquid-top: #edc15f29;
   --liquid-bottom: #edc15f66;
   --background: var(--tint-prime);
@@ -653,4 +674,10 @@
   .citrus-rise {
     animation: none;
   }
+}
+
+/** Bản dev Prime dùng `py-15` = 60px — Tailwind không có bậc 15 nên khai tay. */
+.py-15 {
+  padding-top: 3.75rem;
+  padding-bottom: 3.75rem;
 }

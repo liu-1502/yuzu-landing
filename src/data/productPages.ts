@@ -247,7 +247,11 @@ export const marketplacePage: ProductPage = {
    ------------------------------------------------------------------------- */
 
 export type Stat = { value: string; label: string };
-export type Claim = { title: string; body: string };
+/** Thẻ luận điểm của Prime — bản dev mỗi thẻ có một ảnh tỉ lệ 2:1 ở trên. */
+export type Claim = { title: string; body: string; image?: string };
+
+/** Ô trong dải Maple: số liệu, nhãn, mô tả, icon 48px. */
+export type MapleCell = { value: string; title: string; body: string; icon: string };
 export type Era = { year: string; title: string; body: string };
 
 export type PrimePage = {
@@ -266,7 +270,7 @@ export type PrimePage = {
     timeline: Era[];
     compare: { title: string; cards: Claim[] };
   };
-  lending: { kicker: string; title: string; body: string; cards: Claim[]; note: string };
+  lending: { kicker: string; title: string; body: string; cells: MapleCell[]; note: string };
   closing: ProductPage["closing"];
   sources: { title: string; items: { ref: string; text: string }[]; disclaimer: string };
 };
@@ -293,21 +297,25 @@ export const primePage: PrimePage = {
     ],
     claims: [
       {
+        image: "/assets/yzPrime/liquidity-card-1.png",
         title: "Issued by the world's largest asset managers",
         body:
           "BlackRock's BUIDL fund surpassed $2.9 billion in assets, commanding over 40% of the tokenized Treasury market.[1] Franklin Templeton's BENJI crossed $800 million. The tokenized T-Bill market grew from $2 billion in mid-2024 to over $9 billion by late 2025.[2] BlackRock is now exploring tokenized ETFs beyond Treasuries.[9]",
       },
       {
+        image: "/assets/yzPrime/liquidity-card-2.png",
         title: "Instant settlement, 24/7 liquidity",
         body:
           "Traditional T-Bills settle on T+1 or T+2 cycles within business hours. Tokenized versions settle near-instantly on-chain, any time, any day. Institutions can redeem into USDC in minutes, freeing capital that would otherwise sit locked in settlement windows.[2]",
       },
       {
+        image: "/assets/yzPrime/liquidity-card-3-26b90c.png",
         title: "Backed by the US government",
         body:
           "Underlying assets are short-dated US Treasury bills – one of the safest and most liquid instruments in global finance, backed by the full faith and credit of United States. Custody is held at Bank of New York Mellon under institutional-grade infrastructure.[1]",
       },
       {
+        image: "/assets/yzPrime/liquidity-card-4-546867.png",
         title: "DeFi composability, Yield-bearing collateral",
         body:
           "Tokenized T-Bills are increasingly accepted as margin collateral on decentralized and centralized platforms. BUIDL is already accepted as collateral on Deribit and Aave.[3] Tokenized T-Bills have become the base layer for on-chain lending, reducing reliance on volatile crypto-native collateral while earning the risk-free rate.",
@@ -390,19 +398,25 @@ export const primePage: PrimePage = {
     title: "Maple Finance",
     body:
       "Collateral pool comprises of only highly liquid digital assets. Liquidations are processed in seconds and battle tested through deep drawdowns and volatility[7]. Assets without acceptable liquidity are not eligible, and concentration limits are enforced across the loan book.[8]",
-    cards: [
+    cells: [
       {
-        title: "166.5% — Collateralization ratio",
+        icon: "/assets/yzPrime/maple-icon-shield.svg",
+        value: "166.5%",
+        title: "Collateralization ratio",
         body:
           "Every loan is overcollateralized with highly liquid digital assets. Automated liquidation triggers protect lenders from any shortfall.",
       },
       {
-        title: "$12B+ — Processed, zero lender losses",
+        icon: "/assets/yzPrime/maple-icon-chart.svg",
+        value: "$12B+",
+        title: "Processed, zero lender losses",
         body:
           "Over $12 billion cumulative loan volume with a >99% repayment rate. During October 2025's flash crash, all margin calls were met within three hours, followed by $150 million in net inflows.[7]",
       },
       {
-        title: "BTC, ETH, XRP — Large-cap liquid collateral",
+        icon: "/assets/yzPrime/maple-icon-collateral.svg",
+        value: "BTC, ETH, XRP",
+        title: "Large-cap liquid collateral",
         body:
           "Collateral ratios verifiable on-chain in real time with active margin call monitoring 24/7/365 with 3 independent price feed sources.[8]",
       },
