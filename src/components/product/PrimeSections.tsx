@@ -416,7 +416,45 @@ function Timeline({ eras }: { eras: Era[] }) {
   );
 }
 
+/** Toạ độ bốn sợi chỉ, đo trực tiếp trên bản dev. */
+const CLO_LINES = [
+  { top: "20%", width: "70%" },
+  { top: "36%", width: "55%" },
+  { top: "52%", width: "55%" },
+  { top: "70%", width: "70%" },
+];
+
+/** Đã lọt vào khung nhìn chưa — dùng cho thứ không bọc được trong `Reveal`
+ *  (Reveal đặt transform lên thẻ bọc, mà transform thì tạo containing block mới
+ *  nên mọi con `absolute` bên trong sẽ neo sai). */
+function useInView(ref: React.RefObject<HTMLElement | null>) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "-40px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+  return shown;
+}
+
 export function Clo({ data }: { data: PrimePage["clo"] }) {
+  const ringWrap = useRef<HTMLDivElement>(null);
+  const ringShown = useInView(ringWrap);
+
   return (
     <section className={cn("py-15", PAD)}>
       {/* max-w-7xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
@@ -430,9 +468,32 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
         </Reveal>
 
         <Reveal y={60} className="w-full">
-          <div className="relative mx-auto flex max-w-[1100px] flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-0">
-            <CloRing />
-            <StatPills stats={data.stats} />
+          <div ref={ringWrap} className="relative mx-auto">
+            {/* Bốn sợi chỉ nối vòng tròn sang từng viên số liệu — bản dev có,
+                mình thiếu hẳn. Chúng mờ dần về bên trái và "kéo ra" từ gốc bên
+                trái khi cuộn tới (opacity + scaleX, origin-left). Đặt ở đây làm
+                em của hàng nội dung nên phải là con trực tiếp của `relative`. */}
+            {CLO_LINES.map((l, i) => (
+              <div
+                key={i}
+                aria-hidden
+                className="pointer-events-none absolute hidden h-px origin-left lg:block"
+                style={{
+                  top: l.top,
+                  left: "15%",
+                  width: l.width,
+                  background:
+                    "linear-gradient(90deg, transparent 0%, var(--prime-card-border) 100%)",
+                  opacity: ringShown ? 1 : 0,
+                  transform: `scaleX(${ringShown ? 1 : 0})`,
+                  transition: `opacity .7s ease ${i * 0.12}s, transform .9s cubic-bezier(.22,.61,.36,1) ${i * 0.12}s`,
+                }}
+              />
+            ))}
+            <div className="relative flex flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-0">
+              <CloRing />
+              <StatPills stats={data.stats} />
+            </div>
           </div>
         </Reveal>
 
@@ -514,9 +575,19 @@ export function Lending({ data }: { data: PrimePage["lending"] }) {
         </Reveal>
 
         <Reveal y={60}>
-          <p className="text-center text-[13px] font-medium uppercase tracking-wide text-[var(--prime-text-subtle)]">
-            {data.note}
-          </p>
+          {/* Bản dev để ghi chú này thành một dòng có ICON ĐỒNG HỒ 18px đứng
+              trước, chữ 14px thường — không phải chữ 13px in hoa. File icon đã
+              có sẵn trong repo, chỉ là mình chưa dùng. */}
+          <div className="flex items-center justify-center gap-2">
+            <img
+              src={asset("/assets/yzPrime/maple-icon-clock.svg")}
+              alt=""
+              width={18}
+              height={18}
+              loading="lazy"
+            />
+            <span className="text-sm leading-[1.3] text-[var(--prime-text-muted)]">{data.note}</span>
+          </div>
         </Reveal>
       </div>
     </section>

@@ -86,7 +86,7 @@ export const alphaPage: ProductPage = {
     title: "Who can get in, how fast you get out, what stands under you.",
   },
   tokens: [
-    { name: "yzUSD", icon: "/assets/tokens/syzUSD.svg", desc: "The stablecoin, senior claim, held at par" },
+    { name: "yzUSD", icon: "/assets/tokens/yzUSD.svg", desc: "The stablecoin, senior claim, held at par" },
     { name: "syzUSD", icon: "/assets/tokens/syzUSD.svg", desc: "Staked yzUSD, ERC-4626, earns the weekly yield" },
     { name: "yzPP", icon: "/assets/tokens/yzPP.svg", desc: "Junior tranche, takes the first loss" },
   ],

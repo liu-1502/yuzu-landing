@@ -9,6 +9,8 @@ import {
   ChevronRight,
   ChevronUp,
 } from "@/components/ui/Icons";
+import { LiquidSurface } from "@/components/ui/LiquidSurface";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
 import { Reveal } from "@/components/product/Reveal";
@@ -253,7 +255,14 @@ export function ProductHero({ page }: { page: HeroData }) {
 /* ------------------------------- dải chỉ số -------------------------------- */
 
 /** Ô KPI của bản dev: thẻ có viền, `pb-11` chừa chỗ cho vệt nước ở đáy. */
+/** Mực nước của bốn ô — dùng lại đúng bộ số của trang gốc đã ghi trong
+ *  `content.ts` cho stat box của landing (0.38–0.44, biến thiên nhẹ cho từng ô
+ *  chứ không mã hoá giá trị của chỉ số). */
+const KPI_LEVEL = [0.4, 0.44, 0.38, 0.42];
+
 export function KpiRow({ items }: { items: Kpi[] }) {
+  const reduced = useReducedMotion();
+
   return (
     <section
       aria-label="Key figures"
@@ -268,11 +277,22 @@ export function KpiRow({ items }: { items: Kpi[] }) {
       >
         {items.map((k, i) => (
           <Reveal key={k.label} y={18} delay={i * 0.06}>
-            <div className="flex min-h-[134px] flex-col items-center justify-start gap-1 overflow-hidden rounded-lg border border-line-solid bg-surface px-3 pt-5 pb-11">
-              <span className="text-2xl font-bold leading-9 tabular-nums text-foreground md:text-[32px]">
+            <div className="group relative flex min-h-[134px] flex-col items-center justify-start gap-1 overflow-hidden rounded-lg border border-line-solid bg-surface px-3 pt-5 pb-11">
+              {/* Mặt nước ở đáy ô — thứ mà `pb-11` chừa chỗ cho. Bản dev dựng đúng
+                  component này (viewBox 200×100, gradient --liquid-top → --liquid-bottom,
+                  8 bong bóng, uid `stat-{i}`); trước đây mình chừa chỗ nhưng KHÔNG
+                  vẽ nước, nên bốn ô này trống hẳn phần dưới. */}
+              <LiquidSurface
+                level={KPI_LEVEL[i % KPI_LEVEL.length]}
+                active
+                tone="var(--liquid-back)"
+                uid={`stat-${i}`}
+                reduced={reduced}
+              />
+              <span className="relative z-10 text-2xl font-bold leading-9 tabular-nums text-foreground md:text-[32px]">
                 {k.value}
               </span>
-              <p className="text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="relative z-10 text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 {k.label}
               </p>
             </div>
@@ -448,10 +468,23 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
 /** Bản dev bọc CTA trong một thẻ bo `rounded-xl` có viền; hạt cam rơi bên trong
  * thẻ chứ không phải cả section. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
+  const reduced = useReducedMotion();
+
   return (
     <section className={cn(SECTION, PAD)}>
       <Reveal>
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl border border-line-solid bg-surface px-6 pt-14 pb-20 text-center">
+          {/* Thẻ này bên dev cũng có mặt nước, phủ cả thẻ (1022×330) — cùng
+              component với ô KPI. Mức nước lấy theo khoảng `pb-20` mà bản dev
+              chừa ở đáy (80/330 ≈ 0.24): trang dev khoá cuộn nên không đọc được
+              `d` của họ để lấy đúng số. */}
+          <LiquidSurface
+            level={0.24}
+            active
+            tone="var(--liquid-back)"
+            uid="cta"
+            reduced={reduced}
+          />
           <CitrusField seed={4409} count={8} />
           <div className="relative z-10 flex flex-col items-center gap-6">
             <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
@@ -463,11 +496,11 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
             <div className="mt-1 flex flex-col items-center gap-3 sm:flex-row">
               <a href={closing.primary.href} className={BTN_PRIMARY}>
                 {closing.primary.label}
-                <ArrowRight className="size-4" />
+                <ArrowRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
               </a>
               <a href={closing.secondary.href} className={BTN_GHOST}>
                 {closing.secondary.label}
-                <ArrowUpRight className="size-4" />
+                <ArrowUpRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
               </a>
             </div>
           </div>

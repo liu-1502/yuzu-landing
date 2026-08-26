@@ -116,7 +116,7 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
         />
 
         {/* 4. icon token */}
-        <div className="absolute left-1/2 top-1/2 h-[65%] w-[65%] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute left-1/2 top-1/2 h-[52%] w-[52%] -translate-x-1/2 -translate-y-1/2">
           <img src={asset(s.icon)} alt="" className="size-full object-contain" />
         </div>
       </div>

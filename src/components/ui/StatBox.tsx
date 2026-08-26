@@ -1,20 +1,7 @@
-import { useEffect, useState } from "react";
 import { stats } from "@/data/content";
 import { cn } from "@/lib/utils";
 import { LiquidSurface } from "@/components/ui/LiquidSurface";
-
-/** prefers-reduced-motion, giống useReducedMotion của trang gốc */
-function useReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReduced(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-  return reduced;
-}
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 type Stat = (typeof stats)[number];
 
