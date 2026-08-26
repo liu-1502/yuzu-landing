@@ -270,6 +270,12 @@
   --accent: #4a4fb5;
   --accent-foreground: #f4f4ff;
   --faint: #586a5c;
+
+  /* Nền tím `--surface-2` (#e8e2ef) tối hơn nền xanh/kem của hai trang kia, nên
+     chữ muted của :root đặt lên đó chỉ còn tương phản 4.3 — dưới ngưỡng 4.5 cho
+     chữ nhỏ. Nhãn 11px trong ô KPI là chỗ dính. Đậm lại một nấc, ngả tím cho
+     hợp tông. */
+  --muted-foreground: #4f5468;
   --liquid-top: #4a4fb533;
   --liquid-bottom: #4a4fb599;
 
