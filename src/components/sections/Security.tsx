@@ -157,7 +157,7 @@ function Panel({
        * thụt thêm đúng phần padding của thẻ. Hai thứ này loại trừ nhau: muốn chữ
        * cũng ở 60px thì mép thẻ phải ở 0, tức thẻ tràn viền, mất lề.
        */}
-      <div className="relative z-10 px-6 py-10 md:py-12 lg:px-[60px]">
+      <div className="relative z-10 px-6 py-6 md:py-12 lg:px-[60px]">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-8 md:flex-row md:items-stretch md:gap-[60px]">
           {/*
                      * `min-w-0` là bắt buộc: `h3` có `md:whitespace-nowrap` nên
