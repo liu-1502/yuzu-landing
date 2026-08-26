@@ -418,7 +418,7 @@ export function Protection({
                   khi hover. Chú thích PHẢI bọc trong ngoặc nhọn — `/* *​/` trần ở
                   vị trí con của JSX sẽ render thành chữ thật trên trang. */}
               <li className="flex h-full items-start gap-4 rounded-lg bg-surface p-4 sm:p-5">
-                <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line-strong font-mono text-[11px] font-semibold text-accent sm:mt-0">
+                <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--accent)_35%,transparent)] font-mono text-[11px] font-semibold text-accent sm:mt-0">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">

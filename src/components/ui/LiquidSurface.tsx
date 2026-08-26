@@ -73,7 +73,10 @@ export function LiquidSurface({
 
     const onEnter = () => (hoverRef.current = true);
     const onLeave = () => (hoverRef.current = false);
-    const box = host.closest(".stat-box") ?? host;
+    /* Lớp phủ này `pointer-events-none` nên KHÔNG bao giờ nhận được pointer —
+       phải bắt trên thẻ cha. Trước chỉ dò `.stat-box` (chỉ landing có), nên ô KPI
+       và thẻ CTA của trang sản phẩm không hề dâng nước khi hover. */
+    const box = host.closest(".stat-box") ?? host.parentElement ?? host;
     box.addEventListener("pointerenter", onEnter);
     box.addEventListener("pointerleave", onLeave);
 

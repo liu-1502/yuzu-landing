@@ -604,13 +604,13 @@ main > .mkt-scope {
    như landing. Đây là chỗ lệch có mặt ở MỌI section của ba trang, nên nhìn cả
    trang đã khác tông ngay cả khi bố cục đã khớp. Chỉ ghi đè trong scope sản phẩm
    để không đụng tới landing. */
+/* Kicker ở trang sản phẩm giữ ĐÚNG viên pill nền trắng của home (nền --surface,
+   bo tròn hết, padding 5/14, weight 600) — chỉ đổi màu chữ theo accent của từng
+   scope. Bản dev để chữ trần không nền, nhưng đây là nếp của web này.
+   Không dùng --mark như home vì biến đó vẫn xanh lá trong scope Prime/Marketplace. */
 .alpha-scope .kicker,
 .prime-scope .kicker,
 .mkt-scope .kicker {
-  background: none;
-  padding: 0;
-  border-radius: 0;
-  font-weight: 400;
   color: var(--accent);
 }
 

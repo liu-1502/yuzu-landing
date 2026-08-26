@@ -26,13 +26,11 @@ type BallSkin = {
   icon: string;
 };
 
-/* Nền quả cầu KHÔNG còn màu đen.
-   Bản dev để gradient gần đen (alpha #0d1210, prime #1a1200) và mình từng port
-   đúng vậy, nhưng khối đen đó chiếm gần hết hero. Giờ lấy tông sáng của chính
-   scope: `--surface` ra `--surface-2`, nên quả cầu thành khối thuỷ tinh nhạt và
-   TỰ đổi theo theme từng trang — chỉ còn vành sáng, hào quang, vệt quét và icon
-   là phần nhìn thấy rõ. */
-const SPHERE = "radial-gradient(circle, var(--surface) 55%, var(--surface-2) 100%)";
+/* Quả cầu KHÔNG có nền.
+   Bản dev để gradient gần đen; sau đó mình đổi sang tông sáng của scope, nhưng
+   cái đĩa sáng đó vẫn là một mảng đặc giữa hero. Giờ bỏ hẳn: chỉ còn vành sáng,
+   hào quang, ba vệt quét và icon token nổi trên nền trang. */
+const SPHERE = "transparent";
 
 const SKIN: Record<ProductPage["id"], BallSkin> = {
   alpha: {

@@ -149,8 +149,10 @@ export function Composition({
 
         {vaults ? (
           /* Cả "More on the way" cũng nằm TRONG lưới, làm thẻ thứ 4 xuống hàng
-             hai — bản dev để vậy. Tách nó ra ngoài thì section hụt 58px. */
-          <div className="mt-9 grid gap-4 md:grid-cols-3">
+             hai — bản dev để vậy. Tách nó ra ngoài thì section hụt 58px.
+             `md:gap-y-8` nới khe giữa hàng ba thẻ và thẻ trải ngang bên dưới; chỉ
+             từ `md` vì dưới đó lưới về một cột, để 32px chỉ làm cao thêm vô ích. */
+          <div className="mt-9 grid gap-4 md:grid-cols-3 md:gap-y-8">
             {vaults.map((v, i) => (
               /* Thẻ "More on the way" trải hết hàng thay vì đứng lẻ một phần ba —
                  nó không có số liệu nên để hẹp bằng ba thẻ kia thì hụt hẳn. */
