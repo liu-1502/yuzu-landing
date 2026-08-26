@@ -198,17 +198,20 @@
   --surface-2: #efece2;
   --line-solid: #e6e1d3;
   --line: #e6e1d380;
-  --accent: #93690b;
-  --accent-foreground: #fffdf4;
+  --accent: var(--prime);
+  --accent-foreground: var(--prime-ink);
   --faint: #5c6f60;
 
-  /* Bộ token RIÊNG của trang Prime — bản dev dùng một hệ màu khác cho trang này.
-       --prime-accent        #c97e05  số liệu, viền badge
-       --prime-accent-strong #945d04  chữ trong pill kicker
-       --prime-accent-dark   #a9690a  chỉ số chú thích [n] */
-  --prime-accent: #c97e05;
-  --prime-accent-strong: #945d04;
-  --prime-accent-dark: #a9690a;
+  /* Bộ token của trang Prime TRỎ VỀ `--prime` — đúng màu brand Prime mà trang
+     chủ dùng ở tab Prime. Trước đây ba biến này lấy từ bản dev (#c97e05 /
+     #945d04 / #a9690a), một tông CAM sáng hơn hẳn, nên cả trang Prime ngả cam
+     trong khi Home là nâu vàng.
+     `var()` trong custom property được giải ngay tại chỗ khai, mà `.prime-scope`
+     không khai lại `--prime`, nên nó lấy giá trị kế thừa: #93690b ở light,
+     #edc15f ở dark. Nhờ vậy dark mode tự theo, không cần khai lại bên dưới. */
+  --prime-accent: var(--prime);
+  --prime-accent-strong: var(--prime);
+  --prime-accent-dark: var(--prime);
   --prime-text: #14211a;
   --prime-text-subtle: #5c6e60;
   --prime-text-muted: #5c6f60;
@@ -219,22 +222,19 @@
   /* H1 Prime dùng vàng sáng hơn --accent — xem chú thích ở --heading-accent.
      KHÔNG khai mặc định ở :root: var() trong custom property được giải ngay tại
      chỗ khai nên sẽ khoá cứng vào --accent của :root. */
-  --heading-accent: #c97e05;
-  --liquid-top: #93690b33;
-  --liquid-bottom: #93690b99;
+  --heading-accent: var(--prime);
+  --liquid-top: color-mix(in srgb, var(--prime) 30%, transparent);
+  --liquid-bottom: color-mix(in srgb, var(--prime) 72%, transparent);
 
   /* Lớp nước SAU và 8 bong bóng đọc --liquid-back; thiếu dòng này thì chúng
      vẫn xanh lá giữa trang Prime. */
-  --liquid-back: #93690b;
+  --liquid-back: var(--prime);
 }
 
 .dark .prime-scope {
-  --prime-accent: #edc15f;
-  --prime-accent-strong: #f3d089;
-  --prime-accent-dark: #dCA83f;
+  /* --prime-accent / -strong / -dark, --heading-accent và bộ --liquid-* đã trỏ
+     về var(--prime) ở khối sáng nên tự lật sang #edc15f, không khai lại ở đây. */
   --prime-card-border: #2a2418;
-  --liquid-top: #edc15f29;
-  --liquid-bottom: #edc15f66;
   --background: var(--tint-prime);
   --surface: #1a1610;
   --surface-2: #221d16;
@@ -250,10 +250,8 @@
   /* Dark mode phải đổi CẢ accent và bộ --prime-*: khối sáng phía trên đặt
      --prime-text màu gần đen và --prime-bg màu kem, để nguyên thì ở dark mode
      chữ Prime gần đen trên nền gần đen và nút mất chữ. */
-  --accent: #edc15f;
-  --accent-foreground: #171003;
-  --heading-accent: #edc15f;
-  --liquid-back: #edc15f;
+  --accent: var(--prime);
+  --accent-foreground: var(--prime-ink);
   --muted-foreground: #b3a893;
   --faint: #8a7f6a;
   --prime-text: #f5f1ec;

@@ -40,8 +40,9 @@ const SKIN: Record<ProductPage["id"], BallSkin> = {
     icon: "/assets/tokens/syzUSD.svg",
   },
   prime: {
-    glow: "#ffaa15",
-    rim: "#c97e05",
+    /* Vành và hào quang lấy đúng brand Prime của trang chủ (`--prime`), không
+       phải cặp #ffaa15/#c97e05 của bản dev — cặp đó sáng và ngả cam hơn. */
+    glow: "var(--prime)",
     icon: "/assets/tokens/yzPrime.svg",
   },
   marketplace: {
