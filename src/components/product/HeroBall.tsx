@@ -24,32 +24,28 @@ type BallSkin = {
   rim?: string;
   /** Icon token ở giữa. */
   icon: string;
-} & Sphere;
+};
 
-/* Nền quả cầu: gradient GẦN ĐEN, lấy đúng của bản dev — mỗi sản phẩm một cặp
-   màu riêng. Đây là phần tử lớn nhất trong hero nên nó quyết định cảm giác cả
-   trang; từng thử xanh nhạt rồi trắng theo yêu cầu, nhưng bản dev là quả cầu tối
-   và "copy y chang" thì phải theo nó. */
-type Sphere = { from: string; to: string };
+/* Nền quả cầu KHÔNG còn màu đen.
+   Bản dev để gradient gần đen (alpha #0d1210, prime #1a1200) và mình từng port
+   đúng vậy, nhưng khối đen đó chiếm gần hết hero. Giờ lấy tông sáng của chính
+   scope: `--surface` ra `--surface-2`, nên quả cầu thành khối thuỷ tinh nhạt và
+   TỰ đổi theo theme từng trang — chỉ còn vành sáng, hào quang, vệt quét và icon
+   là phần nhìn thấy rõ. */
+const SPHERE = "radial-gradient(circle, var(--surface) 55%, var(--surface-2) 100%)";
 
 const SKIN: Record<ProductPage["id"], BallSkin> = {
   alpha: {
     glow: "#9fe870",
-    from: "#0d1210",
-    to: "#040706",
     icon: "/assets/tokens/syzUSD.svg",
   },
   prime: {
     glow: "#ffaa15",
     rim: "#c97e05",
-    from: "#1a1200",
-    to: "#000000",
     icon: "/assets/tokens/yzPrime.svg",
   },
   marketplace: {
     glow: "#a8adff",
-    from: "#0d1210",
-    to: "#040706",
     icon: "/assets/tokens/yzCash.svg",
   },
 };
@@ -68,7 +64,7 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
         <div
           className={`${CENTER} rounded-full`}
           style={{
-            background: `radial-gradient(circle, ${s.from} 60%, ${s.to} 100%)`,
+            background: SPHERE,
             border: `3.2px solid ${s.rim ?? s.glow}`,
             filter: "blur(0.8px)",
             boxShadow: `0 0 30px ${mix(30)}, 0 0 60px ${mix(10)}, inset 0 0 20px ${mix(5)}`,
@@ -77,7 +73,7 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
 
         {/* 2. noise + vệt sáng bên trong, cắt trong lòng cầu */}
         <div className={`${CENTER} overflow-hidden rounded-full`}>
-          <div className="absolute inset-0" style={{ ...NOISE, opacity: 0.06 }} />
+          <div className="absolute inset-0" style={{ ...NOISE, opacity: 0.05 }} />
           <div
             className="absolute inset-0"
             style={{

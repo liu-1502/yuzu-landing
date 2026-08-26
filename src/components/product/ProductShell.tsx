@@ -205,7 +205,14 @@ export function ProductHero({ page }: { page: HeroData }) {
         )}
       >
         <div className="flex flex-col items-center gap-5">
-          <HeroBall id={page.id} />
+          {/* Bản dev cho quả cầu HIỆN DẦN khi vào trang (thẻ của họ mang sẵn
+              `opacity: 1; transform: none` do JS gỡ ra), còn của mình thì nhảy
+              ra ngay. Bọc Reveal cho khớp. Mức lệch là mình chọn: mọi transition
+              trên quả cầu bên dev đều 0s vì họ chạy bằng JS từng frame, không có
+              thời lượng nào để đọc. */}
+          <Reveal y={16}>
+            <HeroBall id={page.id} />
+          </Reveal>
           <MobileRails id={page.id} />
         </div>
 
