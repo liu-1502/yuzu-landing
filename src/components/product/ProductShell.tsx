@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
-import { ArrowRight, ArrowUpRight } from "@/components/ui/Icons";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+} from "@/components/ui/Icons";
+import { YuzuMark } from "@/components/ui/YuzuMark";
+import { CitrusField } from "@/components/product/CitrusField";
 import { cn } from "@/lib/utils";
 
 /* Dùng chung một khổ ngang với mọi section của landing: px-6 / lg:px-[60px],
@@ -34,52 +41,105 @@ export type HeroData = Pick<
   "id" | "kicker" | "title" | "intro" | "primary" | "secondary"
 >;
 
-/** Tiêu đề trang: điều hướng sang 2 sản phẩm kia, kicker, H1, intro, 2 nút. */
-export function ProductHero({ page }: { page: HeroData }) {
-  const siblings = productOrder.filter((id) => id !== page.id);
+/** Vị trí tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px.
+ * Hai thanh điều hướng sang sản phẩm khác neo đúng vào đây. */
+const BALL_CENTER = 112 + 113;
+
+/** Quả cầu ở tâm hero: gradient tròn + mark Yuzu, nhấp nhẹ 6px. */
+function HeroBall() {
+  return (
+    <div className="h-[200px] w-[200px] sm:h-[225px] sm:w-[225px]" aria-hidden>
+      <div
+        className="citrus-bob flex size-full items-center justify-center rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, var(--hero-sphere-top) 55%, var(--hero-sphere-edge) 100%)",
+        }}
+      >
+        <YuzuMark className="size-1/2" />
+      </div>
+    </div>
+  );
+}
+
+/** Điều hướng trước/sau theo vòng alpha → prime → marketplace → alpha. */
+function SideRails({ id }: { id: ProductPage["id"] }) {
+  const i = productOrder.indexOf(id);
+  const prev = productOrder[(i - 1 + productOrder.length) % productOrder.length];
+  const next = productOrder[(i + 1) % productOrder.length];
+
+  const rail = (to: string, side: "left" | "right") => (
+    <Link
+      to={`/${to}`}
+      className="group/sw pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_25%,transparent)] transition-colors duration-200 hover:text-foreground"
+    >
+      {side === "left" ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
+      <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] transition-colors duration-200">
+        {to}
+      </span>
+    </Link>
+  );
 
   return (
-    <section className={cn("section-tint pt-10 pb-14 md:pt-16 md:pb-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
-        <nav aria-label="Sản phẩm khác" className="mb-10 flex flex-wrap gap-x-6 gap-y-2">
-          {siblings.map((id) => (
-            <Link
-              key={id}
-              to={`/${id}`}
-              className="microlabel microlabel-muted inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-            >
-              {id}
-              <ArrowUpRight className="size-3.5" />
-            </Link>
-          ))}
-        </nav>
+    <div
+      className="pointer-events-none absolute inset-x-0 z-20 mx-auto hidden max-w-[840px] -translate-y-1/2 items-center justify-between px-4 lg:flex"
+      style={{ top: BALL_CENTER }}
+    >
+      {rail(prev, "left")}
+      {rail(next, "right")}
+    </div>
+  );
+}
 
-        <span className="kicker mb-4">{page.kicker}</span>
-        <h1 className="text-[38px] font-semibold leading-[1.05] text-foreground md:text-[56px]">
-          {page.title}
-        </h1>
-        <p className="mt-5 max-w-[68ch] text-[15.5px] leading-[1.65] text-muted-foreground">
-          {page.intro}
-        </p>
+/** Hero trang sản phẩm — canh giữa, quả cầu trên, tiêu đề dưới, hạt cam nổi
+ * phía sau. Dựng theo đúng layout của dev.yuzu.money/alpha. */
+export function ProductHero({ page }: { page: HeroData }) {
+  // "Yuzu Alpha" → "Yuzu" + "Alpha", chữ cuối tô màu accent như trang gốc.
+  const cut = page.title.lastIndexOf(" ");
+  const lead = cut > 0 ? page.title.slice(0, cut) : "";
+  const tail = cut > 0 ? page.title.slice(cut + 1) : page.title;
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <a
-            href={page.primary.href}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--mark)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition-opacity hover:opacity-90"
-          >
-            {page.primary.label}
-            {page.primary.rate && (
-              <span className="data font-semibold">{page.primary.rate}</span>
-            )}
-            <ArrowRight className="size-4" />
-          </a>
-          <a
-            href={page.secondary.href}
-            className="inline-flex items-center gap-1.5 rounded-full bg-surface px-5 py-3 text-sm font-semibold text-foreground transition-opacity hover:opacity-80"
-          >
-            {page.secondary.label}
-            <ArrowUpRight className="size-4" />
-          </a>
+  return (
+    <section className="section-tint relative overflow-hidden px-4 pt-28 pb-14 sm:px-6">
+      <CitrusField seed={page.id.length * 7919} />
+      <SideRails id={page.id} />
+
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-14 text-center">
+        <HeroBall />
+
+        <div className="flex flex-col items-center gap-4">
+          <span className="kicker">{page.kicker}</span>
+
+          <h1 className="text-balance text-5xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-6xl md:text-7xl">
+            {lead && `${lead} `}
+            <span className="text-accent">{tail}</span>
+          </h1>
+
+          <div className="flex flex-col items-center gap-7">
+            <p className="max-w-[600px] px-2 text-[17px] leading-[1.62] text-muted-foreground md:px-0">
+              {page.intro}
+            </p>
+
+            <div className="flex flex-col items-center gap-4 md:flex-row">
+              <a
+                href={page.primary.href}
+                className="inline-flex items-center gap-2 rounded-full bg-[var(--mark)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition-opacity hover:opacity-90"
+              >
+                {page.primary.label}
+                {page.primary.rate && (
+                  <span className="data font-semibold">{page.primary.rate}</span>
+                )}
+                <ArrowRight className="size-4" />
+              </a>
+              <a
+                href={page.secondary.href}
+                className="inline-flex items-center gap-1.5 rounded-full bg-surface px-5 py-3 text-sm font-semibold text-foreground transition-opacity hover:opacity-80"
+              >
+                {page.secondary.label}
+                <ArrowUpRight className="size-4" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

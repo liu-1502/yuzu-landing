@@ -581,3 +581,54 @@
     animation: none;
   }
 }
+
+/**
+ * Hero trang sản phẩm — copy đúng hai keyframe của dev.yuzu.money.
+ *
+ * citrus-rise: hạt cam nổi từ đáy hero lên rồi tan. Mỗi hạt tự đặt 4 biến qua
+ * inline style nên một keyframe dùng cho cả 30 hạt:
+ *   --drift-x    dạt ngang bao nhiêu khi lên tới đỉnh
+ *   --drift-top  lên cao bao nhiêu (âm)
+ *   --drift-spin quay bao nhiêu độ
+ *   --drift-peak độ mờ ở đoạn giữa (mỗi hạt một mức, nên nhìn có lớp xa gần)
+ * Opacity giữ nguyên ở 12%–88% rồi mới tắt, để hạt không nhấp nháy ở hai đầu.
+ */
+@keyframes citrus-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) rotate(0deg);
+  }
+  12% {
+    opacity: var(--drift-peak, 0.5);
+  }
+  88% {
+    opacity: var(--drift-peak, 0.5);
+  }
+  100% {
+    transform: translate3d(var(--drift-x, 14px), var(--drift-top, -260px), 0)
+      rotate(var(--drift-spin, 40deg));
+    opacity: 0;
+  }
+}
+
+/** Quả cầu hero nhấp nhẹ lên xuống 6px. */
+@keyframes citrus-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.citrus-bob {
+  animation: citrus-bob 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .citrus-bob,
+  .citrus-rise {
+    animation: none;
+  }
+}

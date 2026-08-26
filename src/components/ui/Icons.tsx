@@ -12,6 +12,8 @@ import {
   ArrowRight as LrArrowRight,
   ArrowUpRight as LrArrowUpRight,
   ChevronDown as LrChevronDown,
+  ChevronLeft as LrChevronLeft,
+  ChevronRight as LrChevronRight,
   ExternalLink as LrExternalLink,
   FileCheck2,
   Landmark,
@@ -47,6 +49,14 @@ export const ArrowUpRight = ({ className = "size-4" }: P) => (
 
 export const ExternalLink = ({ className = "size-4" }: P) => (
   <LrExternalLink className={className} strokeWidth={1.9} aria-hidden />
+);
+
+export const ChevronLeft = ({ className = "size-4" }: P) => (
+  <LrChevronLeft className={className} strokeWidth={2} aria-hidden />
+);
+
+export const ChevronRight = ({ className = "size-4" }: P) => (
+  <LrChevronRight className={className} strokeWidth={2} aria-hidden />
 );
 
 export const ChevronDown = ({ className = "size-4" }: P) => (
