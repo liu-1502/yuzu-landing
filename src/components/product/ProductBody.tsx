@@ -9,7 +9,7 @@ import {
   TokenSet,
   WRAP,
 } from "@/components/product/ProductShell";
-import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
+import { CitrusChart } from "@/components/ui/CitrusChart";
 import { Reveal } from "@/components/product/Reveal";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -96,25 +96,99 @@ function Note({
  * Alpha: một danh mục có trọng số nên là quả chanh + danh sách trọng số.
  */
 /**
- * Tỉ trọng vẽ bằng QUẢ CHANH CÓ MÚI của trang chủ, không phải mấy thanh ngang.
- * Dùng lại nguyên `CitrusChart` + `SliceDetail` và chính bộ `slices` trong
- * content.ts mà trang chủ đang dùng, nên không phát sinh nội dung mới và hover
- * một múi thì thẻ mô tả đổi theo y như ngoài home.
+ * Tỉ trọng: quả chanh có múi ở GIỮA, bốn thẻ chia hai bên — trái 2, phải 2.
+ *
+ * Trước đây dùng `SliceDetail` của trang chủ: bốn thẻ chồng lên nhau trong một ô
+ * lưới và chỉ thẻ đang hover mới hiện. Ở đây cần thấy cả bốn cùng lúc nên dựng
+ * riêng, nhưng giữ nguyên bộ `slices` trong content.ts mà trang chủ dùng —
+ * không phát sinh nội dung mới.
+ *
+ * Liên kết hai chiều: rê vào một thẻ thì múi tương ứng trên quả chanh nổi lên, và
+ * ngược lại.
  */
+function SliceCard({
+  s,
+  accent,
+  on,
+  onEnter,
+  onLeave,
+}: {
+  s: Product["slices"][number];
+  accent: string;
+  on: boolean;
+  onEnter: () => void;
+  onLeave: () => void;
+}) {
+  return (
+    <div
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      className="flex items-start gap-3 rounded-lg bg-surface px-3.5 py-3 transition-[box-shadow,transform] duration-300"
+      style={{
+        boxShadow: on
+          ? "0 8px 22px color-mix(in srgb, var(--foreground) 10%, transparent)"
+          : "0 4px 14px color-mix(in srgb, var(--foreground) 5%, transparent)",
+        transform: on ? "translateY(-2px)" : undefined,
+      }}
+    >
+      <span
+        className="mt-[5px] h-[7px] w-[7px] shrink-0 rounded-[2px]"
+        style={{ background: s.upcoming ? "var(--faint)" : (s.color ?? accent) }}
+      />
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12.5px] font-medium leading-tight text-foreground">
+          {s.label}
+        </span>
+        <span className="mt-1 block text-[11.5px] leading-[1.5] text-faint">{s.detail}</span>
+      </span>
+      {s.weight !== null && (
+        <span
+          className="data shrink-0 text-[30px] font-semibold leading-none tracking-[-0.02em]"
+          style={{ color: s.color ?? accent }}
+        >
+          {s.weight}%
+        </span>
+      )}
+    </div>
+  );
+}
+
 function SliceArt({ p }: { p: Product }) {
   const [active, setActive] = useState<number | null>(null);
+  const half = Math.ceil(p.slices.length / 2);
+  const cot = (from: number, to: number) =>
+    p.slices.slice(from, to).map((s, k) => {
+      const i = from + k;
+      return (
+        <SliceCard
+          key={s.label}
+          s={s}
+          accent={p.color}
+          on={i === active}
+          onEnter={() => setActive(i)}
+          onLeave={() => setActive(null)}
+        />
+      );
+    });
 
   return (
     <Reveal y={24}>
-      <div className="mx-auto mt-9 max-w-[460px]">
-        <CitrusChart
-          id={`comp-${p.id}`}
-          accent={p.color}
-          slices={p.slices}
-          active={active}
-          setActive={setActive}
-        />
-        <SliceDetail slices={p.slices} accent={p.color} active={active} />
+      {/* Thứ tự trên mobile: quả chanh trước rồi tới thẻ — nên cột trái mang
+          `order-2`, quả chanh `order-1`. Từ `lg` mới xếp ba cột thật. */}
+      <div className="mt-9 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-8">
+        <div className="order-2 flex flex-col gap-4 lg:order-1">{cot(0, half)}</div>
+
+        <div className="order-1 mx-auto w-full max-w-[420px] lg:order-2 lg:w-[420px]">
+          <CitrusChart
+            id={`comp-${p.id}`}
+            accent={p.color}
+            slices={p.slices}
+            active={active}
+            setActive={setActive}
+          />
+        </div>
+
+        <div className="order-3 flex flex-col gap-4">{cot(half, p.slices.length)}</div>
       </div>
     </Reveal>
   );
