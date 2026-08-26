@@ -5,7 +5,7 @@ import type { ProductPage } from "@/data/productPages";
  * Quả cầu ở tâm hero trang sản phẩm — port đúng các lớp của dev.yuzu.money.
  *
  * Xếp lớp từ dưới lên:
- *  1. Quả cầu nền: gradient tròn theo token hero landing, viền 3.2px màu glow,
+ *  1. Quả cầu nền: gradient tròn trắng, viền 3.2px màu glow,
  *     blur 0.8px và ba
  *     lớp box-shadow (30px / 60px ngoài + 20px inset) tạo hào quang.
  *  2. Khối tròn overflow-hidden chứa hai lớp noise và một lớp quét sáng bên trong.
@@ -26,11 +26,11 @@ type BallSkin = {
   icon: string;
 };
 
-/* Nền quả cầu lấy đúng token của hero landing: light = xanh nhạt, dark = tối.
-   Bản dev cho mỗi sản phẩm một nền gần đen riêng (#0d1210 / #1a1200) nhưng như
-   vậy quả cầu ở trang sản phẩm lệch hẳn tông với quả cầu ở trang chủ. Sắc riêng
-   của từng sản phẩm đã nằm ở hào quang, viền và icon. */
-const SPHERE = "radial-gradient(circle, var(--hero-sphere-top) 55%, var(--hero-sphere-edge) 100%)";
+/* Nền quả cầu: trắng.
+   Dùng --surface ở tâm và --surface-2 ở rìa chứ không phải một màu trắng phẳng —
+   cần chút chuyển ở rìa thì hình mới đọc ra khối cầu. Hai token này cũng đi theo
+   chế độ màu, nên dark mode không bị một quả cầu trắng chóe. */
+const SPHERE = "radial-gradient(circle, var(--surface) 55%, var(--surface-2) 100%)";
 
 const SKIN: Record<ProductPage["id"], BallSkin> = {
   alpha: { glow: "#9fe870", icon: "/assets/tokens/syzUSD.svg" },
