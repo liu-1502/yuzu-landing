@@ -457,7 +457,11 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
     <section className={cn("relative overflow-hidden border-y border-line-solid", SECTION, PAD)}>
       <div className={cn("relative", WRAP)}>
         <SectionHead kicker={kicker} />
-        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Khe rộng 32px CHỈ từ `lg` — đúng chỗ mũi tên nối hiện ra: `-right-6`
+            đặt tâm mũi tên giữa khe đó nên còn 8px thoáng mỗi bên (khe 16px cũ bị
+            mũi tên rộng 16px lấp gần kín, lại còn đè lên thẻ 3px). Dưới `lg` mũi
+            tên ẩn, thẻ xếp dọc, nên giữ 16px cho khỏi cao vô ích. */}
+        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {steps.map((s, i) => (
             <Reveal key={s.label} y={16} delay={i * 0.07}>
               <li className="relative h-full rounded-lg bg-surface p-5">
@@ -468,7 +472,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
                 {i < steps.length - 1 && (
                   <span
                     aria-hidden
-                    className="absolute -right-[13px] top-1/2 hidden -translate-y-1/2 text-faint lg:block"
+                    className="absolute -right-6 top-1/2 hidden -translate-y-1/2 text-faint lg:block"
                   >
                     <ChevronRight className="size-4" />
                   </span>
