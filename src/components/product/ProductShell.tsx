@@ -411,13 +411,13 @@ export function Protection({
     <section className={cn(SECTION, PAD)}>
       <div className={WRAP}>
         <SectionHead kicker={kicker} title={title} />
-        <ol className="mt-9 flex flex-col gap-4">
+        <ol className="mt-9 grid gap-4 sm:grid-cols-2">
           {layers.map((l, i) => (
             <Reveal key={l.title} x={-14} y={0} delay={i * 0.07}>
               {/* Bỏ stroke theo nếp home: nền trắng, không viền, không đổi viền
                   khi hover. Chú thích PHẢI bọc trong ngoặc nhọn — `/* *​/` trần ở
                   vị trí con của JSX sẽ render thành chữ thật trên trang. */}
-              <li className="flex items-start gap-4 rounded-lg bg-surface p-4 sm:items-center sm:p-5">
+              <li className="flex h-full items-start gap-4 rounded-lg bg-surface p-4 sm:p-5">
                 <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line-strong font-mono text-[11px] font-semibold text-accent sm:mt-0">
                   {i + 1}
                 </span>
@@ -501,7 +501,7 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
     <section className={cn(SECTION, PAD)}>
       <Reveal>
-        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl border border-line-solid bg-surface px-6 pt-14 pb-20 text-center">
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl bg-surface px-6 pt-14 pb-20 text-center">
           {/* Thẻ này bên dev cũng có mặt nước, phủ cả thẻ (1022×330) — cùng
               component với ô KPI. Mức nước lấy theo khoảng `pb-20` mà bản dev
               chừa ở đáy (80/330 ≈ 0.24): trang dev khoá cuộn nên không đọc được
