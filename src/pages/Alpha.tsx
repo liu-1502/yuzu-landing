@@ -8,7 +8,6 @@ import {
   PathIn,
   ProductHero,
   Protection,
-  TokenSet,
 } from "@/components/product/ProductShell";
 
 export default function Alpha() {
@@ -19,8 +18,13 @@ export default function Alpha() {
       <ProductHero page={alphaPage} />
       <KpiRow items={alphaPage.kpis} />
       <Composition p={p} head={alphaPage.composition} />
-      <Terms p={p} head={alphaPage.terms} />
-      <TokenSet tokens={alphaPage.tokens} note={alphaPage.tokensNote} />
+      {/* Terms bao luôn bộ token — bản dev để chung một section. */}
+      <Terms
+        p={p}
+        head={alphaPage.terms}
+        tokens={alphaPage.tokens}
+        tokensNote={alphaPage.tokensNote}
+      />
       <Protection {...alphaPage.protection} />
       <PathIn {...alphaPage.path} />
       <Partners />

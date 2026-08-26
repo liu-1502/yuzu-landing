@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
+import { asset } from "@/data/content";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -12,47 +13,54 @@ import {
 import VariableFontCursorProximity from "@/components/fancy/text/variable-font-cursor-proximity";
 import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
+import { Reveal } from "@/components/product/Reveal";
 import { cn } from "@/lib/utils";
 
-/* Dùng chung một khổ ngang với mọi section của landing: px-6 / lg:px-[60px],
-   nội dung kẹp trong max-w-[1280px]. */
-const PAD = "px-6 lg:px-[60px]";
+/* ==========================================================================
+   Trang sản phẩm dựng theo ĐÚNG bản dev.yuzu.money, không theo nếp của landing.
+   Ba khác biệt lớn nhất so với section của landing:
+     - lề ngang px-4 sm:px-6 (16/24px), không phải px-6 lg:px-[60px]
+     - khổ nội dung max-w-5xl (1024px), không phải 1280px
+     - tiêu đề canh TRÁI
+   ========================================================================== */
+export const PAD = "px-4 sm:px-6";
+export const WRAP = "mx-auto max-w-5xl";
+export const SECTION = "py-16 md:py-20";
 
-export function SectionHead({
-  kicker,
-  title,
-  className,
-}: {
-  kicker: string;
-  title: string;
-  className?: string;
-}) {
+/** Thẻ chuẩn của bản dev: bo lg, có viền, hover đổi viền sang accent. */
+export const CARD =
+  "rounded-lg border border-line-solid bg-surface transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+
+/** Nút chính / nút phụ — cao 12 (48px), bo tròn hết. */
+const BTN_PRIMARY =
+  "inline-flex h-12 items-center gap-2 rounded-full bg-foreground px-5 text-[15px] font-medium text-background transition-opacity duration-300 hover:opacity-90";
+const BTN_GHOST =
+  "inline-flex h-12 items-center gap-1.5 rounded-full border border-line-solid px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+
+export function SectionHead({ kicker, title }: { kicker: string; title?: string }) {
   return (
-    /* Canh giữa: CTA đóng trang vốn đã canh giữa, để mỗi tiêu đề section dạt
-       trái thì cả trang so le. Lưới thẻ bên dưới vẫn canh trái như thường. */
-    <div className={cn("mx-auto max-w-[52ch] text-center", className)}>
-      <span className="kicker mb-4">{kicker}</span>
-      <h2 className="text-[30px] font-semibold leading-[1.08] text-foreground md:text-[40px] md:leading-[1.15]">
-        {title}
-      </h2>
-    </div>
+    <Reveal>
+      <span className="kicker">{kicker}</span>
+      {title && (
+        <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
+          {title}
+        </h2>
+      )}
+    </Reveal>
   );
 }
 
-/** Phần hero chỉ cần bấy nhiêu trường — Prime có kiểu riêng (PrimePage) nên
- * không ràng buộc vào nguyên ProductPage. */
+/* ----------------------------------- hero ---------------------------------- */
+
 export type HeroData = Pick<
   ProductPage,
   "id" | "kicker" | "title" | "intro" | "primary" | "secondary"
 >;
 
-/** Vị trí tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px.
- * Hai thanh điều hướng sang sản phẩm khác neo đúng vào đây. */
+/** Tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px. */
 const BALL_CENTER = 112 + 113;
 
-/** Hiệu ứng con trỏ trên H1 — cùng cấu hình với tiêu đề hero của landing.
- * Nghỉ ở `wght` 700 (đúng bằng font-bold hiện tại) nên chưa rê chuột thì trông y
- * như cũ; Bricolage Grotesque chỉ có trục tới 800 nên đó là mức đậm nhất. */
+/** Hiệu ứng con trỏ trên H1 — cùng cấu hình với tiêu đề hero của landing. */
 const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
   containerRef,
   fromFontVariationSettings: "'wght' 700",
@@ -61,7 +69,6 @@ const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
   falloff: "gaussian" as const,
 });
 
-/** Sản phẩm liền trước / liền sau theo vòng alpha → prime → marketplace → alpha. */
 function siblings(id: ProductPage["id"]) {
   const i = productOrder.indexOf(id);
   const n = productOrder.length;
@@ -69,22 +76,21 @@ function siblings(id: ProductPage["id"]) {
 }
 
 const RAIL_LABEL = "font-mono text-[10.5px] uppercase tracking-[0.14em]";
+const RAIL_TONE =
+  "text-[color-mix(in_srgb,var(--foreground)_65%,transparent)] transition-colors duration-200 hover:text-foreground";
 
-/** Điều hướng trước/sau kẹp hai bên quả cầu — chỉ từ lg, hẹp hơn thì không đủ
- * chỗ hai bên. Bản mobile xem `MobileRails`. */
 function SideRails({ id }: { id: ProductPage["id"] }) {
   const { prev, next } = siblings(id);
-
   const rail = (to: string, side: "left" | "right") => (
     <Link
       to={`/${to}`}
-      /* 65% chứ không phải 25%: ở 25% tương phản với nền chỉ 1.64 — dưới mọi
-         ngưỡng, chữ 10.5px coi như không đọc được. 65% cho 4.59, vừa đủ mức AA
-         cho chữ nhỏ mà vẫn ra sắc xám xanh dịu chứ không đậm như thân bài. */
-      className="pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_65%,transparent)] transition-colors duration-200 hover:text-foreground"
+      className={cn(
+        "pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2",
+        RAIL_TONE,
+      )}
     >
       {side === "left" ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
-      <span className={cn(RAIL_LABEL, "transition-colors duration-200")}>{to}</span>
+      <span className={RAIL_LABEL}>{to}</span>
     </Link>
   );
 
@@ -99,61 +105,44 @@ function SideRails({ id }: { id: ProductPage["id"] }) {
   );
 }
 
-/**
- * Điều hướng trước/sau cho mobile — bản dev ẩn hẳn hai thanh này dưới lg, tức là
- * trên điện thoại không có đường nào nhảy sang sản phẩm khác ngoài dropdown ở
- * header.
- *
- * Đặt NGAY DƯỚI quả cầu, không phải cuối hero: đứng sau hai nút CTA thì nó tụt
- * quá sâu, phải cuộn qua cả tiêu đề mới thấy. Ở đây nó thay đúng chỗ hai thanh
- * kẹp hai bên quả cầu của desktop. Ẩn từ lg vì lúc đó đã có SideRails.
- */
+/** Bản dev ẩn hai thanh kẹp dưới lg — trên điện thoại không còn đường nào sang
+ * sản phẩm khác. Thêm một hàng ngay dưới quả cầu. */
 function MobileRails({ id }: { id: ProductPage["id"] }) {
   const { prev, next } = siblings(id);
+  const item = (to: string, side: "left" | "right") => (
+    <Link
+      to={`/${to}`}
+      className={cn("flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2", RAIL_TONE)}
+    >
+      {side === "left" && <ChevronLeft className="size-4 shrink-0" />}
+      <span className={cn(RAIL_LABEL, "truncate")}>{to}</span>
+      {side === "right" && <ChevronRight className="size-4 shrink-0" />}
+    </Link>
+  );
 
   return (
     <nav
       aria-label="Sản phẩm khác"
       className="flex w-full max-w-[320px] items-center justify-between lg:hidden"
     >
-      <Link
-        to={`/${prev}`}
-        /* min-h-11 = 44px: vùng bấm bằng py-1 chỉ cao 24px, dưới ngưỡng cảm ứng. */
-        className="flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2 text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ChevronLeft className="size-4 shrink-0" />
-        <span className={cn(RAIL_LABEL, "truncate")}>{prev}</span>
-      </Link>
-      <Link
-        to={`/${next}`}
-        className="flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2 text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <span className={cn(RAIL_LABEL, "truncate")}>{next}</span>
-        <ChevronRight className="size-4 shrink-0" />
-      </Link>
+      {item(prev, "left")}
+      {item(next, "right")}
     </nav>
   );
 }
 
-/** Hero trang sản phẩm — canh giữa, quả cầu trên, tiêu đề dưới, hạt cam nổi
- * phía sau. Dựng theo đúng layout của dev.yuzu.money/alpha. */
 export function ProductHero({ page }: { page: HeroData }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
-  // "Yuzu Alpha" → "Yuzu" + "Alpha", chữ cuối tô màu accent như trang gốc.
   const cut = page.title.lastIndexOf(" ");
   const lead = cut > 0 ? page.title.slice(0, cut) : "";
   const tail = cut > 0 ? page.title.slice(cut + 1) : page.title;
 
   return (
-    <section className="section-tint relative overflow-hidden px-4 pt-28 pb-14 sm:px-6">
+    <section className={cn("section-tint relative overflow-hidden pt-28 pb-14", PAD)}>
       <CitrusField seed={page.id.length * 7919} />
       <SideRails id={page.id} />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-14 text-center">
-        {/* Gom quả cầu + điều hướng mobile vào một nhóm: cột ngoài có gap-14 (56px),
-            để rails làm con trực tiếp thì nó hở 56px cả trên lẫn dưới, trông như
-            một khối rời. Trên lg rails ẩn nên nhóm này chỉ còn quả cầu, desktop
-            không đổi gì. */}
         <div className="flex flex-col items-center gap-5">
           <HeroBall id={page.id} />
           <MobileRails id={page.id} />
@@ -184,21 +173,13 @@ export function ProductHero({ page }: { page: HeroData }) {
               {page.intro}
             </p>
 
-            <div className="flex flex-col items-center gap-4 md:flex-row">
-              <a
-                href={page.primary.href}
-                className="inline-flex items-center gap-2 rounded-full bg-[var(--mark)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition-opacity hover:opacity-90"
-              >
+            <div className="flex flex-col items-center gap-3 sm:flex-row">
+              <a href={page.primary.href} className={BTN_PRIMARY}>
                 {page.primary.label}
-                {page.primary.rate && (
-                  <span className="data font-semibold">{page.primary.rate}</span>
-                )}
+                {page.primary.rate && <span className="tabular-nums">{page.primary.rate}</span>}
                 <ArrowRight className="size-4" />
               </a>
-              <a
-                href={page.secondary.href}
-                className="inline-flex items-center gap-1.5 rounded-full bg-surface px-5 py-3 text-sm font-semibold text-foreground transition-opacity hover:opacity-80"
-              >
+              <a href={page.secondary.href} className={BTN_GHOST}>
                 {page.secondary.label}
                 <ArrowUpRight className="size-4" />
               </a>
@@ -210,119 +191,110 @@ export function ProductHero({ page }: { page: HeroData }) {
   );
 }
 
-/** Dải 4 chỉ số, kẻ ngang trên dưới trải hết bề ngang như lưới Partners. */
+/* ------------------------------- dải chỉ số -------------------------------- */
+
+/** Ô KPI của bản dev: thẻ có viền, `pb-11` chừa chỗ cho vệt nước ở đáy. */
 export function KpiRow({ items }: { items: Kpi[] }) {
   return (
-    <section aria-label="Key figures" className={cn("bg-surface", PAD)}>
-      <div className="relative mx-auto max-w-[1280px] before:absolute before:inset-x-[calc(50%-50vw)] before:top-0 before:h-px before:bg-line-solid before:content-[''] after:absolute after:inset-x-[calc(50%-50vw)] after:bottom-0 after:z-[2] after:h-px after:bg-line-solid after:content-['']">
-        {/* Cột theo đúng số chỉ số: Prime chỉ có 3, để md:grid-cols-4 thì thừa một
-            ô trống ở cuối hàng. */}
-        <div
-          className={cn(
-            "grid grid-cols-2 gap-px border-x border-line-solid bg-line-solid",
-            items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-4",
-          )}
-        >
-          {items.map((k) => (
-            <div
-              key={k.label}
-              className="flex flex-col items-center justify-center gap-1.5 bg-surface px-3 py-7"
-            >
-              <span className="data text-[26px] font-semibold leading-none text-foreground">
+    <section
+      aria-label="Key figures"
+      className={cn("w-full border-y border-line-solid py-9 md:py-12", PAD)}
+    >
+      <div
+        className={cn(
+          "grid grid-cols-2 gap-3",
+          WRAP,
+          items.length === 3 ? "md:grid-cols-3" : "md:grid-cols-4",
+        )}
+      >
+        {items.map((k, i) => (
+          <Reveal key={k.label} y={18} delay={i * 0.06}>
+            <div className="flex min-h-[134px] flex-col items-center justify-start gap-1 overflow-hidden rounded-lg border border-line-solid bg-surface px-3 pt-5 pb-11">
+              <span className="text-2xl font-bold leading-9 tabular-nums text-foreground md:text-[32px]">
                 {k.value}
               </span>
-              <span className="microlabel microlabel-muted text-center">{k.label}</span>
+              <p className="text-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {k.label}
+              </p>
             </div>
-          ))}
-        </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
 }
 
-function TokenCardBox({
-  token,
-  base,
-}: {
-  token: TokenCard;
-  /** Thẻ nền: viền trên dày, màu accent — dấu hiệu nó đỡ các thẻ phía trên. */
-  base?: boolean;
-}) {
+/* --------------------------------- token ---------------------------------- */
+
+function TokenRow({ token, delay, base }: { token: TokenCard; delay: number; base?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-[20px] bg-surface px-5 py-6",
-        base &&
-          "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
+        "flex h-full items-start gap-3 p-4",
+        CARD,
+        base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
       )}
     >
-      <div className="data text-[20px] font-semibold leading-none text-foreground">
-        {token.name}
+      {token.icon && (
+        <img
+          src={asset(token.icon)}
+          alt=""
+          className="citrus-bob-fast size-8 shrink-0 rounded-full"
+          style={{ animationDelay: `${delay}s` }}
+        />
+      )}
+      <div className="min-w-0">
+        <p className="font-mono text-[13px] font-semibold text-foreground">{token.name}</p>
+        <p className="mt-0.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
       </div>
-      <p className="mt-3 text-[13.5px] leading-[1.55] text-muted-foreground">{token.desc}</p>
     </div>
   );
 }
 
 /**
- * Bộ token của sản phẩm.
- *
- * Khi có `note`, token CUỐI là lớp đỡ của các token còn lại (Alpha: yzPP gánh
- * lỗ đầu tiên cho yzUSD và syzUSD). Lúc đó không xếp cả ba thành hàng ngang
- * ngang hàng nhau nữa — câu "stands under both" phải đọc được từ bố cục: hai
- * token trên một hàng, hai mũi tên chỉ ngược lên, rồi thẻ nền trải hết ngang
- * bên dưới. Không có `note` (Marketplace) thì ba token là ba lựa chọn ngang
- * hàng, giữ lưới cũ.
+ * Bộ token — trên bản dev nó nằm TRONG section Terms, cách hàng thẻ spec `mt-9`,
+ * nên đây là một khối chứ không phải `<section>` riêng.
+ * Khi có `note` (Alpha) thì token cuối là lớp đỡ: tách riêng, viền trên đậm, hai
+ * mũi tên chỉ ngược lên hai token phía trên.
  */
 export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string }) {
   const base = note ? tokens[tokens.length - 1] : null;
   const upper = base ? tokens.slice(0, -1) : tokens;
 
   return (
-    /* pt-9 (36px): Terms để pb-0 và khối này để pt-0 nên hai hàng thẻ dán khít
-       nhau, hở đúng 0px. Trên bản dev khối token nằm TRONG section Terms, cách
-       hàng thẻ spec đúng mt-9 — lấy lại con số đó. */
-    <section className={cn("section-tint pt-9 pb-14 md:pb-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
-        <div
-          className={cn(
-            "grid gap-3",
-            upper.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3",
-          )}
-        >
-          {upper.map((t) => (
-            <TokenCardBox key={t.name} token={t} />
-          ))}
-        </div>
-
-        {base && (
-          <div className="relative mt-8">
-            {/* Hàng mũi tên soi đúng lưới của hàng trên (cùng grid-cols và gap)
-                nên mỗi mũi tên rơi trúng tâm thẻ nó trỏ tới. Bản dev dùng
-                `justify-center gap-[28%]` — ra hai mũi tên dồn vào giữa, không
-                khớp tâm thẻ nào.
-                Mobile hai thẻ xếp dọc nên chỉ cần một mũi tên ở giữa. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-[18px] right-0 left-0 grid grid-cols-1 gap-3 text-[color-mix(in_srgb,var(--accent)_50%,transparent)] sm:grid-cols-2"
-            >
-              <ChevronUp className="mx-auto size-4" />
-              <ChevronUp className="mx-auto hidden size-4 sm:block" />
-            </div>
-
-            <TokenCardBox token={base} base />
-
-            <p className="mt-3 text-center text-[13px] leading-[1.5] text-muted-foreground">
-              {note}
-            </p>
-          </div>
-        )}
+    <div className="mt-9">
+      <div className="grid gap-4 md:grid-cols-2">
+        {upper.map((t, i) => (
+          <Reveal key={t.name} delay={i * 0.08}>
+            <TokenRow token={t} delay={i * 0.7} />
+          </Reveal>
+        ))}
       </div>
-    </section>
+
+      {base && (
+        <Reveal className="relative mt-8" delay={0.16}>
+          {/* Hàng mũi tên soi đúng lưới hàng trên nên mỗi mũi tên rơi trúng tâm thẻ. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-[18px] right-0 left-0 grid grid-cols-1 gap-4 text-[color-mix(in_srgb,var(--accent)_50%,transparent)] md:grid-cols-2"
+          >
+            <ChevronUp className="mx-auto size-4" />
+            <ChevronUp className="mx-auto hidden size-4 md:block" />
+          </div>
+          <TokenRow token={base} delay={1.4} base />
+          <p className="mt-3 text-center text-[13px] leading-[1.5] text-muted-foreground">
+            {note}
+          </p>
+        </Reveal>
+      )}
+    </div>
   );
 }
 
-/** Các lớp bảo vệ, đánh số 1..n — cùng cách đánh số với deck Security. */
+/* ------------------------------- protection ------------------------------- */
+
+/** Mỗi lớp là một dòng, kèm cột vạch "độ sâu" bên phải: lớp ngoài cùng sáng
+ * nhiều vạch, càng vào sâu càng ít. */
 export function Protection({
   kicker,
   title,
@@ -333,23 +305,38 @@ export function Protection({
   layers: Layer[];
 }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section className={cn(SECTION, PAD)}>
+      <div className={WRAP}>
         <SectionHead kicker={kicker} title={title} />
-        <ol className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-9 flex flex-col gap-3">
           {layers.map((l, i) => (
-            <li key={l.title} className="rounded-[20px] bg-surface px-5 py-6">
-              <span
-                className="data flex size-9 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-[15px] font-semibold text-foreground"
-                aria-hidden
-              >
-                {i + 1}
-              </span>
-              <div className="mt-4 text-[15px] font-semibold leading-[1.3] text-foreground">
-                {l.title}
-              </div>
-              <p className="mt-2 text-[13px] leading-[1.55] text-muted-foreground">{l.desc}</p>
-            </li>
+            <Reveal key={l.title} x={-14} y={0} delay={i * 0.07}>
+              <li className={cn("flex items-start gap-4 p-4 sm:items-center sm:p-5", CARD)}>
+                <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line-strong font-mono text-[11px] font-semibold text-accent sm:mt-0">
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[15px] font-medium text-foreground">{l.title}</p>
+                  <p className="mt-0.5 text-[13.5px] leading-[1.5] text-muted-foreground">
+                    {l.desc}
+                  </p>
+                </div>
+                <span
+                  className="hidden shrink-0 gap-1 sm:flex"
+                  aria-label={`Depth ${layers.length - i} of ${layers.length}`}
+                >
+                  {layers.map((_, k) => (
+                    <span
+                      key={k}
+                      className={cn(
+                        "h-5 w-1.5 rounded-full",
+                        k < layers.length - i ? "bg-accent" : "bg-line-solid",
+                      )}
+                    />
+                  ))}
+                </span>
+              </li>
+            </Reveal>
           ))}
         </ol>
       </div>
@@ -357,83 +344,74 @@ export function Protection({
   );
 }
 
-/** Luồng vào: 4 bước nối nhau bằng mũi tên, xuống dòng thì xếp dọc. */
-export function PathIn({
-  kicker,
-  steps,
-  note,
-}: {
-  kicker: string;
-  steps: Step[];
-  note: string;
-}) {
+/* --------------------------------- path in -------------------------------- */
+
+export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[]; note: string }) {
   return (
-    <section
-      className={cn(
-        "section-tint relative overflow-hidden border-t border-line-solid py-14 md:py-20",
-        PAD,
-      )}
-    >
+    <section className={cn("relative overflow-hidden border-y border-line-solid", SECTION, PAD)}>
       <CitrusField seed={7717} count={7} />
-      <div className="relative mx-auto max-w-[1280px]">
-        <span className="kicker mb-8">{kicker}</span>
-        <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className={cn("relative", WRAP)}>
+        <SectionHead kicker={kicker} />
+        <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
-            <li key={s.label} className="relative rounded-[20px] bg-surface px-5 py-6">
-              <div className="microlabel microlabel-muted">{s.label}</div>
-              <div className="mt-2 text-[15px] font-medium leading-[1.4] text-foreground">
-                {s.value}
-              </div>
-              {i < steps.length - 1 && (
-                <ArrowRight
-                  aria-hidden
-                  className="absolute -right-[18px] top-1/2 hidden size-3.5 -translate-y-1/2 text-[color-mix(in_srgb,var(--foreground)_35%,transparent)] lg:block"
-                />
-              )}
-            </li>
+            <Reveal key={s.label} y={16} delay={i * 0.07}>
+              <li className={cn("relative h-full p-5", CARD)}>
+                <span className="microlabel">{s.label}</span>
+                <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
+                  {s.value}
+                </p>
+                {i < steps.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="absolute -right-[13px] top-1/2 hidden -translate-y-1/2 text-faint lg:block"
+                  >
+                    <ChevronRight className="size-4" />
+                  </span>
+                )}
+              </li>
+            </Reveal>
           ))}
         </ol>
-        <p className="mt-6 max-w-[80ch] text-[13px] leading-[1.6] text-foreground">{note}</p>
+        <Reveal delay={0.2}>
+          <p className="mt-6 max-w-[80ch] text-[13px] leading-[1.6] text-muted-foreground">
+            {note}
+          </p>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-/** CTA đóng trang. */
+/* ---------------------------------- CTA ----------------------------------- */
+
+/** Bản dev bọc CTA trong một thẻ bo `rounded-xl` có viền; hạt cam rơi bên trong
+ * thẻ chứ không phải cả section. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
-    <section
-      className={cn(
-        "section-tint relative overflow-hidden border-t border-line-solid py-16 md:py-24",
-        PAD,
-      )}
-    >
-      {/* Bản dev rải hạt cam ở cả CTA đóng trang, 8 hạt — thưa hơn hero (30). */}
-      <CitrusField seed={4409} count={8} />
-      <div className="relative mx-auto max-w-[1280px] text-center">
-        <h2 className="text-[30px] font-semibold leading-[1.08] text-foreground md:text-[40px] md:leading-[1.15]">
-          {closing.title}
-        </h2>
-        <p className="mx-auto mt-4 max-w-[62ch] text-[15.5px] leading-[1.65] text-muted-foreground">
-          {closing.body}
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <a
-            href={closing.primary.href}
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--mark)] px-5 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition-opacity hover:opacity-90"
-          >
-            {closing.primary.label}
-            <ArrowRight className="size-4" />
-          </a>
-          <a
-            href={closing.secondary.href}
-            className="inline-flex items-center gap-1.5 rounded-full bg-surface px-5 py-3 text-sm font-semibold text-foreground transition-opacity hover:opacity-80"
-          >
-            {closing.secondary.label}
-            <ArrowUpRight className="size-4" />
-          </a>
+    <section className={cn(SECTION, PAD)}>
+      <Reveal>
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl border border-line-solid bg-surface px-6 pt-14 pb-20 text-center">
+          <CitrusField seed={4409} count={8} />
+          <div className="relative z-10 flex flex-col items-center gap-6">
+            <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
+              {closing.title}
+            </h2>
+            <p className="max-w-[460px] text-[15px] leading-[1.6] text-muted-foreground">
+              {closing.body}
+            </p>
+            <div className="mt-1 flex flex-col items-center gap-3 sm:flex-row">
+              <a href={closing.primary.href} className={BTN_PRIMARY}>
+                {closing.primary.label}
+                <ArrowRight className="size-4" />
+              </a>
+              <a href={closing.secondary.href} className={BTN_GHOST}>
+                {closing.secondary.label}
+                <ArrowUpRight className="size-4" />
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

@@ -10,7 +10,8 @@
 export type Kpi = { value: string; label: string };
 export type Layer = { title: string; desc: string };
 export type Step = { label: string; value: string };
-export type TokenCard = { name: string; desc: string };
+/** Thẻ token trong khối Terms. `icon` là icon tròn nhấp nhẹ trên bản dev. */
+export type TokenCard = { name: string; desc: string; icon?: string };
 /** Thẻ vault của Marketplace: mô tả + 6 chỉ số. */
 export type Vault = {
   name: string;
@@ -73,9 +74,9 @@ export const alphaPage: ProductPage = {
     title: "Who can get in, how fast you get out, what stands under you.",
   },
   tokens: [
-    { name: "yzUSD", desc: "The stablecoin, senior claim, held at par" },
-    { name: "syzUSD", desc: "Staked yzUSD, ERC-4626, earns the weekly yield" },
-    { name: "yzPP", desc: "Junior tranche, takes the first loss" },
+    { name: "yzUSD", icon: "/assets/tokens/syzUSD.svg", desc: "The stablecoin, senior claim, held at par" },
+    { name: "syzUSD", icon: "/assets/tokens/syzUSD.svg", desc: "Staked yzUSD, ERC-4626, earns the weekly yield" },
+    { name: "yzPP", icon: "/assets/tokens/yzPP.svg", desc: "Junior tranche, takes the first loss" },
   ],
   tokensNote:
     "yzPP stands under both: it takes the first loss in full before yzUSD is touched.",
@@ -196,9 +197,9 @@ export const marketplacePage: ProductPage = {
     title: "Who can get in, how fast you get out, what stands under you.",
   },
   tokens: [
-    { name: "yzCash", desc: "Tokenized T-Bill cash management" },
-    { name: "yzSyrup", desc: "Maple Syrup institutional lending" },
-    { name: "yzmGLOBAL", desc: "Asset-Backed Credit" },
+    { name: "yzCash", icon: "/assets/tokens/yzCash.svg", desc: "Tokenized T-Bill cash management" },
+    { name: "yzSyrup", icon: "/assets/tokens/yzSyrup.svg", desc: "Maple Syrup institutional lending" },
+    { name: "yzmGLOBAL", icon: "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png", desc: "Asset-Backed Credit" },
   ],
   protection: {
     kicker: "Protection",

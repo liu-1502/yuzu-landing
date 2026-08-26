@@ -1,27 +1,32 @@
-import type { Claim, Era, PrimePage, Stat, Vault } from "@/data/productPages";
-import { asset } from "@/data/content";
-import { SectionHead } from "@/components/product/ProductShell";
+import type { Claim, Era, PrimePage, Stat } from "@/data/productPages";
+import {
+  CARD,
+  PAD,
+  SECTION,
+  SectionHead,
+  WRAP,
+} from "@/components/product/ProductShell";
+import { Reveal } from "@/components/product/Reveal";
 import { cn } from "@/lib/utils";
 
-const PAD = "px-6 lg:px-[60px]";
+/* Prime dùng cùng idiom với hai trang kia: khổ max-w-5xl, lề px-4 sm:px-6, tiêu
+   đề canh trái, thẻ `rounded-lg` có viền và hover đổi viền sang accent. */
 
-/** Dải số liệu nhỏ nằm trong một section (khác KpiRow ở đầu trang: không kẻ
- * full-bleed, chỉ là hàng thẻ). */
+/** Dải số liệu trong thân bài — khác dải KPI đầu trang (kia có kẻ full-bleed). */
 function StatStrip({ stats }: { stats: Stat[] }) {
   return (
-    <div
-      className={cn(
-        "grid gap-3",
-        stats.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4",
-      )}
-    >
-      {stats.map((s) => (
-        <div key={s.label} className="rounded-[20px] bg-surface px-5 py-6">
-          <div className="data text-[30px] font-semibold leading-none text-foreground">
-            {s.value}
+    <div className={cn("grid gap-3", stats.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4")}>
+      {stats.map((s, i) => (
+        <Reveal key={s.label} y={18} delay={i * 0.06}>
+          <div className={cn("h-full p-5", CARD)}>
+            <div className="text-2xl font-bold leading-9 tabular-nums text-foreground md:text-[32px]">
+              {s.value}
+            </div>
+            <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              {s.label}
+            </p>
           </div>
-          <div className="microlabel microlabel-muted mt-3">{s.label}</div>
-        </div>
+        </Reveal>
       ))}
     </div>
   );
@@ -29,12 +34,14 @@ function StatStrip({ stats }: { stats: Stat[] }) {
 
 function ClaimCards({ claims, cols }: { claims: Claim[]; cols: string }) {
   return (
-    <div className={cn("grid gap-3", cols)}>
-      {claims.map((c) => (
-        <div key={c.title} className="rounded-[20px] bg-surface px-5 py-6">
-          <div className="text-[15px] font-semibold leading-[1.3] text-foreground">{c.title}</div>
-          <p className="mt-3 text-[13px] leading-[1.6] text-muted-foreground">{c.body}</p>
-        </div>
+    <div className={cn("grid gap-4", cols)}>
+      {claims.map((c, i) => (
+        <Reveal key={c.title} y={24} delay={i * 0.08}>
+          <div className={cn("flex h-full flex-col gap-3 p-5", CARD)}>
+            <h3 className="text-[17px] font-semibold text-foreground">{c.title}</h3>
+            <p className="text-[13.5px] leading-[1.55] text-muted-foreground">{c.body}</p>
+          </div>
+        </Reveal>
       ))}
     </div>
   );
@@ -42,14 +49,14 @@ function ClaimCards({ claims, cols }: { claims: Claim[]; cols: string }) {
 
 export function TBills({ data }: { data: PrimePage["tbills"] }) {
   return (
-    <section className={cn("section-tint py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section className={cn(SECTION, PAD)}>
+      <div className={WRAP}>
         <SectionHead kicker={data.kicker} title={data.title} />
-        <div className="mt-10">
+        <div className="mt-9">
           <StatStrip stats={data.stats} />
         </div>
-        <div className="mt-3">
-          <ClaimCards claims={data.claims} cols="sm:grid-cols-2" />
+        <div className="mt-4">
+          <ClaimCards claims={data.claims} cols="md:grid-cols-2" />
         </div>
       </div>
     </section>
@@ -59,32 +66,26 @@ export function TBills({ data }: { data: PrimePage["tbills"] }) {
 /** Timeline CLO — mốc năm bên trái, nội dung bên phải, nối bằng một đường dọc. */
 function Timeline({ eras }: { eras: Era[] }) {
   return (
-    <ol className="relative mt-10">
+    <ol className="relative mt-9">
       {eras.map((e, i) => (
-        <li key={e.year} className="relative flex gap-5 pb-8 last:pb-0 sm:gap-8">
-          {/* Đường nối chạy từ tâm chấm xuống mốc kế tiếp; mốc cuối thì bỏ. */}
-          {i < eras.length - 1 && (
-            <span
-              aria-hidden
-              className="absolute left-[5px] top-3 h-full w-px bg-line-solid sm:left-[5px]"
-            />
-          )}
-          <span
-            aria-hidden
-            className="relative z-10 mt-2 size-[11px] shrink-0 rounded-full bg-[var(--mark)]"
-          />
-          <div className="min-w-0 flex-1 sm:flex sm:gap-8">
-            <div className="data w-[6ch] shrink-0 text-[17px] font-semibold leading-[1.4] text-foreground">
-              {e.year}
-            </div>
-            <div className="min-w-0">
-              <div className="text-[15px] font-semibold leading-[1.35] text-foreground">
-                {e.title}
+        <Reveal key={e.year} x={-14} y={0} delay={i * 0.06}>
+          <li className="relative flex gap-5 pb-8 last:pb-0 sm:gap-8">
+            {/* Đường nối chạy từ tâm chấm xuống mốc kế tiếp; mốc cuối thì bỏ. */}
+            {i < eras.length - 1 && (
+              <span aria-hidden className="absolute left-[5px] top-3 h-full w-px bg-line-solid" />
+            )}
+            <span aria-hidden className="relative z-10 mt-2 size-[11px] shrink-0 rounded-full bg-accent" />
+            <div className="min-w-0 flex-1 sm:flex sm:gap-8">
+              <div className="w-[6ch] shrink-0 text-[17px] font-semibold leading-[1.4] tabular-nums text-foreground">
+                {e.year}
               </div>
-              <p className="mt-1.5 text-[13px] leading-[1.6] text-muted-foreground">{e.body}</p>
+              <div className="min-w-0">
+                <p className="text-[15px] font-medium text-foreground">{e.title}</p>
+                <p className="mt-0.5 text-[13.5px] leading-[1.5] text-muted-foreground">{e.body}</p>
+              </div>
             </div>
-          </div>
-        </li>
+          </li>
+        </Reveal>
       ))}
     </ol>
   );
@@ -92,24 +93,28 @@ function Timeline({ eras }: { eras: Era[] }) {
 
 export function Clo({ data }: { data: PrimePage["clo"] }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section className={cn(SECTION, PAD)}>
+      <div className={WRAP}>
         <SectionHead kicker={data.kicker} title={data.title} />
-        <p className="mx-auto mt-4 max-w-[80ch] text-center text-[15.5px] leading-[1.65] text-muted-foreground">
-          {data.body}
-        </p>
+        <Reveal delay={0.08}>
+          <p className="mt-4 max-w-[80ch] text-[15px] leading-[1.6] text-muted-foreground">
+            {data.body}
+          </p>
+        </Reveal>
 
-        <div className="mt-10">
+        <div className="mt-9">
           <StatStrip stats={data.stats} />
         </div>
 
         <Timeline eras={data.timeline} />
 
-        <h3 className="mt-14 text-center text-[24px] font-semibold leading-[1.15] text-foreground md:text-[30px]">
-          {data.compare.title}
-        </h3>
+        <Reveal delay={0.1}>
+          <h3 className="mt-14 text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[32px]">
+            {data.compare.title}
+          </h3>
+        </Reveal>
         <div className="mt-6">
-          <ClaimCards claims={data.compare.cards} cols="sm:grid-cols-2" />
+          <ClaimCards claims={data.compare.cards} cols="md:grid-cols-2" />
         </div>
       </div>
     </section>
@@ -118,16 +123,20 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
 export function Lending({ data }: { data: PrimePage["lending"] }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
+    <section className={cn(SECTION, PAD)}>
+      <div className={WRAP}>
         <SectionHead kicker={data.kicker} title={data.title} />
-        <p className="mx-auto mt-4 max-w-[80ch] text-center text-[15.5px] leading-[1.65] text-muted-foreground">
-          {data.body}
-        </p>
-        <div className="mt-10">
-          <ClaimCards claims={data.cards} cols="sm:grid-cols-3" />
+        <Reveal delay={0.08}>
+          <p className="mt-4 max-w-[80ch] text-[15px] leading-[1.6] text-muted-foreground">
+            {data.body}
+          </p>
+        </Reveal>
+        <div className="mt-9">
+          <ClaimCards claims={data.cards} cols="md:grid-cols-3" />
         </div>
-        <p className="microlabel microlabel-muted mt-6">{data.note}</p>
+        <Reveal delay={0.2}>
+          <p className="microlabel mt-6">{data.note}</p>
+        </Reveal>
       </div>
     </section>
   );
@@ -136,13 +145,13 @@ export function Lending({ data }: { data: PrimePage["lending"] }) {
 /** Chú thích nguồn — chữ nhỏ, đánh số [1]..[10], kèm disclaimer cuối. */
 export function Sources({ data }: { data: PrimePage["sources"] }) {
   return (
-    <section className={cn("section-tint border-t border-line-solid py-12 md:py-16", PAD)}>
-      <div className="mx-auto max-w-[1280px]">
-        <h2 className="microlabel microlabel-muted">{data.title}</h2>
+    <section className={cn("border-t border-line-solid py-12 md:py-16", PAD)}>
+      <div className={WRAP}>
+        <h2 className="microlabel">{data.title}</h2>
         <ol className="mt-6 flex flex-col gap-3">
           {data.items.map((s) => (
             <li key={s.ref} className="flex gap-3 text-[11.5px] leading-[1.6] text-faint">
-              <span className="data shrink-0 font-medium text-muted-foreground">{s.ref}</span>
+              <span className="shrink-0 font-mono font-medium text-muted-foreground">{s.ref}</span>
               <span className="min-w-0">{s.text}</span>
             </li>
           ))}
@@ -152,51 +161,5 @@ export function Sources({ data }: { data: PrimePage["sources"] }) {
         </p>
       </div>
     </section>
-  );
-}
-
-/** Thẻ vault của Marketplace: tên, mô tả, và lưới 6 chỉ số. Vault "More on the
- * way" chưa có chỉ số nên chỉ hiện mô tả. */
-export function VaultCards({ vaults }: { vaults: Vault[] }) {
-  return (
-    <div className="grid gap-3 lg:grid-cols-2">
-      {vaults.map((v) => (
-        <div
-          key={v.name}
-          className={cn(
-            "flex flex-col rounded-[20px] px-5 py-6",
-            v.upcoming ? "bg-[color-mix(in_srgb,var(--foreground)_4%,transparent)]" : "bg-surface",
-          )}
-        >
-          <div className="flex items-center gap-2.5">
-            {v.icon && (
-              <img
-                src={asset(v.icon)}
-                alt=""
-                /* citrus-bob-fast: bản dev cho 3 icon vault trong khối Composition
-                   nhấp nhẹ 4.5s. */
-                className="citrus-bob-fast size-7 shrink-0 rounded-full"
-              />
-            )}
-            <div className="data text-[20px] font-semibold leading-none text-foreground">
-              {v.name}
-            </div>
-          </div>
-          <p className="mt-3 text-[13px] leading-[1.6] text-muted-foreground">{v.desc}</p>
-          {v.metrics.length > 0 && (
-            <dl className="mt-5 grid grid-cols-3 gap-x-4 gap-y-4 border-t border-line-solid pt-5">
-              {v.metrics.map((m) => (
-                <div key={m.label}>
-                  <dt className="microlabel microlabel-muted">{m.label}</dt>
-                  <dd className="data mt-1.5 text-[15px] font-semibold leading-none text-foreground">
-                    {m.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </div>
-      ))}
-    </div>
   );
 }
