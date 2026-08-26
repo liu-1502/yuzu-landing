@@ -71,8 +71,11 @@ export function CitrusChart({
 }) {
   const arr = layout(slices);
 
+  /* Chiều cao viewBox 116 chứ không phải 124: phần vẽ thấp nhất trong cả ba sản
+     phẩm là nhãn "AAA CLOs" của Prime ở y=102.7, để 124 thì thừa 11–19 đơn vị
+     trống dưới đáy — quy ra 26–35px khoảng hở chết trên mobile. */
   return (
-    <svg viewBox="-38 -10 176 124" className="block w-full" aria-hidden>
+    <svg viewBox="-38 -10 176 116" className="block w-full" aria-hidden>
       <defs>
         <radialGradient id={`plate-${id}`}>
           <stop offset="50%" stopColor={accent} stopOpacity="0.7" />
@@ -263,7 +266,7 @@ export function SliceDetail({
   active: number | null;
 }) {
   return (
-    <div className="mt-6 grid grid-cols-1 sm:mt-8">
+    <div className="mt-3 grid grid-cols-1 sm:mt-8">
       {slices.map((s, i) => {
         const on = i === active;
         return (

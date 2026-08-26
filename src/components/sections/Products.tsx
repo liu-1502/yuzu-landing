@@ -303,6 +303,20 @@ function Carousel() {
 
   const p = products[index];
 
+  /* Ba thẻ cao khác nhau (Marketplace 588px, Prime 463px) mà flex rail thì lấy
+     chiều cao của thẻ cao nhất — đứng ở Alpha sẽ thấy ~100px trống trước hàng dot.
+     Cho khung bám theo thẻ đang hiện, có transition để lúc vuốt không giật. */
+  const [railH, setRailH] = useState<number>();
+  useEffect(() => {
+    const measure = () => {
+      const el = railRef.current?.children[index] as HTMLElement | undefined;
+      if (el) setRailH(el.scrollHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [index]);
+
   return (
     <div
       id="products"
@@ -344,7 +358,11 @@ function Carousel() {
           const i = Math.round(el.scrollLeft / step(el));
           setIndex(Math.max(0, Math.min(products.length - 1, i)));
         }}
-        className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        /* items-start là BẮT BUỘC khi đặt height tường minh: để mặc định stretch
+           thì thẻ con cao bằng khung, `scrollHeight` đo lại chính chiều cao khung
+           và vòng đo bị kẹt. */
+        style={{ height: railH }}
+        className="-mx-6 flex snap-x snap-mandatory items-start gap-6 overflow-x-auto overflow-y-hidden overscroll-x-contain px-6 transition-[height] duration-300 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {products.map((item, i) => (
           <CarouselSlide key={item.id} p={item} on={i === index} />
