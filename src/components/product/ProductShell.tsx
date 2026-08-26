@@ -411,10 +411,13 @@ export function Protection({
     <section className={cn(SECTION, PAD)}>
       <div className={WRAP}>
         <SectionHead kicker={kicker} title={title} />
-        <ol className="mt-9 flex flex-col gap-3">
+        <ol className="mt-9 flex flex-col gap-4">
           {layers.map((l, i) => (
             <Reveal key={l.title} x={-14} y={0} delay={i * 0.07}>
-              <li className={cn("flex items-start gap-4 p-4 sm:items-center sm:p-5", CARD)}>
+              {/* Bỏ stroke theo nếp home: nền trắng, không viền, không đổi viền
+                  khi hover. Chú thích PHẢI bọc trong ngoặc nhọn — `/* *​/` trần ở
+                  vị trí con của JSX sẽ render thành chữ thật trên trang. */}
+              <li className="flex items-start gap-4 rounded-lg bg-surface p-4 sm:items-center sm:p-5">
                 <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line-strong font-mono text-[11px] font-semibold text-accent sm:mt-0">
                   {i + 1}
                 </span>
@@ -454,10 +457,10 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
     <section className={cn("relative overflow-hidden border-y border-line-solid", SECTION, PAD)}>
       <div className={cn("relative", WRAP)}>
         <SectionHead kicker={kicker} />
-        <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
             <Reveal key={s.label} y={16} delay={i * 0.07}>
-              <li className={cn("relative h-full p-5", CARD)}>
+              <li className="relative h-full rounded-lg bg-surface p-5">
                 <span className="microlabel">{s.label}</span>
                 <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
                   {s.value}

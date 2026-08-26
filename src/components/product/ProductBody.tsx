@@ -28,7 +28,7 @@ function VaultCard({ v, i }: { v: Vault; i: number }) {
        dưới giữ nguyên: đó là vạch phân cách nội dung, không phải viền thẻ. */
     <div
       className={cn(
-        "flex h-full flex-col gap-4 rounded-lg bg-surface-2 p-5",
+        "flex h-full flex-col gap-4 rounded-lg bg-surface p-5",
         "will-change-transform transition-transform duration-300 hover:-translate-y-1",
       )}
     >
@@ -152,7 +152,14 @@ export function Composition({
              hai — bản dev để vậy. Tách nó ra ngoài thì section hụt 58px. */
           <div className="mt-9 grid gap-4 md:grid-cols-3">
             {vaults.map((v, i) => (
-              <Reveal key={v.name} y={24} delay={i * 0.08}>
+              /* Thẻ "More on the way" trải hết hàng thay vì đứng lẻ một phần ba —
+                 nó không có số liệu nên để hẹp bằng ba thẻ kia thì hụt hẳn. */
+              <Reveal
+                key={v.name}
+                y={24}
+                delay={i * 0.08}
+                className={v.upcoming ? "md:col-span-3" : undefined}
+              >
                 <VaultCard v={v} i={i} />
               </Reveal>
             ))}
@@ -192,13 +199,13 @@ export function Terms({
         <SectionHead kicker={head.kicker} title={head.title} center />
 
         <Reveal className="mt-9" delay={0.08}>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
             {p.facts.map((f) => {
               const Icon = FACT_ICONS[f.icon as keyof typeof FACT_ICONS];
               return (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3.5 rounded-lg bg-surface-2 px-3.5 py-3 text-center sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5"
+                  className="flex items-center gap-3.5 rounded-lg bg-surface px-3.5 py-3 text-center sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5"
                 >
                   <div className="shrink-0 sm:mb-2.5">
                     <Icon className="citrus-bob-fast size-7 text-accent" />

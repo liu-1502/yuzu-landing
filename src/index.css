@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Biến thể `dark:` phải bám CLASS `.dark`, không bám `prefers-color-scheme`.
+   Mặc định của Tailwind v4 là media query, mà cả trang đổi theme bằng class
+   `.dark` (ThemeToggle). Hai thứ đó lệch nhau ngay khi hệ điều hành để dark còn
+   app để light: lúc đó `dark:hidden` vẫn ăn, nên dải Partners ở LIGHT mode lại
+   hiện bộ logo bản tối và giấu bộ màu — ngược hẳn bản dev. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ==========================================================================
    YUZU — DESIGN TOKENS (copy 1:1 từ trang gốc)
    Sửa màu ở đây là đổi cả trang. Light = :root, Dark = .dark
