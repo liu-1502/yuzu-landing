@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/Icons";
 import { LiquidSurface } from "@/components/ui/LiquidSurface";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import { HeroBall } from "@/components/product/HeroBall";
 import { Reveal } from "@/components/product/Reveal";
 import { cn } from "@/lib/utils";
 
@@ -205,14 +204,14 @@ export function ProductHero({ page }: { page: HeroData }) {
         )}
       >
         <div className="flex flex-col items-center gap-5">
-          {/* Bản dev cho quả cầu HIỆN DẦN khi vào trang (thẻ của họ mang sẵn
-              `opacity: 1; transform: none` do JS gỡ ra), còn của mình thì nhảy
-              ra ngay. Bọc Reveal cho khớp. Mức lệch là mình chọn: mọi transition
-              trên quả cầu bên dev đều 0s vì họ chạy bằng JS từng frame, không có
-              thời lượng nào để đọc. */}
-          <Reveal y={16}>
-            <HeroBall id={page.id} />
-          </Reveal>
+          {/* Ô GIỮ CHỖ rỗng, đúng như bản dev: thẻ 225px của họ trống hoàn toàn,
+              quả cầu là một lớp overlay của cả trang (xem HeroBallStage). Có vậy
+              nó mới xoay được khi chuyển sản phẩm thay vì remount. */}
+          <div
+            data-ball-slot
+            className="h-[200px] w-[200px] sm:h-[225px] sm:w-[225px]"
+            aria-hidden
+          />
           <MobileRails id={page.id} />
         </div>
 

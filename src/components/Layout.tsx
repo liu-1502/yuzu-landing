@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Header } from "@/components/sections/Header";
 import { Footer } from "@/components/sections/Footer";
+import { HeroBallStage } from "@/components/product/HeroBallStage";
 
 /** Đổi route thì về đầu trang — trừ khi URL có hash, lúc đó nhảy tới section.
  *
@@ -46,6 +47,10 @@ export function Layout() {
       </a>
       <Header />
       <main id="main">
+        {/* Quả cầu hero sống Ở ĐÂY chứ không trong hero: `Outlet` remount mỗi lần
+            đổi route, còn `main` thì không — nhờ vậy nó xoay được khi bấm
+            prev/next thay vì unmount rồi mount lại. */}
+        <HeroBallStage />
         <Outlet />
       </main>
       <Footer />

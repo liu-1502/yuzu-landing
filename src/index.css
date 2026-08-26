@@ -335,9 +335,15 @@
  * `min-height: 100svh` để wrapper phủ hết màn, không hở một dải nền cũ ở đáy khi
  * nội dung ngắn.
  */
-.alpha-scope,
-.prime-scope,
-.mkt-scope {
+/* `main > ` là phần QUAN TRỌNG, không phải cho gọn.
+   Section Products của landing cũng mang class `prime-scope` / `mkt-scope` để đổi
+   màu theo tab — nếu để selector trần thì chính section đó bị sơn nền và ép cao
+   100svh, và tệ hơn là `:root:has(.mkt-scope)` bên dưới khớp luôn cả landing rồi
+   nhuộm tím toàn trang. Wrapper của trang sản phẩm là con TRỰC TIẾP của `main`,
+   còn section kia nằm sâu hơn, nên `main > ` tách đúng hai trường hợp. */
+main > .alpha-scope,
+main > .prime-scope,
+main > .mkt-scope {
   background: var(--background);
   color: var(--foreground);
   min-height: 100svh;
@@ -353,22 +359,22 @@
  * lại. Giá trị ghi thẳng bằng đúng `--background` của scope để không hở một
  * đường ranh mảnh giữa main và footer.
  */
-:root:has(.alpha-scope) {
+:root:has(main > .alpha-scope) {
   --background: #f2f7ef;
 }
-:root:has(.prime-scope) {
+:root:has(main > .prime-scope) {
   --background: #f9f7f0;
 }
-:root:has(.mkt-scope) {
+:root:has(main > .mkt-scope) {
   --background: #f3f0f6;
 }
-.dark:has(.alpha-scope) {
+.dark:has(main > .alpha-scope) {
   --background: var(--tint-alpha);
 }
-.dark:has(.prime-scope) {
+.dark:has(main > .prime-scope) {
   --background: var(--tint-prime);
 }
-.dark:has(.mkt-scope) {
+.dark:has(main > .mkt-scope) {
   --background: var(--tint-mkt);
 }
 
@@ -445,6 +451,11 @@
        Dùng `clip` chứ không phải `hidden` — `hidden` tạo scroll container và
        làm hỏng position: sticky của section Products. Giống trang gốc. */
     overflow-x: clip;
+  }
+  main {
+    /* Containing block cho stage quả cầu hero — nó `absolute` trong `main` để
+       sống sót qua mọi lần đổi route. */
+    position: relative;
   }
   body {
     overflow-x: clip;
