@@ -134,7 +134,7 @@ export function ProductHero({ page }: { page: HeroData }) {
 
           <h1 className="text-balance text-5xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-6xl md:text-7xl">
             {lead && `${lead} `}
-            <span className="text-accent">{tail}</span>
+            <span style={{ color: "var(--heading-accent, var(--accent))" }}>{tail}</span>
           </h1>
 
           <div className="flex flex-col items-center gap-7">

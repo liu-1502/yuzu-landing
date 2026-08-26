@@ -199,6 +199,14 @@
      thẻ trắng trung tính. Số lấy đúng từ dev.yuzu.money/prime. */
   --surface: #fdfcfa;
   --surface-2: #efece2;
+  /* Chữ tô điểm trong H1 hero. Bản dev cho H1 Prime một class riêng
+     `text-prime-accent` = #c97e05, sáng hơn --accent (#93690b) — vàng #93690b ở cỡ
+     72px trên nền kem đọc ra nâu xỉn, nên đây là chủ ý.
+     Chỉ khai ở scope này; các scope khác để hero tự lùi về --accent của chúng qua
+     fallback `var(--heading-accent, var(--accent))`. KHÔNG khai mặc định ở :root:
+     var() trong custom property được giải ngay tại chỗ khai, nên nó sẽ khoá cứng
+     vào --accent của :root và mọi scope đều ra màu Alpha. */
+  --heading-accent: #c97e05;
   --liquid-top: #93690b33;
   --liquid-bottom: #93690b99;
 }
