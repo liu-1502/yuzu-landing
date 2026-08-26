@@ -1,7 +1,6 @@
 import type { Product } from "@/data/content";
 import { asset } from "@/data/content";
 import type { ProductPage, Vault } from "@/data/productPages";
-import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
 import { ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
 import {
   CARD,
@@ -13,7 +12,7 @@ import {
 } from "@/components/product/ProductShell";
 import { CitrusField } from "@/components/product/CitrusField";
 import { Reveal } from "@/components/product/Reveal";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as const;
@@ -62,6 +61,95 @@ function VaultCard({ v, i }: { v: Vault; i: number }) {
 
 /* ------------------------------- composition ------------------------------ */
 
+/** Ghi chú dưới tiêu đề, có một cụm chữ là link (bản dev gắn "asset whitelist"). */
+function Note({
+  text,
+  link,
+}: {
+  text: string;
+  link?: { text: string; href: string };
+}) {
+  if (!link || !text.includes(link.text)) {
+    return <>{text}</>;
+  }
+  const [before, after] = text.split(link.text);
+  return (
+    <>
+      {before}
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-accent underline decoration-[color-mix(in_srgb,var(--accent)_40%,transparent)] underline-offset-2 transition-colors hover:decoration-[var(--accent)]"
+      >
+        {link.text}
+      </a>
+      {after}
+    </>
+  );
+}
+
+/**
+ * Danh sách trọng số của Alpha — bản dev KHÔNG dùng biểu đồ tròn ở trang sản
+ * phẩm, mà là từng dòng có thanh tiến trình chạy từ 0 tới đúng tỉ lệ khi cuộn
+ * tới. Thanh lệch pha nhau 90ms cho có nhịp.
+ */
+function WeightList({ p }: { p: Product }) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [run, setRun] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setRun(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setRun(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "-60px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <ul ref={ref} className="mt-9">
+      {p.slices.map((s, i) => (
+        <li key={s.label} className="border-t border-line-solid py-4 first:border-t-0">
+          <div className="flex flex-col gap-1.5 sm:flex-row sm:items-baseline sm:gap-6">
+            <span className="w-14 shrink-0 font-mono text-[15px] font-semibold tabular-nums text-accent">
+              {s.weight !== null ? `${s.weight}%` : "—"}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[15px] font-medium text-foreground">{s.label}</span>
+              <span className="mt-0.5 block text-[13.5px] leading-[1.5] text-muted-foreground">
+                {s.detail}
+              </span>
+            </span>
+          </div>
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface-2 sm:ml-20 sm:w-[calc(100%-5rem)]">
+            <div
+              className="h-full rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, color-mix(in srgb, var(--accent) 45%, transparent), var(--accent))",
+                width: run && s.weight !== null ? `${s.weight}%` : 0,
+                transition: `width 1s cubic-bezier(.22,.61,.36,1) ${i * 0.09}s`,
+              }}
+            />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * Marketplace: mỗi vault là một exposure riêng nên phần này là lưới 3 thẻ vault.
  * Alpha: một danh mục có trọng số nên là quả chanh + danh sách trọng số.
@@ -75,21 +163,23 @@ export function Composition({
   head: ProductPage["composition"];
   vaults?: Vault[];
 }) {
-  const [hovered, setHovered] = useState<number | null>(null);
-
   return (
     <section className={cn("relative overflow-hidden", SECTION, PAD)}>
       <CitrusField seed={2273} count={9} />
       <div className={cn("relative", WRAP)}>
-        <SectionHead kicker={head.kicker} title={head.title} />
-
-        {head.note && (
-          <Reveal delay={0.08}>
-            <p className="mt-4 max-w-[80ch] text-[13.5px] leading-[1.6] text-muted-foreground">
-              {head.note}
+        {/* Ghi chú nằm TRONG cùng khối reveal với tiêu đề, đúng như bản dev. */}
+        <Reveal>
+          <span className="kicker">{head.kicker}</span>
+          <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
+            {head.title}
+          </h2>
+          {head.note && (
+            <p className="mt-4 max-w-[620px] text-[14.5px] leading-[1.6] text-muted-foreground">
+              <Note text={head.note} link={head.noteLink} />
             </p>
-          </Reveal>
-        )}
+          )}
+        </Reveal>
+
 
         {vaults ? (
           <div className="mt-9 grid gap-4 md:grid-cols-3">
@@ -102,48 +192,7 @@ export function Composition({
               ))}
           </div>
         ) : (
-          <div className="mt-9 grid items-start gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:gap-12">
-            <Reveal y={24}>
-              <CitrusChart
-                id={p.id}
-                accent={p.color}
-                slices={p.slices}
-                active={hovered}
-                setActive={setHovered}
-              />
-              <SliceDetail slices={p.slices} accent={p.color} active={hovered} />
-            </Reveal>
-
-            <Reveal y={24} delay={0.08}>
-              <ul className="flex flex-col">
-                {p.slices.map((s, i) => (
-                  <li
-                    key={s.label}
-                    onMouseEnter={() => setHovered(i)}
-                    onMouseLeave={() => setHovered(null)}
-                    className="flex items-baseline gap-4 border-b border-line-solid py-4 first:pt-0 last:border-b-0"
-                  >
-                    {s.weight !== null && (
-                      <span
-                        className="w-[3.5ch] shrink-0 text-[22px] font-bold leading-none tabular-nums"
-                        style={{ color: s.color ?? p.color }}
-                      >
-                        {s.weight}%
-                      </span>
-                    )}
-                    <span className="min-w-0">
-                      <span className="block text-[15px] font-medium leading-[1.35] text-foreground">
-                        {s.label}
-                      </span>
-                      <span className="mt-1 block text-[13.5px] leading-[1.5] text-muted-foreground">
-                        {s.detail}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
+          <WeightList p={p} />
         )}
 
         {/* "More on the way" — bản dev để ngoài lưới 3 thẻ, dạng một dòng nhắc. */}

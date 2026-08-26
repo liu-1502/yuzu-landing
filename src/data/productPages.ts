@@ -32,7 +32,14 @@ export type ProductPage = {
   primary: { label: string; rate?: string; href: string };
   secondary: { label: string; href: string };
   kpis: Kpi[];
-  composition: { kicker: string; title: string; note?: string };
+  composition: {
+    kicker: string;
+    title: string;
+    note?: string;
+    /** Cụm chữ trong `note` được biến thành link, kèm đích. Bản dev gắn link
+     * "asset whitelist" ngay trong câu. */
+    noteLink?: { text: string; href: string };
+  };
   /** Chỉ Marketplace có: mỗi vault là một exposure riêng, kèm bảng chỉ số. */
   vaults?: Vault[];
   terms: { kicker: string; title: string };
@@ -68,6 +75,7 @@ export const alphaPage: ProductPage = {
     title: "Tranched yield from curated, institutional-grade strategies",
     note:
       "Every protocol and asset these strategies are allowed to touch is published in advance on the asset whitelist, so the venues behind each weight above can be read before you deposit rather than inferred afterwards.",
+    noteLink: { text: "asset whitelist", href: "https://app.yuzu.money/asset-whitelist" },
   },
   terms: {
     kicker: "Terms",
