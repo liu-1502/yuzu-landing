@@ -83,8 +83,11 @@ function SideRails({ id }: { id: ProductPage["id"] }) {
 /**
  * Điều hướng trước/sau cho mobile — bản dev ẩn hẳn hai thanh này dưới lg, tức là
  * trên điện thoại không có đường nào nhảy sang sản phẩm khác ngoài dropdown ở
- * header. Ở đây thay bằng một hàng nằm cuối hero: trước bên trái, sau bên phải,
- * gạch phân cách phía trên. Ẩn từ lg vì lúc đó đã có SideRails.
+ * header.
+ *
+ * Đặt NGAY DƯỚI quả cầu, không phải cuối hero: đứng sau hai nút CTA thì nó tụt
+ * quá sâu, phải cuộn qua cả tiêu đề mới thấy. Ở đây nó thay đúng chỗ hai thanh
+ * kẹp hai bên quả cầu của desktop. Ẩn từ lg vì lúc đó đã có SideRails.
  */
 function MobileRails({ id }: { id: ProductPage["id"] }) {
   const { prev, next } = siblings(id);
@@ -92,7 +95,7 @@ function MobileRails({ id }: { id: ProductPage["id"] }) {
   return (
     <nav
       aria-label="Sản phẩm khác"
-      className="mt-2 flex w-full max-w-[600px] items-center justify-between border-t border-line-solid pt-6 lg:hidden"
+      className="flex w-full max-w-[320px] items-center justify-between lg:hidden"
     >
       <Link
         to={`/${prev}`}
@@ -127,7 +130,14 @@ export function ProductHero({ page }: { page: HeroData }) {
       <SideRails id={page.id} />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-14 text-center">
-        <HeroBall id={page.id} />
+        {/* Gom quả cầu + điều hướng mobile vào một nhóm: cột ngoài có gap-14 (56px),
+            để rails làm con trực tiếp thì nó hở 56px cả trên lẫn dưới, trông như
+            một khối rời. Trên lg rails ẩn nên nhóm này chỉ còn quả cầu, desktop
+            không đổi gì. */}
+        <div className="flex flex-col items-center gap-5">
+          <HeroBall id={page.id} />
+          <MobileRails id={page.id} />
+        </div>
 
         <div className="flex flex-col items-center gap-4">
           <span className="kicker">{page.kicker}</span>
@@ -161,8 +171,6 @@ export function ProductHero({ page }: { page: HeroData }) {
                 <ArrowUpRight className="size-4" />
               </a>
             </div>
-
-            <MobileRails id={page.id} />
           </div>
         </div>
       </div>
