@@ -187,7 +187,10 @@ export function Terms({
   return (
     <section className={cn("border-y border-line-solid", SECTION, PAD)}>
       <div className={WRAP}>
-        <SectionHead kicker={head.kicker} title={head.title} />
+        {/* Theo nếp home: tiêu đề canh GIỮA, thẻ nền xanh nhạt (--surface-2) và
+            BỎ stroke — giống stat box ngoài trang chủ, không phải thẻ viền nền
+            trắng của bản dev. */}
+        <SectionHead kicker={head.kicker} title={head.title} center />
 
         <Reveal className="mt-9" delay={0.08}>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
@@ -196,7 +199,7 @@ export function Terms({
               return (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3.5 rounded-md border border-line-solid bg-surface px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center"
+                  className="flex items-center gap-3.5 rounded-lg bg-surface-2 px-3.5 py-3 text-center sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5"
                 >
                   <div className="shrink-0 sm:mb-2.5">
                     <Icon className="citrus-bob-fast size-7 text-accent" />

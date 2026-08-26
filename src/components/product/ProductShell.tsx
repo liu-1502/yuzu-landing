@@ -34,11 +34,12 @@ export const CARD =
 /** Nút hero của Alpha & Marketplace: cao 48px, chữ 15px, nút chính có vệt tối
  *  inset ở đáy. Cả HAI nút đều dùng mũi tên NGANG 18px trượt sang phải khi hover
  *  — trước đây mình để nút phụ mũi tên chéo lên và icon 16px. */
-/* Nút lấy đúng dáng nút "Launch app" trên header: class `.launch-btn` (nền
-   #1a1a1a, chữ trắng, vệt tối inset ở đáy, dark mode đảo lại) và bo `rounded-sm`
-   — KHÔNG bo tròn hết. Bản dev bo tròn hết nhưng đây là nếp của web này. */
+/* Nút lấy DÁNG của nút "Launch app" trên header — bo `rounded-sm`, có vệt tối
+   inset ở đáy — nhưng MÀU thì theo màu brand của từng trang chứ không phải nền
+   #1a1a1a: `--accent` đổi theo scope nên Alpha ra xanh, Prime vàng, Marketplace
+   tím. Không dùng class `.launch-btn` nữa vì nó ghim cứng màu đen. */
 const BTN_PRIMARY =
-  "launch-btn group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm px-5 text-[15px] font-medium transition-colors duration-300";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm bg-accent px-5 text-[15px] font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90";
 const BTN_GHOST =
   "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
 
@@ -51,15 +52,26 @@ const BTN_PRIME_GHOST =
 /** Mũi tên trong nút — 18px cho Alpha/Marketplace, 20px cho Prime. */
 const CTA_ARROW = "transition-transform duration-300 group-hover/cta:translate-x-0.5";
 
-export function SectionHead({ kicker, title }: { kicker: string; title?: string }) {
+export function SectionHead({
+  kicker,
+  title,
+  center,
+}: {
+  kicker: string;
+  title?: string;
+  /** Canh giữa theo nếp home; bản dev canh trái. */
+  center?: boolean;
+}) {
   return (
     <Reveal>
-      <span className="kicker">{kicker}</span>
-      {title && (
-        <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
-          {title}
-        </h2>
-      )}
+      <div className={cn(center && "flex flex-col items-center text-center")}>
+        <span className="kicker">{kicker}</span>
+        {title && (
+          <h2 className="mt-4 max-w-[620px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[40px]">
+            {title}
+          </h2>
+        )}
+      </div>
     </Reveal>
   );
 }
@@ -312,8 +324,9 @@ function TokenRow({ token, delay, base }: { token: TokenCard; delay: number; bas
   return (
     <div
       className={cn(
-        "flex h-full items-start gap-3 p-4",
-        CARD,
+        /* Nếp home: nền xanh nhạt, không stroke. Thẻ đỡ (yzPP) giữ nhấn bằng
+           một vệt accent ở viền TRÊN — đó là thứ nói nó đứng dưới hai thẻ kia. */
+        "flex h-full items-start gap-3 rounded-lg bg-surface-2 p-4 transition-colors duration-300",
         base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
       )}
     >
