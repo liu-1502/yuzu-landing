@@ -65,7 +65,10 @@ function SideRails({ id }: { id: ProductPage["id"] }) {
   const rail = (to: string, side: "left" | "right") => (
     <Link
       to={`/${to}`}
-      className="pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_25%,transparent)] transition-colors duration-200 hover:text-foreground"
+      /* 65% chứ không phải 25%: ở 25% tương phản với nền chỉ 1.64 — dưới mọi
+         ngưỡng, chữ 10.5px coi như không đọc được. 65% cho 4.59, vừa đủ mức AA
+         cho chữ nhỏ mà vẫn ra sắc xám xanh dịu chứ không đậm như thân bài. */
+      className="pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_65%,transparent)] transition-colors duration-200 hover:text-foreground"
     >
       {side === "left" ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
       <span className={cn(RAIL_LABEL, "transition-colors duration-200")}>{to}</span>
