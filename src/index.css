@@ -246,6 +246,21 @@
   --border: #2e281f;
   --border-prominent: #443b2e;
   --foreground: #f5f1ec;
+
+  /* Dark mode phải đổi CẢ accent và bộ --prime-*: khối sáng phía trên đặt
+     --prime-text màu gần đen và --prime-bg màu kem, để nguyên thì ở dark mode
+     chữ Prime gần đen trên nền gần đen và nút mất chữ. */
+  --accent: #edc15f;
+  --accent-foreground: #171003;
+  --heading-accent: #edc15f;
+  --liquid-back: #edc15f;
+  --muted-foreground: #b3a893;
+  --faint: #8a7f6a;
+  --prime-text: #f5f1ec;
+  --prime-text-subtle: #b3a893;
+  --prime-text-muted: #b3a893;
+  --prime-card: #1a1610;
+  --prime-bg: var(--tint-prime);
 }
 .mkt-scope {
   /* Số lấy nguyên từ dev.yuzu.money/marketplace. `--mark` giữ xanh như trên. */
@@ -288,6 +303,75 @@
   --line-strong: #333a5e;
   --border: #232744;
   --foreground: #eceefa;
+  --line: #23274480;
+  --accent: #a8adff;
+  --accent-foreground: #0d0e1f;
+  --muted-foreground: #a3a6c4;
+  --faint: #7e82a6;
+  --liquid-top: #a8adff29;
+  --liquid-bottom: #a8adff66;
+  --liquid-back: #a8adff;
+}
+
+/* THIẾU HẲN trước đây: không có khối này thì `.alpha-scope` (màu sáng) thắng
+   `.dark` — cùng độ ưu tiên nhưng khai sau — nên trang Alpha vẫn sáng khi bật
+   dark mode. Chỉ cần tối lại đúng sáu biến mà khối sáng ghi đè. */
+.dark .alpha-scope {
+  --background: var(--tint-alpha);
+  --surface: #101a12;
+  --surface-2: #16221a;
+  --line-solid: #1f2e23;
+  --line: #1f2e2380;
+  --faint: #708674;
+}
+
+/**
+ * SƠN nền cho ba scope.
+ *
+ * Trước đây cả ba khai lại `--background` nhưng KHÔNG ai sơn nó: `body` sơn
+ * `background-color: var(--background)`, mà `body` đọc token từ `:root` — scope
+ * là div CON nên token trong đó không bao giờ tới được body. Mọi section thì
+ * trong suốt. Kết quả: trang Marketplace/Prime vẫn nằm trên nền xanh lá của
+ * landing dù token đã tím / vàng nâu.
+ *
+ * `min-height: 100svh` để wrapper phủ hết màn, không hở một dải nền cũ ở đáy khi
+ * nội dung ngắn.
+ */
+.alpha-scope,
+.prime-scope,
+.mkt-scope {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100svh;
+}
+
+/**
+ * Footer nằm NGOÀI `<main>` nên cũng ngoài scope: nó trong suốt và ăn nền của
+ * `body`, tức nền xanh lá của landing — thành một vệt lệch tông ở đáy trang
+ * Prime/Marketplace. Đổi nền của chính `body` theo trang đang mở; layout footer
+ * không đụng tới, đúng yêu cầu "footer chỉ đổi màu theo theme".
+ *
+ * `--tint-*` đã tự lật ở khối `.dark` nên dark mode theo luôn, không cần khai
+ * lại. Giá trị ghi thẳng bằng đúng `--background` của scope để không hở một
+ * đường ranh mảnh giữa main và footer.
+ */
+:root:has(.alpha-scope) {
+  --background: #f2f7ef;
+}
+:root:has(.prime-scope) {
+  --background: #f9f7f0;
+}
+:root:has(.mkt-scope) {
+  --background: #f3f0f6;
+}
+.dark:has(.alpha-scope) {
+  --background: var(--tint-alpha);
+}
+.dark:has(.prime-scope) {
+  --background: var(--tint-prime);
+}
+.dark:has(.mkt-scope) {
+  --background: var(--tint-mkt);
 }
 
 /* ==========================================================================

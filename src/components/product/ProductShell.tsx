@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/Icons";
 import { LiquidSurface } from "@/components/ui/LiquidSurface";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
 import { Reveal } from "@/components/product/Reveal";
 import { cn } from "@/lib/utils";
@@ -43,9 +42,11 @@ const BTN_PRIMARY =
 const BTN_GHOST =
   "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
 
-/** Prime dùng bộ riêng: py-2 nên chỉ cao 44px, chữ 16px, và số liệu to hơn (20px). */
+/** Prime dùng bộ riêng: py-2 nên chỉ cao 44px, chữ 16px, số liệu to hơn (20px).
+ *  Nền lấy --prime-accent (vàng nâu) chứ không phải --prime-text: biến đó là màu
+ *  mực gần ĐEN, để vậy thì nút Prime ra đen giữa một trang vàng nâu. */
 const BTN_PRIME =
-  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-sm bg-[var(--prime-text)] px-4 py-2 text-base font-medium text-[var(--prime-bg)] shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
+  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-sm bg-[var(--prime-accent)] px-4 py-2 text-base font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
 const BTN_PRIME_GHOST =
   "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-sm border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
 
@@ -195,7 +196,6 @@ export function ProductHero({ page }: { page: HeroData }) {
     /* pb: Alpha và Marketplace pb-14 (56px), riêng Prime pb-15 (60px). Không có
        section-tint — bản dev để nền cho wrapper scope lo, hero trong suốt. */
     <section className={cn("relative overflow-hidden pt-28", prime ? "pb-15" : "pb-14", PAD)}>
-      <CitrusField seed={page.id.length * 7919} />
       <SideRails id={page.id} />
 
       <div
@@ -446,7 +446,6 @@ export function Protection({
 export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[]; note: string }) {
   return (
     <section className={cn("relative overflow-hidden border-y border-line-solid", SECTION, PAD)}>
-      <CitrusField seed={7717} count={7} />
       <div className={cn("relative", WRAP)}>
         <SectionHead kicker={kicker} />
         <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -501,7 +500,6 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
             uid="cta"
             reduced={reduced}
           />
-          <CitrusField seed={4409} count={8} />
           <div className="relative z-10 flex flex-col items-center gap-6">
             <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
               {closing.title}

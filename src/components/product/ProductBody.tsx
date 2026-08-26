@@ -11,7 +11,6 @@ import {
   WRAP,
 } from "@/components/product/ProductShell";
 import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
-import { CitrusField } from "@/components/product/CitrusField";
 import { Reveal } from "@/components/product/Reveal";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -131,7 +130,6 @@ export function Composition({
 }) {
   return (
     <section className={cn("relative overflow-hidden", SECTION, PAD)}>
-      <CitrusField seed={2273} count={9} />
       <div className={cn("relative", WRAP)}>
         {/* Khối tiêu đề canh GIỮA — nếp của web này, bản dev canh trái. */}
         <Reveal>
