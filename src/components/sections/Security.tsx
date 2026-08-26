@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMotionValueEvent } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useChoreography } from "@/lib/useChoreography";
@@ -88,15 +88,37 @@ function Panel({
   tinted,
   enabled,
   vh,
+  onMeasure,
 }: {
   panel: (typeof securityPanels)[number];
   index: number;
   tinted: boolean;
   enabled: boolean;
   vh: number;
+  /** Báo lên cha: đáy tiêu đề và đỉnh body, tính từ mép trên mặt thẻ. Cha dùng
+   * hai số này để tính bậc thang cho bản mobile — xem `mobileOffsets`. */
+  onMeasure?: (index: number, head: number, body: number) => void;
 }) {
   const { progress, totalCards = 1 } = useStackingCardsContext();
   const [covered, setCovered] = useState(false);
+  const faceRef = useRef<HTMLDivElement>(null);
+
+  /* Đo lại mỗi khi khung đổi bề ngang: tiêu đề xuống 1 hay 2 dòng là tuỳ bề
+     ngang, mà bậc thang phải bám đúng số đó. */
+  useEffect(() => {
+    const el = faceRef.current;
+    if (!el || !onMeasure) return;
+    const read = () => {
+      const top = el.getBoundingClientRect().top;
+      const h3 = el.querySelector("h3")?.getBoundingClientRect();
+      const body = el.querySelector("p")?.getBoundingClientRect();
+      if (h3 && body) onMeasure(index, h3.bottom - top, body.top - top);
+    };
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [index, onMeasure]);
 
   // Thẻ k ghim khi khối đã cuộn được k·H − STICKY_TOP, trên tổng dải N·H − vh.
   // Thẻ này bị phủ đúng lúc thẻ k = index+1 ghim.
@@ -114,6 +136,7 @@ function Panel({
 
   return (
     <div
+      ref={faceRef}
       className="security-panel relative mx-auto w-full max-w-[1280px] overflow-clip rounded-[40px]"
       style={{
         backgroundColor: tinted ? "var(--surface-2)" : "var(--surface)",
@@ -275,6 +298,31 @@ export function Security() {
   const sectionRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
 
+  /* Bậc thang cho bản mobile. Desktop dùng STRIP cố định được vì h3 có
+     `md:whitespace-nowrap` nên tiêu đề luôn 1 dòng, đáy đều nhau. Mobile thì 3/5
+     tiêu đề xuống 2 dòng: cần bậc ≥120 để tiêu đề nào cũng hở đủ, nhưng ≤97 để
+     không thẻ nào hở một mẩu body — không số cố định nào thoả cả hai. Nên đo từng
+     thẻ: bậc dưới thẻ k = đáy tiêu đề CỦA CHÍNH NÓ + 16, chặn trên bởi đỉnh body
+     của nó. */
+  const [dims, setDims] = useState<{ head: number; body: number }[]>([]);
+  const onMeasure = useCallback((i: number, head: number, body: number) => {
+    setDims((prev) => {
+      if (prev[i]?.head === head && prev[i]?.body === body) return prev;
+      const next = [...prev];
+      next[i] = { head, body };
+      return next;
+    });
+  }, []);
+
+  const mobileOffsets = useMemo(() => {
+    const out = [0];
+    for (let i = 0; i < securityPanels.length - 1; i++) {
+      const d = dims[i];
+      out.push(out[i] + (d ? Math.min(d.head + 16, d.body) : STRIP));
+    }
+    return out;
+  }, [dims]);
+
   /* Tiêu đề ghim ở 64, cả chồng thẻ ghim ngay DƯỚI chân nó; tới thẻ 3 thì cả cụm
    * (tiêu đề + thẻ 1 + thẻ 2) trượt lên, tiêu đề đi hẳn còn chồng thẻ hạ về 96.
    *
@@ -386,14 +434,17 @@ export function Security() {
               // tiêu đề thẻ dưới.
               // Mobile / reduced-motion: về 0, không thì mặt panel trôi xuống rồi bị
               // panel sau che mất nội dung đáy.
-              topPosition={stacking ? `${i * STRIP}px` : "0px"}
+              topPosition={stacking ? `${i * STRIP}px` : `${mobileOffsets[i]}px`}
               // H ≥ vh là điều kiện để mọi thẻ đều ghim được tới đỉnh (dải scroll của
               // khối là N·H − vh, thẻ cuối cần ghim tại (N−1)·H). Cộng thêm 1 bậc
               // (104px) để mặt thẻ cuối — đã lệch (N−1)·STRIP = 412px — không thò ra
               // ngoài item rồi chồng lên section dưới.
               // Lệch khỏi `top-0` của thư viện: ghim theo --yz-stack-top, chạy từ đáy
               // khoảng hở, để thẻ đầu tiên không dính vào header.
-              className="w-full px-6 lg:px-[60px] md:top-[var(--yz-stack-top)] md:h-[calc(100svh+104px)]"
+              /* top-20 (80px) chứ không phải top-0 của thư viện: mobile không có
+                 --yz-stack-top, để 0 thì thẻ ghim sát mép và chui xuống dưới
+                 header 64px. */
+              className="top-20 w-full px-6 lg:px-[60px] md:top-[var(--yz-stack-top)] md:h-[calc(100svh+104px)]"
               style={{ zIndex: i + 1 }}
             >
               <Panel
@@ -402,6 +453,7 @@ export function Security() {
                 tinted={even}
                 enabled={stacking}
                 vh={vh}
+                onMeasure={onMeasure}
               />
             </StackingCardItem>
           );
