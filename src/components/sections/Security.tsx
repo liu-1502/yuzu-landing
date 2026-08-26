@@ -47,6 +47,9 @@ const TAIL_SCREENS = 1;
 /** Bật xếp thẻ khi màn đủ rộng và người dùng không tắt animation. */
 function useStacking() {
   const [on, setOn] = useState(false);
+  /* Tách riêng `on`: `on` còn phụ thuộc reduced-motion, còn `wide` thuần là
+     ngưỡng md — dùng để chọn nội dung render, không phải để bật animation. */
+  const [isWide, setIsWide] = useState(false);
   const [vh, setVh] = useState(0);
 
   useEffect(() => {
@@ -54,6 +57,7 @@ function useStacking() {
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sync = () => {
       setOn(wide.matches && !calm.matches);
+      setIsWide(wide.matches);
       setVh(window.innerHeight);
     };
     sync();
@@ -67,7 +71,7 @@ function useStacking() {
     };
   }, []);
 
-  return { on, vh };
+  return { on, wide: isWide, vh };
 }
 
 /**
@@ -87,6 +91,7 @@ function Panel({
   index,
   tinted,
   enabled,
+  wide,
   vh,
   onMeasure,
 }: {
@@ -94,6 +99,8 @@ function Panel({
   index: number;
   tinted: boolean;
   enabled: boolean;
+  /** Từ md trở lên. Quyết định NỘI DUNG render, không phải hiện/ẩn bằng CSS. */
+  wide: boolean;
   vh: number;
   /** Báo lên cha: đáy tiêu đề và đỉnh body, tính từ mép trên mặt thẻ. Cha dùng
    * hai số này để tính bậc thang cho bản mobile — xem `mobileOffsets`. */
@@ -137,7 +144,7 @@ function Panel({
   return (
     <div
       ref={faceRef}
-      className="security-panel relative mx-auto w-full max-w-[1280px] overflow-clip rounded-[40px]"
+      className="security-panel relative mx-auto w-full max-w-[1280px] overflow-clip rounded-[24px] md:rounded-[40px]"
       style={{
         backgroundColor: tinted ? "var(--surface-2)" : "var(--surface)",
       }}
@@ -158,14 +165,15 @@ function Panel({
                      */}
                   <div className="relative min-w-0 flex-1">
             <div className="relative z-10 flex flex-col gap-6 pt-0.5">
-              <h3 className="text-2xl font-bold leading-[1.3] text-foreground md:whitespace-nowrap md:text-[32px]">
-                {covered && (
-                  <span
-                    className="hidden md:inline"
-                    style={{ color: "var(--mark)" }}
-                  >
-                    {panel.n}.{" "}
-                  </span>
+              <h3 className="text-xl font-bold leading-[1.3] text-foreground md:whitespace-nowrap md:text-[32px]">
+                {/* Mobile luôn hiện số thứ tự: chồng thẻ ở đây chỉ hở đúng dải
+                    tiêu đề, có số thì đọc được mình đang ở lớp thứ mấy. Desktop
+                    giữ nếp cũ — chỉ hiện khi thẻ đã bị thẻ sau phủ.
+                    Một span duy nhất chứ không phải hai span ẩn/hiện bằng CSS:
+                    `display:none` không gỡ chữ khỏi cây accessibility, desktop
+                    lúc bị phủ sẽ được đọc thành "1. 1. Security Audits". */}
+                {(!wide || covered) && (
+                  <span style={{ color: "var(--mark)" }}>{panel.n}.{" "}</span>
                 )}
                 {panel.title}
               </h3>
@@ -290,7 +298,7 @@ function Panel({
 }
 
 export function Security() {
-  const { on: stacking, vh } = useStacking();
+  const { on: stacking, wide, vh } = useStacking();
   /* Riêng biệt với `stacking`: `stacking` quyết việc xếp thẻ bên trong section,
      còn cái này quyết việc section có trượt đè lên Products hay không. Trên màn
      thấp (<620px) thẻ vẫn xếp được nhưng Products không ghim, nên không được đè. */
@@ -452,6 +460,7 @@ export function Security() {
                 index={i}
                 tinted={even}
                 enabled={stacking}
+                wide={wide}
                 vh={vh}
                 onMeasure={onMeasure}
               />
