@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
@@ -8,6 +9,7 @@ import {
   ChevronRight,
   ChevronUp,
 } from "@/components/ui/Icons";
+import VariableFontCursorProximity from "@/components/fancy/text/variable-font-cursor-proximity";
 import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
 import { cn } from "@/lib/utils";
@@ -47,6 +49,17 @@ export type HeroData = Pick<
 /** Vị trí tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px.
  * Hai thanh điều hướng sang sản phẩm khác neo đúng vào đây. */
 const BALL_CENTER = 112 + 113;
+
+/** Hiệu ứng con trỏ trên H1 — cùng cấu hình với tiêu đề hero của landing.
+ * Nghỉ ở `wght` 700 (đúng bằng font-bold hiện tại) nên chưa rê chuột thì trông y
+ * như cũ; Bricolage Grotesque chỉ có trục tới 800 nên đó là mức đậm nhất. */
+const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
+  containerRef,
+  fromFontVariationSettings: "'wght' 700",
+  toFontVariationSettings: "'wght' 800",
+  radius: 90,
+  falloff: "gaussian" as const,
+});
 
 /** Sản phẩm liền trước / liền sau theo vòng alpha → prime → marketplace → alpha. */
 function siblings(id: ProductPage["id"]) {
@@ -125,6 +138,7 @@ function MobileRails({ id }: { id: ProductPage["id"] }) {
 /** Hero trang sản phẩm — canh giữa, quả cầu trên, tiêu đề dưới, hạt cam nổi
  * phía sau. Dựng theo đúng layout của dev.yuzu.money/alpha. */
 export function ProductHero({ page }: { page: HeroData }) {
+  const titleRef = useRef<HTMLHeadingElement>(null);
   // "Yuzu Alpha" → "Yuzu" + "Alpha", chữ cuối tô màu accent như trang gốc.
   const cut = page.title.lastIndexOf(" ");
   const lead = cut > 0 ? page.title.slice(0, cut) : "";
@@ -148,9 +162,21 @@ export function ProductHero({ page }: { page: HeroData }) {
         <div className="flex flex-col items-center gap-4">
           <span className="kicker">{page.kicker}</span>
 
-          <h1 className="text-balance text-5xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-6xl md:text-7xl">
-            {lead && `${lead} `}
-            <span style={{ color: "var(--heading-accent, var(--accent))" }}>{tail}</span>
+          <h1
+            ref={titleRef}
+            className="text-balance text-5xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-6xl md:text-7xl"
+          >
+            {lead && (
+              <VariableFontCursorProximity {...titleFx(titleRef)}>
+                {`${lead} `}
+              </VariableFontCursorProximity>
+            )}
+            <VariableFontCursorProximity
+              style={{ color: "var(--heading-accent, var(--accent))" }}
+              {...titleFx(titleRef)}
+            >
+              {tail}
+            </VariableFontCursorProximity>
           </h1>
 
           <div className="flex flex-col items-center gap-7">
