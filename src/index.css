@@ -717,3 +717,8 @@
     animation: none;
   }
 }
+
+/** Bản dev dùng `pb-15` = 60px ở hero trang sản phẩm — Tailwind không có bậc 15. */
+.pb-15 {
+  padding-bottom: 3.75rem;
+}

@@ -138,7 +138,9 @@ export function ProductHero({ page }: { page: HeroData }) {
   const tail = cut > 0 ? page.title.slice(cut + 1) : page.title;
 
   return (
-    <section className={cn("section-tint relative overflow-hidden pt-28 pb-14", PAD)}>
+    /* pb-15 = 60px (không phải pb-14) và KHÔNG có section-tint — bản dev để nền
+       cho wrapper scope lo, hero chỉ trong suốt. */
+    <section className={cn("relative overflow-hidden pt-28 pb-15", PAD)}>
       <CitrusField seed={page.id.length * 7919} />
       <SideRails id={page.id} />
 

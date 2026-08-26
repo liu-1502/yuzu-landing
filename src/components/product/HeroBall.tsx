@@ -5,7 +5,7 @@ import type { ProductPage } from "@/data/productPages";
  * Quả cầu ở tâm hero trang sản phẩm — port đúng các lớp của dev.yuzu.money.
  *
  * Xếp lớp từ dưới lên:
- *  1. Quả cầu nền: gradient tròn trắng, viền 3.2px màu glow,
+ *  1. Quả cầu nền: gradient tròn gần đen, viền 3.2px màu glow,
  *     blur 0.8px và ba
  *     lớp box-shadow (30px / 60px ngoài + 20px inset) tạo hào quang.
  *  2. Khối tròn overflow-hidden chứa hai lớp noise và một lớp quét sáng bên trong.
@@ -24,18 +24,34 @@ type BallSkin = {
   rim?: string;
   /** Icon token ở giữa. */
   icon: string;
-};
+} & Sphere;
 
-/* Nền quả cầu: trắng.
-   Dùng --surface ở tâm và --surface-2 ở rìa chứ không phải một màu trắng phẳng —
-   cần chút chuyển ở rìa thì hình mới đọc ra khối cầu. Hai token này cũng đi theo
-   chế độ màu, nên dark mode không bị một quả cầu trắng chóe. */
-const SPHERE = "radial-gradient(circle, var(--surface) 55%, var(--surface-2) 100%)";
+/* Nền quả cầu: gradient GẦN ĐEN, lấy đúng của bản dev — mỗi sản phẩm một cặp
+   màu riêng. Đây là phần tử lớn nhất trong hero nên nó quyết định cảm giác cả
+   trang; từng thử xanh nhạt rồi trắng theo yêu cầu, nhưng bản dev là quả cầu tối
+   và "copy y chang" thì phải theo nó. */
+type Sphere = { from: string; to: string };
 
 const SKIN: Record<ProductPage["id"], BallSkin> = {
-  alpha: { glow: "#9fe870", icon: "/assets/tokens/syzUSD.svg" },
-  prime: { glow: "#ffaa15", rim: "#c97e05", icon: "/assets/tokens/yzPrime.svg" },
-  marketplace: { glow: "#a8adff", icon: "/assets/tokens/yzCash.svg" },
+  alpha: {
+    glow: "#9fe870",
+    from: "#0d1210",
+    to: "#040706",
+    icon: "/assets/tokens/syzUSD.svg",
+  },
+  prime: {
+    glow: "#ffaa15",
+    rim: "#c97e05",
+    from: "#1a1200",
+    to: "#000000",
+    icon: "/assets/tokens/yzPrime.svg",
+  },
+  marketplace: {
+    glow: "#a8adff",
+    from: "#0d1210",
+    to: "#040706",
+    icon: "/assets/tokens/yzCash.svg",
+  },
 };
 
 const CENTER = "absolute left-1/2 top-1/2 size-full -translate-x-1/2 -translate-y-1/2";
@@ -52,7 +68,7 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
         <div
           className={`${CENTER} rounded-full`}
           style={{
-            background: SPHERE,
+            background: `radial-gradient(circle, ${s.from} 60%, ${s.to} 100%)`,
             border: `3.2px solid ${s.rim ?? s.glow}`,
             filter: "blur(0.8px)",
             boxShadow: `0 0 30px ${mix(30)}, 0 0 60px ${mix(10)}, inset 0 0 20px ${mix(5)}`,
