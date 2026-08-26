@@ -283,7 +283,10 @@ function Carousel() {
     >
       <Heading />
 
-      <div className="mb-5 inline-flex gap-1 rounded-full bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] p-1">
+      {/* Bọc thêm một lớp flex justify-center: track là inline-flex nên tự dạt về
+          lề trái, trong khi Heading phía trên canh giữa — lệch tâm 27px. */}
+      <div className="mb-5 flex justify-center">
+        <div className="inline-flex gap-1 rounded-full bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] p-1">
         {products.map((item, i) => {
           const on = i === index;
           return (
@@ -303,6 +306,7 @@ function Carousel() {
             </button>
           );
         })}
+        </div>
       </div>
 
       <div
