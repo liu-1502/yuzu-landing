@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Claim, Era, MapleCell, PrimePage, Stat } from "@/data/productPages";
 import { asset } from "@/data/content";
 import { PAD, WRAP } from "@/components/product/ProductShell";
+import { MapleIcon } from "@/components/product/MapleIcons";
 import { Reveal } from "@/components/product/Reveal";
 import { cn } from "@/lib/utils";
 
@@ -39,14 +40,10 @@ function withRefs(text: string) {
   );
 }
 
+/** Dùng thẳng `.kicker` — viên pill nền trắng của home. Trước đây Prime tự dựng
+ *  một pill riêng viền + nền tô accent, chữ 13px; giờ theo nếp chung. */
 function Pill({ children }: { children: string }) {
-  return (
-    <div className="inline-flex items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--prime-accent)_32%,transparent)] bg-[color-mix(in_srgb,var(--prime-accent)_12%,transparent)] px-4 py-2">
-      <span className="text-[13px] font-semibold uppercase leading-none tracking-[0.08em] text-[var(--prime-accent-strong)]">
-        {children}
-      </span>
-    </div>
-  );
+  return <span className="kicker">{children}</span>;
 }
 
 function PrimeH2({ children }: { children: string }) {
@@ -200,6 +197,19 @@ function StatPills({ stats }: { stats: Stat[] }) {
     <div className="flex flex-col gap-4 lg:ml-12 lg:gap-5">
       {stats.map((s, i) => (
         <Reveal key={s.label} y={20} delay={i * 0.07}>
+          <div className="relative">
+            {/* Sợi chỉ nối vòng tròn sang viên này. Neo vào CHÍNH viên
+                (`right-full`, `top-1/2`) nên nó luôn nằm giữa viên và luôn lấp
+                đúng khe `lg:ml-12` (48px) — trước đây bốn sợi đặt theo % của cả
+                khối nên lệch tâm viên (20/36/52/70% so với tâm thật
+                16.3/38.8/61.3/83.8%) và còn kéo xuyên qua viên. */}
+            <span
+              aria-hidden
+              className="absolute top-1/2 right-full hidden h-px w-12 -translate-y-1/2 lg:block"
+              style={{
+                background: "linear-gradient(90deg, transparent 0%, var(--prime-accent) 100%)",
+              }}
+            />
           <div className="flex items-center gap-3 rounded-full border border-[var(--prime-card-border)] bg-[var(--prime-card)] py-2 pr-4 pl-2 lg:gap-4 lg:pr-5">
             <div className="flex h-11 min-w-11 items-center justify-center rounded-full border border-[var(--prime-accent)] bg-[var(--prime-bg)] px-3 lg:h-13 lg:min-w-13 lg:px-4">
               <span className="whitespace-nowrap text-lg font-medium tabular-nums text-[var(--prime-accent-strong)] lg:text-xl">
@@ -209,6 +219,7 @@ function StatPills({ stats }: { stats: Stat[] }) {
             <span className="text-sm font-medium text-[var(--prime-text)] lg:text-lg">
               {withRefs(s.label)}
             </span>
+          </div>
           </div>
         </Reveal>
       ))}
@@ -416,45 +427,8 @@ function Timeline({ eras }: { eras: Era[] }) {
   );
 }
 
-/** Toạ độ bốn sợi chỉ, đo trực tiếp trên bản dev. */
-const CLO_LINES = [
-  { top: "20%", width: "70%" },
-  { top: "36%", width: "55%" },
-  { top: "52%", width: "55%" },
-  { top: "70%", width: "70%" },
-];
-
-/** Đã lọt vào khung nhìn chưa — dùng cho thứ không bọc được trong `Reveal`
- *  (Reveal đặt transform lên thẻ bọc, mà transform thì tạo containing block mới
- *  nên mọi con `absolute` bên trong sẽ neo sai). */
-function useInView(ref: React.RefObject<HTMLElement | null>) {
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setShown(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: "-40px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [ref]);
-  return shown;
-}
 
 export function Clo({ data }: { data: PrimePage["clo"] }) {
-  const ringWrap = useRef<HTMLDivElement>(null);
-  const ringShown = useInView(ringWrap);
-
   return (
     <section className={cn("py-15", PAD)}>
       {/* max-w-7xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
@@ -468,28 +442,7 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
         </Reveal>
 
         <Reveal y={60} className="w-full">
-          <div ref={ringWrap} className="relative mx-auto">
-            {/* Bốn sợi chỉ nối vòng tròn sang từng viên số liệu — bản dev có,
-                mình thiếu hẳn. Chúng mờ dần về bên trái và "kéo ra" từ gốc bên
-                trái khi cuộn tới (opacity + scaleX, origin-left). Đặt ở đây làm
-                em của hàng nội dung nên phải là con trực tiếp của `relative`. */}
-            {CLO_LINES.map((l, i) => (
-              <div
-                key={i}
-                aria-hidden
-                className="pointer-events-none absolute hidden h-px origin-left lg:block"
-                style={{
-                  top: l.top,
-                  left: "15%",
-                  width: l.width,
-                  background:
-                    "linear-gradient(90deg, transparent 0%, var(--prime-card-border) 100%)",
-                  opacity: ringShown ? 1 : 0,
-                  transform: `scaleX(${ringShown ? 1 : 0})`,
-                  transition: `opacity .7s ease ${i * 0.12}s, transform .9s cubic-bezier(.22,.61,.36,1) ${i * 0.12}s`,
-                }}
-              />
-            ))}
+          <div className="relative mx-auto">
             <div className="relative flex flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-0">
               <CloRing />
               <StatPills stats={data.stats} />
@@ -557,7 +510,7 @@ export function Lending({ data }: { data: PrimePage["lending"] }) {
                     "border-b border-[var(--prime-card-border)] md:border-r md:border-b-0",
                 )}
               >
-                <img src={asset(c.icon)} alt="" width={48} height={48} loading="lazy" />
+                <MapleIcon src={c.icon} className="size-12 text-[var(--prime-accent)]" />
                 <div className="flex flex-col gap-2">
                   <p className="text-[28px] font-bold leading-[1.3] tabular-nums text-[var(--prime-text)]">
                     {c.value}

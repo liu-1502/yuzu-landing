@@ -374,12 +374,33 @@ main > .mkt-scope {
  */
 :root:has(main > .alpha-scope) {
   --background: #f2f7ef;
+
+  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
+     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
+     luôn accent của :root theo trang đang mở. `--alpha` tự lật ở khối `.dark` nên
+     một dòng này lo cả hai chế độ. */
+  --accent: var(--alpha);
+  --accent-foreground: var(--alpha-ink);
 }
 :root:has(main > .prime-scope) {
   --background: #f9f7f0;
+
+  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
+     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
+     luôn accent của :root theo trang đang mở. `--prime` tự lật ở khối `.dark` nên
+     một dòng này lo cả hai chế độ. */
+  --accent: var(--prime);
+  --accent-foreground: var(--prime-ink);
 }
 :root:has(main > .mkt-scope) {
   --background: #f3f0f6;
+
+  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
+     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
+     luôn accent của :root theo trang đang mở. `--mkt` tự lật ở khối `.dark` nên
+     một dòng này lo cả hai chế độ. */
+  --accent: var(--mkt);
+  --accent-foreground: var(--mkt-ink);
 }
 .dark:has(main > .alpha-scope) {
   --background: var(--tint-alpha);

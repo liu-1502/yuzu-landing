@@ -496,23 +496,10 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
 /** Bản dev bọc CTA trong một thẻ bo `rounded-xl` có viền; hạt cam rơi bên trong
  * thẻ chứ không phải cả section. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
-  const reduced = useReducedMotion();
-
   return (
     <section className={cn(SECTION, PAD)}>
       <Reveal>
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl bg-surface px-6 pt-14 pb-20 text-center">
-          {/* Thẻ này bên dev cũng có mặt nước, phủ cả thẻ (1022×330) — cùng
-              component với ô KPI. Mức nước lấy theo khoảng `pb-20` mà bản dev
-              chừa ở đáy (80/330 ≈ 0.24): trang dev khoá cuộn nên không đọc được
-              `d` của họ để lấy đúng số. */}
-          <LiquidSurface
-            level={0.24}
-            active
-            tone="var(--liquid-back)"
-            uid="cta"
-            reduced={reduced}
-          />
           <div className="relative z-10 flex flex-col items-center gap-6">
             <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
               {closing.title}
