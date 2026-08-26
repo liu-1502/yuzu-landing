@@ -14,7 +14,9 @@ export default function Alpha() {
   const p = products.find((x) => x.id === "alpha")!;
 
   return (
-    <>
+    /* alpha-scope: bản dev cũng bọc trang Alpha trong một scope riêng (nền và
+       viền ngả xanh hơn token gốc). */
+    <div className="alpha-scope">
       <ProductHero page={alphaPage} />
       <KpiRow items={alphaPage.kpis} />
       <Composition p={p} head={alphaPage.composition} />
@@ -29,6 +31,6 @@ export default function Alpha() {
       <PathIn {...alphaPage.path} />
       <ProductPartners />
       <ClosingCta closing={alphaPage.closing} />
-    </>
+    </div>
   );
 }

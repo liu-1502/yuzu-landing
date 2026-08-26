@@ -13,7 +13,9 @@
   --font-mono: "Instrument Sans", system-ui, sans-serif;
 
   --background: #f3f6f0;
-  --foreground: #152e12;
+  /* #14211a — lấy đúng của dev.yuzu.money. Trước đây mình để #152e12 (xanh hơn),
+     lệch ở MỌI dòng chữ nên nhìn cả trang đã khác tông. */
+  --foreground: #14211a;
   --surface: #fcfdfa;
   --surface-2: #e8eee3;
   --card: #fcfdfa;
@@ -189,44 +191,39 @@
 
 /* Product colour scopes — dùng cho section Products khi đổi tab */
 .prime-scope {
-  --accent: var(--prime);
-  --accent-foreground: var(--prime-ink);
-  --citrus: var(--prime);
-  --mark: var(--mark-2);
-  /* Nền section đổi theo tab — trước đây chỉ khai trong `.dark`, light mode không đổi. */
-  --background: var(--tint-prime);
-  /* Thẻ cũng phải ngả theo tông sản phẩm, không thì trang Prime vẫn ra một rừng
-     thẻ trắng trung tính. Số lấy đúng từ dev.yuzu.money/prime. */
+  /* Số lấy nguyên từ dev.yuzu.money/prime. `--mark` GIỮ xanh #2e5c11 chứ không
+     đổi sang vàng — bản dev không đổi nó theo scope. */
+  --background: #f9f7f0;
   --surface: #fdfcfa;
   --surface-2: #efece2;
-  /* Bộ token RIÊNG của trang Prime — bản dev dùng một hệ màu khác cho trang này,
-     không dùng chung với Alpha/Marketplace. Ba màu vàng lấy nguyên giá trị; còn
-     lại trỏ vào token của mình để dark mode tự chạy.
+  --line-solid: #e6e1d3;
+  --line: #e6e1d380;
+  --accent: #93690b;
+  --accent-foreground: #fffdf4;
+  --faint: #5c6f60;
+
+  /* Bộ token RIÊNG của trang Prime — bản dev dùng một hệ màu khác cho trang này.
        --prime-accent        #c97e05  số liệu, viền badge
        --prime-accent-strong #945d04  chữ trong pill kicker
-       --prime-accent-dark   #a9690a  chỉ số chú thích [n]
-     --prime-card-border phải khai riêng cho hai chế độ vì #e6e1d3 là nâu kem,
-     không có token nào của mình khớp. */
+       --prime-accent-dark   #a9690a  chỉ số chú thích [n] */
   --prime-accent: #c97e05;
   --prime-accent-strong: #945d04;
   --prime-accent-dark: #a9690a;
-  --prime-text: var(--foreground);
-  --prime-text-subtle: var(--muted-foreground);
-  --prime-card: var(--surface);
+  --prime-text: #14211a;
+  --prime-text-subtle: #5c6e60;
+  --prime-text-muted: #5c6f60;
+  --prime-card: #fdfcfa;
   --prime-card-border: #e6e1d3;
-  --prime-bg: var(--background);
+  --prime-bg: #f9f7f0;
 
-  /* Chữ tô điểm trong H1 hero. Bản dev cho H1 Prime một class riêng
-     `text-prime-accent` = #c97e05, sáng hơn --accent (#93690b) — vàng #93690b ở cỡ
-     72px trên nền kem đọc ra nâu xỉn, nên đây là chủ ý.
-     Chỉ khai ở scope này; các scope khác để hero tự lùi về --accent của chúng qua
-     fallback `var(--heading-accent, var(--accent))`. KHÔNG khai mặc định ở :root:
-     var() trong custom property được giải ngay tại chỗ khai, nên nó sẽ khoá cứng
-     vào --accent của :root và mọi scope đều ra màu Alpha. */
+  /* H1 Prime dùng vàng sáng hơn --accent — xem chú thích ở --heading-accent.
+     KHÔNG khai mặc định ở :root: var() trong custom property được giải ngay tại
+     chỗ khai nên sẽ khoá cứng vào --accent của :root. */
   --heading-accent: #c97e05;
   --liquid-top: #93690b33;
   --liquid-bottom: #93690b99;
 }
+
 .dark .prime-scope {
   --prime-accent: #edc15f;
   --prime-accent-strong: #f3d089;
@@ -247,18 +244,32 @@
   --foreground: #f5f1ec;
 }
 .mkt-scope {
-  --accent: var(--mkt);
-  --accent-foreground: var(--mkt-ink);
-  --citrus: var(--mkt);
-  --mark: var(--mkt);
-  /* Xem chú thích ở `.prime-scope`. Số lấy từ dev.yuzu.money/marketplace. */
+  /* Số lấy nguyên từ dev.yuzu.money/marketplace. `--mark` giữ xanh như trên. */
+  --background: #f3f0f6;
   --surface: #fbfafd;
   --surface-2: #e8e2ef;
+  --line-solid: #dcd4e5;
+  --line: #dcd4e580;
+  --accent: #4a4fb5;
+  --accent-foreground: #f4f4ff;
+  --faint: #586a5c;
   --liquid-top: #4a4fb533;
   --liquid-bottom: #4a4fb599;
-  /* Nền section đổi theo tab — xem chú thích ở `.prime-scope`. */
-  --background: var(--tint-mkt);
 }
+
+/**
+ * Alpha cũng có scope riêng trên bản dev — trước đây mình để trang Alpha dùng
+ * thẳng token gốc nên nền và viền nhạt hơn, ngả xanh ít hơn bản dev.
+ */
+.alpha-scope {
+  --background: #f2f7ef;
+  --surface: #fbfef9;
+  --surface-2: #e7f0e1;
+  --line-solid: #dae7d2;
+  --line: #dae7d280;
+  --faint: #5d7061;
+}
+
 .dark .mkt-scope {
   --background: var(--tint-mkt);
   --surface: #101223;
