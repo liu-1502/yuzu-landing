@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
 } from "@/components/ui/Icons";
 import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
@@ -210,23 +211,79 @@ export function KpiRow({ items }: { items: Kpi[] }) {
   );
 }
 
-/** Bộ token của sản phẩm — 3 thẻ trắng, tên token cỡ lớn. */
+function TokenCardBox({
+  token,
+  base,
+}: {
+  token: TokenCard;
+  /** Thẻ nền: viền trên dày, màu accent — dấu hiệu nó đỡ các thẻ phía trên. */
+  base?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-[20px] bg-surface px-5 py-6",
+        base &&
+          "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
+      )}
+    >
+      <div className="data text-[20px] font-semibold leading-none text-foreground">
+        {token.name}
+      </div>
+      <p className="mt-3 text-[13.5px] leading-[1.55] text-muted-foreground">{token.desc}</p>
+    </div>
+  );
+}
+
+/**
+ * Bộ token của sản phẩm.
+ *
+ * Khi có `note`, token CUỐI là lớp đỡ của các token còn lại (Alpha: yzPP gánh
+ * lỗ đầu tiên cho yzUSD và syzUSD). Lúc đó không xếp cả ba thành hàng ngang
+ * ngang hàng nhau nữa — câu "stands under both" phải đọc được từ bố cục: hai
+ * token trên một hàng, hai mũi tên chỉ ngược lên, rồi thẻ nền trải hết ngang
+ * bên dưới. Không có `note` (Marketplace) thì ba token là ba lựa chọn ngang
+ * hàng, giữ lưới cũ.
+ */
 export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string }) {
+  const base = note ? tokens[tokens.length - 1] : null;
+  const upper = base ? tokens.slice(0, -1) : tokens;
+
   return (
     <section className={cn("section-tint pb-14 md:pb-20", PAD)}>
       <div className="mx-auto max-w-[1280px]">
-        <div className="grid gap-3 sm:grid-cols-3">
-          {tokens.map((t) => (
-            <div key={t.name} className="rounded-[20px] bg-surface px-5 py-6">
-              <div className="data text-[20px] font-semibold leading-none text-foreground">
-                {t.name}
-              </div>
-              <p className="mt-3 text-[13.5px] leading-[1.55] text-muted-foreground">{t.desc}</p>
-            </div>
+        <div
+          className={cn(
+            "grid gap-3",
+            upper.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-3",
+          )}
+        >
+          {upper.map((t) => (
+            <TokenCardBox key={t.name} token={t} />
           ))}
         </div>
-        {note && (
-          <p className="mt-5 text-[13.5px] leading-[1.6] text-foreground">{note}</p>
+
+        {base && (
+          <div className="relative mt-8">
+            {/* Hàng mũi tên soi đúng lưới của hàng trên (cùng grid-cols và gap)
+                nên mỗi mũi tên rơi trúng tâm thẻ nó trỏ tới. Bản dev dùng
+                `justify-center gap-[28%]` — ra hai mũi tên dồn vào giữa, không
+                khớp tâm thẻ nào.
+                Mobile hai thẻ xếp dọc nên chỉ cần một mũi tên ở giữa. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-[18px] right-0 left-0 grid grid-cols-1 gap-3 text-[color-mix(in_srgb,var(--accent)_50%,transparent)] sm:grid-cols-2"
+            >
+              <ChevronUp className="mx-auto size-4" />
+              <ChevronUp className="mx-auto hidden size-4 sm:block" />
+            </div>
+
+            <TokenCardBox token={base} base />
+
+            <p className="mt-3 text-center text-[13px] leading-[1.5] text-muted-foreground">
+              {note}
+            </p>
+          </div>
         )}
       </div>
     </section>
