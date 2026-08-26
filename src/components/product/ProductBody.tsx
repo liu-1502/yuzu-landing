@@ -28,6 +28,12 @@ export function Composition({
       <div className="mx-auto max-w-[1280px]">
         <SectionHead kicker={head.kicker} title={head.title} />
 
+        {head.note && (
+          <p className="mt-4 max-w-[80ch] text-[13.5px] leading-[1.6] text-foreground">
+            {head.note}
+          </p>
+        )}
+
         <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)] lg:gap-14">
           <div>
             <CitrusChart
@@ -71,11 +77,6 @@ export function Composition({
           )}
         </div>
 
-        {head.note && (
-          <p className="mt-10 max-w-[80ch] text-[13.5px] leading-[1.6] text-foreground">
-            {head.note}
-          </p>
-        )}
       </div>
     </section>
   );
