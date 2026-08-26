@@ -82,7 +82,8 @@
   --yellow-yuzu-950: #2c1f03;
   --tint-alpha: #f3f6f0;
   --tint-prime: #f9f7f0;
-  --tint-mkt: #f7faff;
+  /* #f3f0f6 chứ không phải trắng ngả xanh: khớp --background của mkt-scope trên bản dev. */
+  --tint-mkt: #f3f0f6;
   --mark: #2e5c11;
   --mark-2: #7a5609;
   --liquid-top: #3e7b184d;
@@ -194,6 +195,10 @@
   --mark: var(--mark-2);
   /* Nền section đổi theo tab — trước đây chỉ khai trong `.dark`, light mode không đổi. */
   --background: var(--tint-prime);
+  /* Thẻ cũng phải ngả theo tông sản phẩm, không thì trang Prime vẫn ra một rừng
+     thẻ trắng trung tính. Số lấy đúng từ dev.yuzu.money/prime. */
+  --surface: #fdfcfa;
+  --surface-2: #efece2;
   --liquid-top: #93690b33;
   --liquid-bottom: #93690b99;
 }
@@ -217,6 +222,9 @@
   --accent-foreground: var(--mkt-ink);
   --citrus: var(--mkt);
   --mark: var(--mkt);
+  /* Xem chú thích ở `.prime-scope`. Số lấy từ dev.yuzu.money/marketplace. */
+  --surface: #fbfafd;
+  --surface-2: #e8e2ef;
   --liquid-top: #4a4fb533;
   --liquid-bottom: #4a4fb599;
   /* Nền section đổi theo tab — xem chú thích ở `.prime-scope`. */

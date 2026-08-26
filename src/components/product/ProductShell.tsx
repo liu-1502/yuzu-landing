@@ -7,8 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "@/components/ui/Icons";
-import { YuzuMark } from "@/components/ui/YuzuMark";
 import { CitrusField } from "@/components/product/CitrusField";
+import { HeroBall } from "@/components/product/HeroBall";
 import { cn } from "@/lib/utils";
 
 /* Dùng chung một khổ ngang với mọi section của landing: px-6 / lg:px-[60px],
@@ -44,23 +44,6 @@ export type HeroData = Pick<
 /** Vị trí tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px.
  * Hai thanh điều hướng sang sản phẩm khác neo đúng vào đây. */
 const BALL_CENTER = 112 + 113;
-
-/** Quả cầu ở tâm hero: gradient tròn + mark Yuzu, nhấp nhẹ 6px. */
-function HeroBall() {
-  return (
-    <div className="h-[200px] w-[200px] sm:h-[225px] sm:w-[225px]" aria-hidden>
-      <div
-        className="citrus-bob flex size-full items-center justify-center rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, var(--hero-sphere-top) 55%, var(--hero-sphere-edge) 100%)",
-        }}
-      >
-        <YuzuMark className="size-1/2" />
-      </div>
-    </div>
-  );
-}
 
 /** Điều hướng trước/sau theo vòng alpha → prime → marketplace → alpha. */
 function SideRails({ id }: { id: ProductPage["id"] }) {
@@ -105,7 +88,7 @@ export function ProductHero({ page }: { page: HeroData }) {
       <SideRails id={page.id} />
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-14 text-center">
-        <HeroBall />
+        <HeroBall id={page.id} />
 
         <div className="flex flex-col items-center gap-4">
           <span className="kicker">{page.kicker}</span>
