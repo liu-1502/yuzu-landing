@@ -139,16 +139,18 @@ export function HeroBallStage() {
   const depth = (slot.size / 225) * DEPTH;
 
   return (
-    /* Mang class scope của sản phẩm đang mở: stage nằm NGOÀI div scope của trang
-       nên nếu không có nó, quả cầu sẽ đọc `--surface` / `--prime` của :root và
-       lệch tông hẳn so với trang. */
+    /* Div ngoài KHÔNG được mang class scope: nó là con trực tiếp của `main`, mà
+       `main > .alpha-scope` là rule sơn nền + ép `min-height: 100svh` cho wrapper
+       trang sản phẩm. Trúng rule đó thì stage thành một khối đục cao hết màn, đặt
+       `z-10` ngay trên hero và trùm kín chữ. Class scope đặt ở div TRONG — vẫn đủ
+       để quả cầu đọc `--surface` / `--prime` của đúng sản phẩm. */
     <div
-      className={`pointer-events-none absolute inset-x-0 z-10 flex justify-center ${SCOPE[active]}`}
+      className="pointer-events-none absolute inset-x-0 z-10 flex justify-center"
       style={{ top: slot.top, perspective: 1100 }}
       aria-hidden
     >
       <div
-        className="relative"
+        className={`relative ${SCOPE[active]}`}
         style={{
           width: slot.size,
           height: slot.size,
