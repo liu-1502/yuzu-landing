@@ -29,7 +29,7 @@ export function Composition({
         <SectionHead kicker={head.kicker} title={head.title} />
 
         {head.note && (
-          <p className="mt-4 max-w-[80ch] text-[13.5px] leading-[1.6] text-foreground">
+          <p className="mx-auto mt-4 max-w-[80ch] text-center text-[13.5px] leading-[1.6] text-foreground">
             {head.note}
           </p>
         )}

@@ -94,7 +94,7 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
     <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
       <div className="mx-auto max-w-[1280px]">
         <SectionHead kicker={data.kicker} title={data.title} />
-        <p className="mt-4 max-w-[80ch] text-[15.5px] leading-[1.65] text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-[80ch] text-center text-[15.5px] leading-[1.65] text-muted-foreground">
           {data.body}
         </p>
 
@@ -104,7 +104,7 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
         <Timeline eras={data.timeline} />
 
-        <h3 className="mt-14 text-[24px] font-semibold leading-[1.15] text-foreground md:text-[30px]">
+        <h3 className="mt-14 text-center text-[24px] font-semibold leading-[1.15] text-foreground md:text-[30px]">
           {data.compare.title}
         </h3>
         <div className="mt-6">
@@ -120,7 +120,7 @@ export function Lending({ data }: { data: PrimePage["lending"] }) {
     <section className={cn("section-tint border-t border-line-solid py-14 md:py-20", PAD)}>
       <div className="mx-auto max-w-[1280px]">
         <SectionHead kicker={data.kicker} title={data.title} />
-        <p className="mt-4 max-w-[80ch] text-[15.5px] leading-[1.65] text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-[80ch] text-center text-[15.5px] leading-[1.65] text-muted-foreground">
           {data.body}
         </p>
         <div className="mt-10">

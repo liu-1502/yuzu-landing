@@ -25,7 +25,9 @@ export function SectionHead({
   className?: string;
 }) {
   return (
-    <div className={cn("max-w-[52ch]", className)}>
+    /* Canh giữa: CTA đóng trang vốn đã canh giữa, để mỗi tiêu đề section dạt
+       trái thì cả trang so le. Lưới thẻ bên dưới vẫn canh trái như thường. */
+    <div className={cn("mx-auto max-w-[52ch] text-center", className)}>
       <span className="kicker mb-4">{kicker}</span>
       <h2 className="text-[30px] font-semibold leading-[1.08] text-foreground md:text-[40px] md:leading-[1.15]">
         {title}
