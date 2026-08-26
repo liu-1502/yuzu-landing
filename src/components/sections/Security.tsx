@@ -35,6 +35,9 @@ const HEADER = 64;
 /** Vị trí ghim của cả chồng thẻ SAU khi tiêu đề đã bị đẩy đi: 64 header + 32 hở. */
 const STICKY_TOP = 96;
 
+/** Mép ghim của chồng thẻ trên mobile: 64 header + 16 hở. */
+const MOBILE_TOP = 80;
+
 /** Đuôi trống 100svh nối sau thẻ cuối. Nhờ nó thẻ số 5 còn ghim thêm đúng một màn
  * để Transparency (-mt-[100svh]) trượt phủ lên, thay vì đẩy nó đi.
  *
@@ -104,7 +107,7 @@ function Panel({
   vh: number;
   /** Báo lên cha: đáy tiêu đề và đỉnh body, tính từ mép trên mặt thẻ. Cha dùng
    * hai số này để tính bậc thang cho bản mobile — xem `mobileOffsets`. */
-  onMeasure?: (index: number, head: number, body: number) => void;
+  onMeasure?: (index: number, head: number, body: number, face: number) => void;
 }) {
   const { progress, totalCards = 1 } = useStackingCardsContext();
   const [covered, setCovered] = useState(false);
@@ -119,7 +122,7 @@ function Panel({
       const top = el.getBoundingClientRect().top;
       const h3 = el.querySelector("h3")?.getBoundingClientRect();
       const body = el.querySelector("p")?.getBoundingClientRect();
-      if (h3 && body) onMeasure(index, h3.bottom - top, body.top - top);
+      if (h3 && body) onMeasure(index, h3.bottom - top, body.top - top, el.offsetHeight);
     };
     read();
     const ro = new ResizeObserver(read);
@@ -312,12 +315,13 @@ export function Security() {
      không thẻ nào hở một mẩu body — không số cố định nào thoả cả hai. Nên đo từng
      thẻ: bậc dưới thẻ k = đáy tiêu đề CỦA CHÍNH NÓ + 16, chặn trên bởi đỉnh body
      của nó. */
-  const [dims, setDims] = useState<{ head: number; body: number }[]>([]);
-  const onMeasure = useCallback((i: number, head: number, body: number) => {
+  const [dims, setDims] = useState<{ head: number; body: number; face: number }[]>([]);
+  const onMeasure = useCallback((i: number, head: number, body: number, face: number) => {
     setDims((prev) => {
-      if (prev[i]?.head === head && prev[i]?.body === body) return prev;
+      const p = prev[i];
+      if (p?.head === head && p?.body === body && p?.face === face) return prev;
       const next = [...prev];
-      next[i] = { head, body };
+      next[i] = { head, body, face };
       return next;
     });
   }, []);
@@ -346,11 +350,68 @@ export function Security() {
     const intro = introRef.current;
     if (!sec || !intro) return;
 
-    if (!stacking || !vh) {
-      sec.style.removeProperty("--yz-stack-top");
-      intro.style.transform = "";
-      return;
+    intro.style.transform = "";
+
+    /* Nhánh mobile: chồng thẻ trượt dần lên để thẻ đang ghim luôn hiện ĐỦ.
+     *
+     * Cần bao nhiêu chỗ cho thẻ k = bậc thang tích luỹ tới k + chiều cao mặt thẻ k.
+     * Thẻ càng sâu thì bậc càng dày, tới thẻ 4–5 là vượt màn hình (thẻ 5 cần
+     * 362 + 491 = 853px trong khi chỉ còn 812 − 80 = 732px) nên bị cắt đáy. Bù
+     * bằng cách hạ mép ghim đúng phần thiếu — dải tiêu đề của mấy thẻ đầu trôi
+     * lên khuất sau header, thẻ đang đọc thì đủ chỗ.
+     *
+     * Nội suy theo scroll chứ không nhảy bậc: giữa hai thẻ, mép ghim chạy mượt
+     * từ mức của thẻ này sang mức của thẻ kia. */
+    if (!stacking) {
+      if (!vh || dims.length < securityPanels.length) return;
+
+      /* Trừ thêm 16px biên: lúc đang nội suy giữa hai thẻ, mép ghim chưa kịp
+         hạ hết nên đáy thẻ còn thò ra vài px. */
+      const room = vh - MOBILE_TOP - 16;
+      const deficits = securityPanels.map(
+        (_, i) => Math.max(0, mobileOffsets[i] + (dims[i]?.face ?? 0) - room),
+      );
+
+      let deckTop = 0;
+      const measureM = () => {
+        deckTop =
+          sec.getBoundingClientRect().top + window.scrollY + intro.offsetHeight;
+      };
+
+      let rafM = 0;
+      const applyM = () => {
+        rafM = 0;
+        // Vị trí liên tục trong deck, tính theo đơn vị "thẻ" (item cao đúng 1 vh).
+        const t = Math.min(
+          Math.max((window.scrollY - deckTop + MOBILE_TOP) / vh, 0),
+          deficits.length - 1,
+        );
+        const i = Math.floor(t);
+        const a = deficits[i];
+        const b = deficits[i + 1] ?? a;
+        const d = a + (b - a) * (t - i);
+        sec.style.setProperty("--yz-stack-top", `${MOBILE_TOP - d}px`);
+      };
+
+      const onScrollM = () => {
+        if (!rafM) rafM = requestAnimationFrame(applyM);
+      };
+      const onResizeM = () => {
+        measureM();
+        applyM();
+      };
+      measureM();
+      applyM();
+      window.addEventListener("scroll", onScrollM, { passive: true });
+      window.addEventListener("resize", onResizeM);
+      return () => {
+        if (rafM) cancelAnimationFrame(rafM);
+        window.removeEventListener("scroll", onScrollM);
+        window.removeEventListener("resize", onResizeM);
+      };
     }
+
+    if (!vh) return;
 
     const h = vh + EXTRA;
     let pinned = 0; // đáy tiêu đề khi đang ghim = chỗ chồng thẻ đậu
@@ -394,7 +455,7 @@ export function Security() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, [stacking, vh]);
+  }, [stacking, vh, dims, mobileOffsets]);
 
   return (
     <section
@@ -449,10 +510,13 @@ export function Security() {
               // ngoài item rồi chồng lên section dưới.
               // Lệch khỏi `top-0` của thư viện: ghim theo --yz-stack-top, chạy từ đáy
               // khoảng hở, để thẻ đầu tiên không dính vào header.
-              /* top-20 (80px) chứ không phải top-0 của thư viện: mobile không có
-                 --yz-stack-top, để 0 thì thẻ ghim sát mép và chui xuống dưới
-                 header 64px. */
-              className="top-20 w-full px-6 lg:px-[60px] md:top-[var(--yz-stack-top)] md:h-[calc(100svh+104px)]"
+              /* h-svh trên mobile: item PHẢI cao đều nhau. Để `h-full` (hoá ra là
+                 auto) thì mỗi thẻ một chiều cao (463..603px) nên nhả sticky ở mốc
+                 khác nhau — thẻ cao nhất nhả trước rồi trượt lên TRÊN thẻ đứng
+                 trước nó, chồng thẻ vỡ thứ tự.
+                 `top` đọc từ --yz-stack-top ở mọi bề ngang; biến này mobile thì
+                 trượt dần lên để thẻ đang ghim luôn hiện đủ. */
+              className="h-svh w-full px-6 top-[var(--yz-stack-top)] lg:px-[60px] md:h-[calc(100svh+104px)]"
               style={{ zIndex: i + 1 }}
             >
               <Panel
@@ -468,9 +532,13 @@ export function Security() {
           );
         })}
 
-        {/* Đuôi giữ thẻ cuối còn ghim — xem TAIL_SCREENS. Không dàn dựng thì nó chỉ
-            là 100svh khoảng trống chết, vì Transparency cũng không bị kéo lên. */}
-        {overlap && <div aria-hidden className="h-[100svh]" />}
+        {/* Đuôi 100svh — cần ở CẢ hai bản, không chỉ desktop.
+            Mọi item cao bằng nhau nên chúng nhả sticky cùng lúc, tại đáy deck.
+            Thẻ k do đó ghim được `deckH − (k+1)·vh`: thẻ cuối ra đúng 0, tức ghim
+            và nhả cùng một khoảnh khắc — không kịp đọc. Đuôi cho nó đúng một màn
+            để đứng lại. Trên desktop đuôi còn kiêm việc giữ thẻ 5 ghim trong lúc
+            Transparency trượt phủ lên (xem TAIL_SCREENS). */}
+        <div aria-hidden className="h-[100svh]" />
       </StackingCards>
     </section>
   );
