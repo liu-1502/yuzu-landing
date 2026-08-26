@@ -45,21 +45,27 @@ export type HeroData = Pick<
  * Hai thanh điều hướng sang sản phẩm khác neo đúng vào đây. */
 const BALL_CENTER = 112 + 113;
 
-/** Điều hướng trước/sau theo vòng alpha → prime → marketplace → alpha. */
-function SideRails({ id }: { id: ProductPage["id"] }) {
+/** Sản phẩm liền trước / liền sau theo vòng alpha → prime → marketplace → alpha. */
+function siblings(id: ProductPage["id"]) {
   const i = productOrder.indexOf(id);
-  const prev = productOrder[(i - 1 + productOrder.length) % productOrder.length];
-  const next = productOrder[(i + 1) % productOrder.length];
+  const n = productOrder.length;
+  return { prev: productOrder[(i - 1 + n) % n], next: productOrder[(i + 1) % n] };
+}
+
+const RAIL_LABEL = "font-mono text-[10.5px] uppercase tracking-[0.14em]";
+
+/** Điều hướng trước/sau kẹp hai bên quả cầu — chỉ từ lg, hẹp hơn thì không đủ
+ * chỗ hai bên. Bản mobile xem `MobileRails`. */
+function SideRails({ id }: { id: ProductPage["id"] }) {
+  const { prev, next } = siblings(id);
 
   const rail = (to: string, side: "left" | "right") => (
     <Link
       to={`/${to}`}
-      className="group/sw pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_25%,transparent)] transition-colors duration-200 hover:text-foreground"
+      className="pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2 text-[color-mix(in_srgb,var(--foreground)_25%,transparent)] transition-colors duration-200 hover:text-foreground"
     >
       {side === "left" ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
-      <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] transition-colors duration-200">
-        {to}
-      </span>
+      <span className={cn(RAIL_LABEL, "transition-colors duration-200")}>{to}</span>
     </Link>
   );
 
@@ -71,6 +77,39 @@ function SideRails({ id }: { id: ProductPage["id"] }) {
       {rail(prev, "left")}
       {rail(next, "right")}
     </div>
+  );
+}
+
+/**
+ * Điều hướng trước/sau cho mobile — bản dev ẩn hẳn hai thanh này dưới lg, tức là
+ * trên điện thoại không có đường nào nhảy sang sản phẩm khác ngoài dropdown ở
+ * header. Ở đây thay bằng một hàng nằm cuối hero: trước bên trái, sau bên phải,
+ * gạch phân cách phía trên. Ẩn từ lg vì lúc đó đã có SideRails.
+ */
+function MobileRails({ id }: { id: ProductPage["id"] }) {
+  const { prev, next } = siblings(id);
+
+  return (
+    <nav
+      aria-label="Sản phẩm khác"
+      className="mt-2 flex w-full max-w-[600px] items-center justify-between border-t border-line-solid pt-6 lg:hidden"
+    >
+      <Link
+        to={`/${prev}`}
+        /* min-h-11 = 44px: vùng bấm bằng py-1 chỉ cao 24px, dưới ngưỡng cảm ứng. */
+        className="flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2 text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ChevronLeft className="size-4 shrink-0" />
+        <span className={cn(RAIL_LABEL, "truncate")}>{prev}</span>
+      </Link>
+      <Link
+        to={`/${next}`}
+        className="flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2 text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <span className={cn(RAIL_LABEL, "truncate")}>{next}</span>
+        <ChevronRight className="size-4 shrink-0" />
+      </Link>
+    </nav>
   );
 }
 
@@ -122,6 +161,8 @@ export function ProductHero({ page }: { page: HeroData }) {
                 <ArrowUpRight className="size-4" />
               </a>
             </div>
+
+            <MobileRails id={page.id} />
           </div>
         </div>
       </div>
