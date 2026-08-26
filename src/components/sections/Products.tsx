@@ -259,6 +259,33 @@ function Pinned() {
 
 /* --------------------------------- carousel --------------------------------- */
 
+
+
+/** Một thẻ trong rail ngang của bản mobile. Mỗi thẻ giữ múi đang chọn của riêng
+ * nó, và chỉ cho tương tác khi đang là thẻ hiển thị — thẻ nằm ngoài khung vẫn ở
+ * trong DOM, để bấm được thì bàn phím sẽ tab vào múi của thẻ không nhìn thấy. */
+function CarouselSlide({ p, on }: { p: Product; on: boolean }) {
+  const [active, setActive] = useState<number | null>(null);
+
+  return (
+    <section
+      aria-label={`${p.name}, ${p.kind}`}
+      className="w-full shrink-0 snap-center"
+      aria-hidden={!on || undefined}
+    >
+      <CitrusChart
+        id={p.id}
+        accent={p.color}
+        slices={p.slices}
+        active={active}
+        setActive={setActive}
+        interactive={on}
+      />
+      <SliceDetail slices={p.slices} accent={p.color} active={active} />
+      <Yields p={p} />
+    </section>
+  );
+}
 function Carousel() {
   const railRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -319,22 +346,8 @@ function Carousel() {
         }}
         className="-mx-6 flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {products.map((item) => (
-          <section
-            key={item.id}
-            aria-label={`${item.name}, ${item.kind}`}
-            className="w-full shrink-0 snap-center"
-          >
-            <CitrusChart
-              id={item.id}
-              accent={item.color}
-              slices={item.slices}
-              active={null}
-              setActive={() => {}}
-              interactive={false}
-            />
-            <Yields p={item} />
-          </section>
+        {products.map((item, i) => (
+          <CarouselSlide key={item.id} p={item} on={i === index} />
         ))}
       </div>
 

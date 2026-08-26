@@ -112,8 +112,28 @@ export function CitrusChart({
         return (
           <g
             key={slice.label}
-            onMouseEnter={interactive ? () => setActive(i) : undefined}
-            onMouseLeave={interactive ? () => setActive(null) : undefined}
+            /* Pointer event chứ không phải onMouseEnter/Leave: trên cảm ứng,
+               mouseenter chỉ được trình duyệt giả lập lúc chạm và không có
+               mouseleave tương ứng, nên múi chọn xong là kẹt luôn. Ở đây tách
+               bạch — chuột thì rê để xem, chạm thì bấm để chọn (bấm lại để bỏ). */
+            onPointerEnter={
+              interactive ? (e) => e.pointerType === "mouse" && setActive(i) : undefined
+            }
+            onPointerLeave={
+              interactive ? (e) => e.pointerType === "mouse" && setActive(null) : undefined
+            }
+            onPointerDown={
+              interactive
+                ? (e) => e.pointerType !== "mouse" && setActive(active === i ? null : i)
+                : undefined
+            }
+            /* Bàn phím cũng phải tới được, không thì thông tin múi chỉ dành cho
+               người dùng chuột. */
+            tabIndex={interactive ? 0 : undefined}
+            role={interactive ? "button" : undefined}
+            aria-label={interactive ? `${slice.label}${slice.weight !== null ? `, ${slice.weight}%` : ""}` : undefined}
+            onFocus={interactive ? () => setActive(i) : undefined}
+            onBlur={interactive ? () => setActive(null) : undefined}
             style={{
               cursor: interactive ? "pointer" : "default",
               // Múi active PHÌNH TO quanh tâm biểu đồ, không đẩy ra ngoài.
@@ -243,7 +263,7 @@ export function SliceDetail({
   active: number | null;
 }) {
   return (
-    <div className="hidden sm:mt-8 sm:grid sm:grid-cols-1">
+    <div className="mt-6 grid grid-cols-1 sm:mt-8">
       {slices.map((s, i) => {
         const on = i === active;
         return (
