@@ -331,17 +331,19 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
       </div>
 
       {base && (
-        <Reveal className="relative mt-8" delay={0.16}>
-          {/* Hàng mũi tên soi đúng lưới hàng trên nên mỗi mũi tên rơi trúng tâm thẻ. */}
+        <Reveal className="relative mt-6" delay={0.16}>
+          {/* Bản dev không soi mũi tên theo lưới: hai mũi tên đặt giữa, cách nhau
+              28% bề rộng — nên cả ở cột đơn vẫn thấy hai mũi. Và khoảng hở là
+              mt-6 / mt-2, không phải mt-8 / mt-3 (mình từng để cao hơn 12px). */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-[18px] right-0 left-0 grid grid-cols-1 gap-4 text-[color-mix(in_srgb,var(--accent)_50%,transparent)] md:grid-cols-2"
+            className="pointer-events-none absolute -top-[18px] right-0 left-0 flex justify-center gap-[28%] text-[color-mix(in_srgb,var(--accent)_50%,transparent)]"
           >
-            <ChevronUp className="mx-auto size-4" />
-            <ChevronUp className="mx-auto hidden size-4 md:block" />
+            <ChevronUp className="size-4" />
+            <ChevronUp className="size-4" />
           </div>
           <TokenRow token={base} delay={1.4} base />
-          <p className="mt-3 text-center text-[13px] leading-[1.5] text-muted-foreground">
+          <p className="mt-2 text-center text-[13px] leading-[1.5] text-muted-foreground">
             {note}
           </p>
         </Reveal>
@@ -432,7 +434,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
           ))}
         </ol>
         <Reveal delay={0.2}>
-          <p className="mt-6 max-w-[80ch] text-[13px] leading-[1.6] text-muted-foreground">
+          <p className="mt-5 max-w-[640px] text-[13px] leading-[1.6] text-muted-foreground">
             {note}
           </p>
         </Reveal>

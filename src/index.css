@@ -418,6 +418,19 @@
   font-weight: 500;
 }
 
+/* Nhãn nhỏ ở TRANG SẢN PHẨM: bản dev dùng font MONO 10px, weight 400,
+   letter-spacing 1px — mảnh và nhỏ hơn hẳn bản landing (sans 11.5px weight 500).
+   Xuất hiện ở mọi ô số liệu của cả ba trang, nên riêng chỗ này đã làm thẻ vault
+   cao hơn bản gốc 9px. Chỉ ghi đè trong scope sản phẩm. */
+.alpha-scope .microlabel,
+.prime-scope .microlabel,
+.mkt-scope .microlabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
 /**
  * Biến thể màu phụ. Phải là class riêng chứ không dùng `text-muted-foreground`:
  * `.microlabel` khai ngoài `@layer` nên thắng mọi utility của Tailwind.
