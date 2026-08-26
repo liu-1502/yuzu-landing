@@ -3,7 +3,6 @@ import { asset } from "@/data/content";
 import type { ProductPage, Vault } from "@/data/productPages";
 import { ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
 import {
-  CARD,
   PAD,
   SECTION,
   SectionHead,
@@ -24,11 +23,13 @@ const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as con
  * hàng có chân bảng thẳng nhau. */
 function VaultCard({ v, i }: { v: Vault; i: number }) {
   return (
+    /* Nếp home: nền xanh nhạt, KHÔNG stroke. Hover chỉ nhấc thẻ lên 1 nấc —
+       bỏ hẳn viền đổi màu và vệt đổ bóng màu accent. Kẻ ngang trong `dl` bên
+       dưới giữ nguyên: đó là vạch phân cách nội dung, không phải viền thẻ. */
     <div
       className={cn(
-        "flex h-full flex-col gap-4 p-5",
-        CARD,
-        "will-change-transform transition-[transform,border-color,box-shadow] hover:-translate-y-1 hover:border-[color-mix(in_srgb,var(--accent)_45%,transparent)] hover:shadow-[0_18px_38px_-22px_color-mix(in_srgb,var(--accent)_70%,transparent)]",
+        "flex h-full flex-col gap-4 rounded-lg bg-surface-2 p-5",
+        "will-change-transform transition-transform duration-300 hover:-translate-y-1",
       )}
     >
       <div className="flex items-center gap-2.5">
