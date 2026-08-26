@@ -29,6 +29,9 @@ export type ProductPage = {
   kicker: string;
   title: string;
   intro: string;
+  /** Hai cụm trong `intro` được bản dev tô đậm + màu accent. Dò theo chuỗi con
+   *  nên thứ tự trong mảng không quan trọng, nhưng phải khớp y hệt từng chữ. */
+  introMark?: string[];
   primary: { label: string; rate?: string; href: string };
   secondary: { label: string; href: string };
   kpis: Kpi[];
@@ -62,6 +65,7 @@ export const alphaPage: ProductPage = {
   title: "Yuzu Alpha",
   intro:
     "An actively managed portfolio of leveraged DeFi yield, split into two tranches. syzUSD takes the senior claim and pays a weekly yield. yzPP sits underneath it, absorbs the first loss, and is paid a premium for standing there.",
+  introMark: ["split into two tranches", "absorbs the first loss"],
   primary: { label: "Start earning", rate: "8%", href: "#" },
   secondary: { label: "View research", href: "#" },
   kpis: [
@@ -141,6 +145,7 @@ export const marketplacePage: ProductPage = {
   title: "Yuzu Marketplace",
   intro:
     "Where Alpha and Prime hand you a managed portfolio, the Marketplace hands you one named exposure. Each vault is underwritten by the Yuzu risk team and publishes its diligence before it opens.",
+  introMark: ["one named exposure", "publishes its diligence before it opens"],
   primary: { label: "Start earning", rate: "6-11.8%", href: "#" },
   secondary: { label: "View research", href: "#" },
   kpis: [
@@ -266,6 +271,9 @@ export type PrimePage = {
   kicker: string;
   title: string;
   intro: string;
+  /** Hai cụm trong `intro` được bản dev tô đậm + màu accent. Dò theo chuỗi con
+   *  nên thứ tự trong mảng không quan trọng, nhưng phải khớp y hệt từng chữ. */
+  introMark?: string[];
   primary: { label: string; rate?: string; href: string };
   secondary: { label: string; href: string };
   kpis: Kpi[];
@@ -288,6 +296,7 @@ export const primePage: PrimePage = {
   title: "Yuzu Prime",
   intro:
     "Institutional-grade fixed income, tokenized onchain. Powered by a diversified portfolio of US Treasuries, A-grade investment credit, and overcollateralized lending.",
+  introMark: ["US Treasuries, A-grade investment credit", "overcollateralized lending"],
   primary: { label: "Start Earning", rate: "7% APY", href: "#" },
   secondary: { label: "View Research", href: "#" },
   kpis: [

@@ -460,6 +460,21 @@
  * Biến thể cho section có nền trắng (Partners): pill trắng trên nền trắng thì
  * tàng hình, nên đổi sang xanh nhạt. Chữ vẫn `--mark`.
  */
+/* Kicker ở TRANG SẢN PHẨM khác landing: bản dev để chữ mảnh màu accent, KHÔNG
+   nền, KHÔNG padding, font-weight 400 — không phải viên pill nền trắng chữ đậm
+   như landing. Đây là chỗ lệch có mặt ở MỌI section của ba trang, nên nhìn cả
+   trang đã khác tông ngay cả khi bố cục đã khớp. Chỉ ghi đè trong scope sản phẩm
+   để không đụng tới landing. */
+.alpha-scope .kicker,
+.prime-scope .kicker,
+.mkt-scope .kicker {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-weight: 400;
+  color: var(--accent);
+}
+
 .kicker-on-light {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }

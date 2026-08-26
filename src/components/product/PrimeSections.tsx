@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import type { Claim, Era, MapleCell, PrimePage, Stat } from "@/data/productPages";
 import { asset } from "@/data/content";
 import { PAD, WRAP } from "@/components/product/ProductShell";
@@ -215,37 +216,203 @@ function StatPills({ stats }: { stats: Stat[] }) {
   );
 }
 
-function Timeline({ eras }: { eras: Era[] }) {
+/* --------------------------- dòng thời gian CLO ---------------------------- */
+
+/** Đường cong bản dev vẽ dòng thời gian, viewBox 1289×1204. */
+const SNAKE_D =
+  "M7.05481 0.5C279.471 0.50039 628.629 12.139 903.865 68.3917C1319.43 153.324 1496.25 372.571 883.758 496.685C192.183 636.823 -43.3639 727.054 7.05481 847.078C57.47 967.10 391.924 1094.79 883.758 1155.94C1192.8 1194.37 1166.14 1188.68 1288.05 1202.82";
+const SNAKE_W = 1289;
+const SNAKE_H = 1204;
+
+/** Bảy mốc nằm ở các vị trí này theo CHIỀU DÀI đường cong (tính ngược từ toạ độ
+ *  thật trên bản dev, sai số < 0.02px nên đây đúng là số họ dùng). */
+const ERA_AT = [0, 0.125, 0.25, 0.47, 0.61, 0.73, 0.93];
+
+/** Khoảng hở giữa đáy thẻ và điểm neo: 32px, riêng mốc 4–5 là 82px — hai mốc đó
+ *  nằm ở khúc đường đi xuống nên phải nâng cao hơn để chữ không đè lên đường. */
+const ERA_LIFT = [32, 32, 32, 82, 82, 32, 32];
+
+/**
+ * Tiến độ vẽ đường theo cuộn: 0 khi đỉnh khối còn dưới 85% chiều cao khung nhìn,
+ * 1 khi khối đã trôi qua. Bản dev khoá cuộn nên mình không đo được đúng công thức
+ * của họ; đây là quãng hợp lý để mốc cuối (0.93) kịp hiện trước khi khối rời màn.
+ */
+function useDrawProgress(ref: React.RefObject<HTMLDivElement | null>) {
+  const [p, setP] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setP(1);
+      return;
+    }
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const span = vh * 0.25 + r.height;
+      setP(Math.min(1, Math.max(0, (vh * 0.85 - r.top) / span)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref]);
+
+  return p;
+}
+
+/** Chữ trong một mốc — dùng chung cho bản desktop và bản dọc trên điện thoại. */
+function EraText({ era, bodyClass }: { era: Era; bodyClass: string }) {
   return (
-    <ol className="relative w-full">
-      {eras.map((e, i) => (
-        <Reveal key={e.year} x={-14} y={0} delay={i * 0.05}>
-          <li className="relative flex gap-5 pb-8 last:pb-0 sm:gap-8">
-            {i < eras.length - 1 && (
-              <span
-                aria-hidden
-                className="absolute top-3 left-[5px] h-full w-px bg-[var(--prime-card-border)]"
-              />
-            )}
-            <span
-              aria-hidden
-              className="relative z-10 mt-2 size-[11px] shrink-0 rounded-full bg-[var(--prime-accent)]"
+    <>
+      <span className="text-2xl font-medium leading-none text-[var(--prime-text)]">{era.year}</span>
+      <div className="flex flex-col gap-1.5">
+        <h4 className="text-2xl font-medium leading-tight text-[var(--prime-accent)]">
+          {era.title}
+        </h4>
+        <p className={bodyClass}>{withRefs(era.body)}</p>
+      </div>
+    </>
+  );
+}
+
+/**
+ * Dòng thời gian CLO — dựng lại đúng bản dev, KHÔNG phải danh sách dọc như trước.
+ *
+ * Bản dev có hai biến thể tách hẳn nhau:
+ *  - từ lg: một đường cong SVG uốn hình chữ S, bảy mốc đặt NGAY TRÊN đường ở các
+ *    vị trí 0/12.5/25/47/61/73/93% chiều dài. Đường được vẽ dần theo cuộn
+ *    (stroke-dashoffset), mốc nào bị đường đi qua thì hiện ra.
+ *  - dưới lg: một vạch dọc bên trái, mốc xếp thẳng đứng, vạch cao dần theo cuộn.
+ *
+ * Toạ độ mốc lấy bằng `getPointAtLength` nên không cần đo DOM: chúng là toạ độ
+ * trong viewBox, đổi sang % của khung là xong — khung giữ đúng tỉ lệ 1289:1204
+ * nên vị trí khớp ở mọi bề rộng.
+ */
+function Timeline({ eras }: { eras: Era[] }) {
+  const wide = useRef<HTMLDivElement>(null);
+  const narrow = useRef<HTMLDivElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const pWide = useDrawProgress(wide);
+  const pNarrow = useDrawProgress(narrow);
+  const [len, setLen] = useState(0);
+  const [pts, setPts] = useState<{ x: number; y: number }[]>([]);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+    const total = path.getTotalLength();
+    setLen(total);
+    setPts(
+      ERA_AT.map((f) => {
+        const pt = path.getPointAtLength(f * total);
+        return { x: pt.x, y: pt.y };
+      }),
+    );
+  }, []);
+
+  return (
+    <>
+      <div ref={wide} className="relative hidden w-full overflow-visible pt-32 lg:block">
+        <div className="relative z-10 mx-auto" style={{ width: "80%", maxWidth: 1050 }}>
+          <svg viewBox={`0 0 ${SNAKE_W} ${SNAKE_H}`} fill="none" className="block w-full" aria-hidden>
+            {/* Vạch nền: bản dev để trắng 15% — trên nền kem gần như không thấy,
+                nên thực tế người xem chỉ thấy nét vàng được vẽ dần. Giữ đúng
+                giá trị của họ. */}
+            <path d={SNAKE_D} stroke="rgba(255,255,255,0.15)" strokeWidth={2} />
+            <path
+              ref={pathRef}
+              d={SNAKE_D}
+              stroke="var(--prime-accent)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              style={len ? { strokeDasharray: len, strokeDashoffset: len * (1 - pWide) } : undefined}
             />
-            <div className="min-w-0 flex-1 sm:flex sm:gap-8">
-              <div className="w-[6ch] shrink-0 text-[17px] font-semibold leading-[1.4] tabular-nums text-[var(--prime-text)]">
-                {e.year}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[15px] font-medium text-[var(--prime-text)]">{e.title}</p>
-                <p className="mt-0.5 text-[13.5px] leading-[1.5] text-[var(--prime-text-subtle)]">
-                  {withRefs(e.body)}
-                </p>
+          </svg>
+
+          {pts.map((pt, i) => (
+            <div
+              key={eras[i]?.year ?? i}
+              className="absolute"
+              style={{
+                left: `${(pt.x / SNAKE_W) * 100}%`,
+                top: `${(pt.y / SNAKE_H) * 100}%`,
+                opacity: pWide >= ERA_AT[i] ? 1 : 0,
+                transform: `translateX(-8px) translateY(calc(-100% - ${ERA_LIFT[i]}px))`,
+                transition: "opacity .6s ease",
+              }}
+            >
+              {eras[i] && (
+                <div className="relative">
+                  {/* Sợi chỉ dọc mảnh 2px nối thẻ xuống đường, mờ dần sang trái. */}
+                  <div
+                    aria-hidden
+                    className="absolute left-1.5 top-0"
+                    style={{
+                      width: 2,
+                      height: 200,
+                      background:
+                        "linear-gradient(90deg, transparent 0%, var(--prime-card-border) 100%)",
+                    }}
+                  />
+                  <div className="flex w-90 flex-col gap-2 pl-6 text-left">
+                    <EraText
+                      era={eras[i]}
+                      bodyClass="text-sm font-normal leading-tight text-[var(--prime-text-subtle)]"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div ref={narrow} className="relative w-full pl-8 lg:hidden">
+        <div aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--prime-card-border)]" />
+        <div
+          aria-hidden
+          className="absolute left-0 top-0 h-full w-px origin-top bg-[var(--prime-accent)]"
+          style={{ transform: `scaleY(${pNarrow})` }}
+        />
+        {eras.map((era, i) => {
+          const on = pNarrow >= (i + 0.35) / eras.length;
+          return (
+            <div key={era.year} className="relative mb-12 last:mb-0">
+              <div
+                aria-hidden
+                className="absolute -left-9.75 top-2.5 size-3.5 rounded-full bg-[var(--prime-accent)]"
+                style={{ filter: "blur(2px)", opacity: on ? 1 : 0, transition: "opacity .5s ease" }}
+              />
+              <div
+                aria-hidden
+                className="absolute -left-9.75 top-2.5 size-3.5 rounded-full bg-[var(--prime-accent)]"
+                style={{ opacity: on ? 1 : 0, transition: "opacity .5s ease" }}
+              />
+              <div
+                className="flex flex-col gap-2"
+                style={{ opacity: on ? 1 : 0, transition: "opacity .5s ease" }}
+              >
+                <EraText
+                  era={era}
+                  bodyClass="text-sm leading-relaxed text-[color-mix(in_srgb,var(--prime-text)_70%,transparent)]"
+                />
               </div>
             </div>
-          </li>
-        </Reveal>
-      ))}
-    </ol>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
@@ -269,23 +436,32 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
           </div>
         </Reveal>
 
-        <div className="w-full max-w-5xl">
-          <Timeline eras={data.timeline} />
-        </div>
+        {/* Timeline rộng hết khổ max-w-7xl như bản dev, không bó vào max-w-5xl:
+            đường cong cần cả bề ngang mới ra hình chữ S. */}
+        <Timeline eras={data.timeline} />
 
-        <Reveal y={60} className="w-full max-w-5xl">
-          <PrimeH2>{data.compare.title}</PrimeH2>
-          <div className="mt-8 grid gap-8 md:grid-cols-2">
-            {data.compare.cards.map((c) => (
-              <div key={c.title} className={cn("flex h-full flex-col gap-2 p-6", CARD_PRIME)}>
-                <h3 className="text-2xl font-bold leading-normal text-[var(--prime-text)]">
-                  {c.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-[var(--prime-text-subtle)] opacity-80">
-                  {withRefs(c.body)}
-                </p>
-              </div>
-            ))}
+        <Reveal y={60} className="w-full">
+          {/* Bản dev KHÔNG dựng hai thẻ bo 40px ở đây: chỉ là một dải kẻ trên/dưới,
+              tiêu đề 18px, và hai ô chữ trơn. Mình từng làm thành thẻ nên khối này
+              cao hơn bản gốc 28px và nặng hơn hẳn về thị giác. */}
+          <div className="border-y border-[var(--prime-card)] py-8">
+            <h3 className="mb-4 text-lg font-bold text-[var(--prime-text)]">
+              {data.compare.title}
+            </h3>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {data.compare.cards.map((c) => (
+                <div key={c.title}>
+                  <div className="mb-2 flex items-center gap-1">
+                    <span className="text-sm font-semibold leading-relaxed text-[var(--prime-text)]">
+                      {c.title}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-[var(--prime-text-muted)]">
+                    {withRefs(c.body)}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </Reveal>
       </div>
@@ -351,25 +527,24 @@ export function Lending({ data }: { data: PrimePage["lending"] }) {
 
 export function Sources({ data }: { data: PrimePage["sources"] }) {
   return (
-    <section className={cn("border-t border-[var(--prime-card-border)] py-15", PAD)}>
-      <div className={WRAP}>
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[var(--prime-accent-strong)]">
+    /* Bản dev: px-6 rồi BỎ lề từ md (md:px-0) vì khối đã có max-w-5xl mx-auto —
+       không phải px-4 sm:px-6 như các section khác. */
+    <section className="border-t border-[var(--prime-card-border)] px-6 py-15 md:px-0">
+      {/* Ba khối cách nhau gap-6, không phải mt-6/mt-8 xen kẽ. Chữ 11px, danh sách
+          gap-1 — mình từng để 11.5px và gap-3 nên khối này cao hơn bản gốc 141px. */}
+      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+        <h4 className="text-[11px] font-semibold leading-relaxed text-[var(--prime-text-subtle)]">
           {data.title}
-        </h2>
-        <ol className="mt-6 flex flex-col gap-3">
+        </h4>
+        <ol className="flex list-none flex-col gap-1 text-[11px] leading-relaxed break-words text-[var(--prime-text-muted)]">
           {data.items.map((s) => (
-            <li
-              key={s.ref}
-              className="flex gap-3 text-[11.5px] leading-[1.6] text-[var(--prime-text-subtle)] opacity-80"
-            >
-              <span className="shrink-0 font-mono font-medium text-[var(--prime-accent-dark)]">
-                {s.ref}
-              </span>
-              <span className="min-w-0">{s.text}</span>
+            <li key={s.ref}>
+              <span className="font-semibold text-[var(--prime-accent-strong)]">{s.ref}</span>{" "}
+              {s.text}
             </li>
           ))}
         </ol>
-        <p className="mt-8 border-t border-[var(--prime-card-border)] pt-6 text-[11.5px] leading-[1.6] text-[var(--prime-text-subtle)] opacity-70">
+        <p className="text-[11px] leading-relaxed text-[var(--prime-text-muted)]">
           {data.disclaimer}
         </p>
       </div>

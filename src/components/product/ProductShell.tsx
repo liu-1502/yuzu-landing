@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
@@ -10,7 +9,6 @@ import {
   ChevronRight,
   ChevronUp,
 } from "@/components/ui/Icons";
-import VariableFontCursorProximity from "@/components/fancy/text/variable-font-cursor-proximity";
 import { CitrusField } from "@/components/product/CitrusField";
 import { HeroBall } from "@/components/product/HeroBall";
 import { Reveal } from "@/components/product/Reveal";
@@ -31,11 +29,22 @@ export const SECTION = "py-16 md:py-20";
 export const CARD =
   "rounded-lg border border-line-solid bg-surface transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
 
-/** Nút chính / nút phụ — cao 12 (48px), bo tròn hết. */
+/** Nút hero của Alpha & Marketplace: cao 48px, chữ 15px, nút chính có vệt tối
+ *  inset ở đáy. Cả HAI nút đều dùng mũi tên NGANG 18px trượt sang phải khi hover
+ *  — trước đây mình để nút phụ mũi tên chéo lên và icon 16px. */
 const BTN_PRIMARY =
-  "inline-flex h-12 items-center gap-2 rounded-full bg-foreground px-5 text-[15px] font-medium text-background transition-opacity duration-300 hover:opacity-90";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-5 text-[15px] font-medium text-background shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90";
 const BTN_GHOST =
-  "inline-flex h-12 items-center gap-1.5 rounded-full border border-line-solid px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+
+/** Prime dùng bộ riêng: py-2 nên chỉ cao 44px, chữ 16px, và số liệu to hơn (20px). */
+const BTN_PRIME =
+  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[var(--prime-text)] px-4 py-2 text-base font-medium text-[var(--prime-bg)] shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
+const BTN_PRIME_GHOST =
+  "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
+
+/** Mũi tên trong nút — 18px cho Alpha/Marketplace, 20px cho Prime. */
+const CTA_ARROW = "transition-transform duration-300 group-hover/cta:translate-x-0.5";
 
 export function SectionHead({ kicker, title }: { kicker: string; title?: string }) {
   return (
@@ -54,20 +63,11 @@ export function SectionHead({ kicker, title }: { kicker: string; title?: string 
 
 export type HeroData = Pick<
   ProductPage,
-  "id" | "kicker" | "title" | "intro" | "primary" | "secondary"
+  "id" | "kicker" | "title" | "intro" | "introMark" | "primary" | "secondary"
 >;
 
 /** Tâm quả cầu tính từ đỉnh section: pt-28 (112px) + nửa quả cầu 225px. */
 const BALL_CENTER = 112 + 113;
-
-/** Hiệu ứng con trỏ trên H1 — cùng cấu hình với tiêu đề hero của landing. */
-const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
-  containerRef,
-  fromFontVariationSettings: "'wght' 700",
-  toFontVariationSettings: "'wght' 800",
-  radius: 90,
-  falloff: "gaussian" as const,
-});
 
 function siblings(id: ProductPage["id"]) {
   const i = productOrder.indexOf(id);
@@ -75,9 +75,16 @@ function siblings(id: ProductPage["id"]) {
   return { prev: productOrder[(i - 1 + n) % n], next: productOrder[(i + 1) % n] };
 }
 
-const RAIL_LABEL = "font-mono text-[10.5px] uppercase tracking-[0.14em]";
+/* Bản dev: mũi V để `text-foreground/25` — rất nhạt, hover mới sang accent; còn
+   nhãn thì mang màu muted riêng và cũng sang accent theo group. Mình từng để 65%
+   nên hai thanh này đậm hơn hẳn bản gốc. */
+const RAIL_LABEL =
+  "font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground transition-colors duration-200 group-hover/rail:text-accent";
 const RAIL_TONE =
-  "text-[color-mix(in_srgb,var(--foreground)_65%,transparent)] transition-colors duration-200 hover:text-foreground";
+  "text-[color-mix(in_srgb,var(--foreground)_25%,transparent)] transition-colors duration-200 hover:text-accent";
+
+/** Nhãn trên thanh kẹp là TÊN sản phẩm (hoa đầu), không phải slug đường dẫn. */
+const railName = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1);
 
 function SideRails({ id }: { id: ProductPage["id"] }) {
   const { prev, next } = siblings(id);
@@ -85,12 +92,16 @@ function SideRails({ id }: { id: ProductPage["id"] }) {
     <Link
       to={`/${to}`}
       className={cn(
-        "pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2",
+        "group/rail pointer-events-auto flex flex-col items-center gap-0.5 rounded-md p-2",
         RAIL_TONE,
       )}
     >
-      {side === "left" ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
-      <span className={RAIL_LABEL}>{to}</span>
+      {side === "left" ? (
+        <ChevronLeft className="size-14" />
+      ) : (
+        <ChevronRight className="size-14" />
+      )}
+      <span className={RAIL_LABEL}>{railName(to)}</span>
     </Link>
   );
 
@@ -112,10 +123,13 @@ function MobileRails({ id }: { id: ProductPage["id"] }) {
   const item = (to: string, side: "left" | "right") => (
     <Link
       to={`/${to}`}
-      className={cn("flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2", RAIL_TONE)}
+      className={cn(
+        "group/rail flex min-h-11 min-w-0 items-center gap-1.5 rounded-md py-2",
+        RAIL_TONE,
+      )}
     >
       {side === "left" && <ChevronLeft className="size-4 shrink-0" />}
-      <span className={cn(RAIL_LABEL, "truncate")}>{to}</span>
+      <span className={cn(RAIL_LABEL, "truncate")}>{railName(to)}</span>
       {side === "right" && <ChevronRight className="size-4 shrink-0" />}
     </Link>
   );
@@ -131,62 +145,105 @@ function MobileRails({ id }: { id: ProductPage["id"] }) {
   );
 }
 
+/** Tô đậm + accent hai cụm mà bản dev nhấn trong đoạn intro. */
+function markIntro(text: string, marks: string[] | undefined, tone: string) {
+  if (!marks?.length) return text;
+  // Tách theo đúng chuỗi con, giữ cả dấu phân cách để ghép lại không mất chữ.
+  const re = new RegExp(`(${marks.map((m) => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`);
+  return text.split(re).map((piece, i) =>
+    marks.includes(piece) ? (
+      <span key={i} className={cn("font-medium", tone)}>
+        {piece}
+      </span>
+    ) : (
+      piece
+    ),
+  );
+}
+
 export function ProductHero({ page }: { page: HeroData }) {
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const prime = page.id === "prime";
   const cut = page.title.lastIndexOf(" ");
   const lead = cut > 0 ? page.title.slice(0, cut) : "";
   const tail = cut > 0 ? page.title.slice(cut + 1) : page.title;
+  const arrow = cn(CTA_ARROW, prime ? "size-5" : "h-[18px] w-[18px]");
 
+  /* Hero của Prime KHÁC hẳn hai trang kia trên bản dev, không chỉ khác màu:
+       - cột dọc gap-20 (80px) thay vì gap-14 (56px)
+       - KHÔNG có dòng kicker phía trên H1
+       - khối chữ gap-6 thay vì gap-7, nút cao 44px thay vì 48px
+     Mình từng dùng chung một khuôn cho cả ba nên Prime bị cao hơn bản gốc 26px
+     và có thêm một dòng chữ mà trang gốc không có. */
   return (
-    /* pb-15 = 60px (không phải pb-14) và KHÔNG có section-tint — bản dev để nền
-       cho wrapper scope lo, hero chỉ trong suốt. */
-    <section className={cn("relative overflow-hidden pt-28 pb-15", PAD)}>
+    /* pb: Alpha và Marketplace pb-14 (56px), riêng Prime pb-15 (60px). Không có
+       section-tint — bản dev để nền cho wrapper scope lo, hero trong suốt. */
+    <section className={cn("relative overflow-hidden pt-28", prime ? "pb-15" : "pb-14", PAD)}>
       <CitrusField seed={page.id.length * 7919} />
       <SideRails id={page.id} />
 
-      <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-14 text-center">
+      <div
+        className={cn(
+          "relative mx-auto flex max-w-5xl flex-col items-center text-center",
+          prime ? "gap-20" : "gap-14",
+        )}
+      >
         <div className="flex flex-col items-center gap-5">
           <HeroBall id={page.id} />
           <MobileRails id={page.id} />
         </div>
 
         <div className="flex flex-col items-center gap-4">
-          <span className="kicker">{page.kicker}</span>
+          {!prime && (
+            <Reveal>
+              <span className="kicker">{page.kicker}</span>
+            </Reveal>
+          )}
 
-          <h1
-            ref={titleRef}
-            className="text-balance text-5xl font-bold leading-[1.15] tracking-tight text-foreground sm:text-6xl md:text-7xl"
-          >
-            {lead && (
-              <VariableFontCursorProximity {...titleFx(titleRef)}>
-                {`${lead} `}
-              </VariableFontCursorProximity>
-            )}
-            <VariableFontCursorProximity
-              style={{ color: "var(--heading-accent, var(--accent))" }}
-              {...titleFx(titleRef)}
-            >
-              {tail}
-            </VariableFontCursorProximity>
-          </h1>
+          {/* H1 của bản dev là chữ PHẲNG (`font-variation-settings: normal`), chỉ
+              từ cuối mang màu accent. Trước đây mình bọc nó trong hiệu ứng con
+              trỏ wght 700→800 — vừa khác bản gốc, vừa cắt chữ thành từng ký tự
+              nên trình đọc màn hình đọc rời rạc. */}
+          <Reveal delay={prime ? 0 : 0.06}>
+            <h1 className="text-balance font-sans text-5xl font-bold leading-[1.15] tracking-tight sm:text-6xl md:text-7xl">
+              {lead && `${lead} `}
+              <span style={{ color: "var(--heading-accent, var(--accent))" }}>{tail}</span>
+            </h1>
+          </Reveal>
 
-          <div className="flex flex-col items-center gap-7">
-            <p className="max-w-[600px] px-2 text-[17px] leading-[1.62] text-muted-foreground md:px-0">
-              {page.intro}
-            </p>
+          <Reveal delay={prime ? 0.06 : 0.12}>
+            <div className={cn("flex flex-col items-center", prime ? "gap-6" : "gap-7")}>
+              <p
+                className={cn(
+                  "text-center",
+                  prime
+                    ? "max-w-[560px] px-4 text-lg leading-[29.25px] text-[var(--prime-text-muted)] md:px-0"
+                    : "max-w-[600px] px-2 text-[17px] leading-[1.62] text-muted-foreground md:px-0",
+                )}
+              >
+                {markIntro(
+                  page.intro,
+                  page.introMark,
+                  prime ? "text-[var(--prime-accent-strong)]" : "text-accent",
+                )}
+              </p>
 
-            <div className="flex flex-col items-center gap-3 sm:flex-row">
-              <a href={page.primary.href} className={BTN_PRIMARY}>
-                {page.primary.label}
-                {page.primary.rate && <span className="tabular-nums">{page.primary.rate}</span>}
-                <ArrowRight className="size-4" />
-              </a>
-              <a href={page.secondary.href} className={BTN_GHOST}>
-                {page.secondary.label}
-                <ArrowUpRight className="size-4" />
-              </a>
+              <div className="flex flex-col items-center gap-4 md:flex-row">
+                <a href={page.primary.href} className={prime ? BTN_PRIME : BTN_PRIMARY}>
+                  {page.primary.label}
+                  {page.primary.rate && (
+                    <span className={cn("font-bold tabular-nums", prime ? "text-xl" : "text-lg")}>
+                      {page.primary.rate}
+                    </span>
+                  )}
+                  <ArrowRight className={arrow} />
+                </a>
+                <a href={page.secondary.href} className={prime ? BTN_PRIME_GHOST : BTN_GHOST}>
+                  {page.secondary.label}
+                  <ArrowRight className={arrow} />
+                </a>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
