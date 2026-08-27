@@ -41,7 +41,11 @@ const SKIN: Record<ProductPage["id"], BallSkin> = {
     /* Vành và hào quang lấy đúng brand Prime của trang chủ (`--prime`), không
        phải cặp #ffaa15/#c97e05 của bản dev — cặp đó sáng và ngả cam hơn. */
     glow: "var(--prime)",
-    icon: "/assets/tokens/yzPrime.svg",
+    /* Bản KHÔNG có mảng nền: file `yzPrime.svg` gốc có thêm một hình lục giác tô
+       `#FFB01A` ở 10%, nằm sau nét vẽ — trên quả cầu trong suốt nó hiện ra thành
+       một mảng kem đục giữa hero. Không sửa file gốc vì nó còn dùng ở orbit trang
+       chủ và mấy chỗ khác trong `content.ts`, nên tách một bản riêng. */
+    icon: "/assets/tokens/yzPrime-noplate.svg",
   },
   marketplace: {
     glow: "#a8adff",

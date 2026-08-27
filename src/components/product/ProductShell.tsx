@@ -378,7 +378,7 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           /* Nền `--background` (nền trang) chứ không `--surface-2`: trên section
              trắng thì đó là mảng xanh nhạt vừa đủ tách nền, còn `--surface-2`
              đậm hơn một nấc nên nhìn nặng. Cùng cách với thẻ "The path in". */
-          "flex h-full items-start justify-between gap-3 rounded-lg bg-[var(--background)] p-5 transition-colors duration-300",
+          "flex h-full items-start justify-between gap-3 rounded-md bg-[var(--background)] p-5 transition-colors duration-300",
           base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
         )}
       >
@@ -387,7 +387,7 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
         </div>
         {token.icon && (
-          <img src={asset(token.icon)} alt="" className="size-14 shrink-0 rounded-full" />
+          <img src={asset(token.icon)} alt="" className="size-11 shrink-0 rounded-full" />
         )}
       </div>
     );
