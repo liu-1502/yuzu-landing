@@ -370,14 +370,15 @@ main > .mkt-scope {
   min-height: 100svh;
 }
 
-/* Nét kẻ trong footer — XÁM TRUNG TÍNH, không lấy `--line-solid` (token đó ngả
-   theo tông sản phẩm nên ra viền tím/nâu). Light: overlay đen 15%. Dark: lật sang
-   trắng 15%, vì đen 15% trên nền gần đen thì không còn thấy gì. */
+/* Nét kẻ XÁM TRUNG TÍNH, dùng cho những chỗ không muốn viền ngả theo tông sản
+   phẩm như `--line-solid` (token đó ra viền xanh ở Alpha, nâu ở Prime, tím ở
+   Marketplace). Light: overlay đen 15%. Dark: lật sang trắng 15%, vì đen 15% trên
+   nền gần đen thì không còn thấy gì. */
 :root {
-  --footer-line: rgba(0, 0, 0, 0.15);
+  --line-neutral: rgba(0, 0, 0, 0.15);
 }
 .dark {
-  --footer-line: rgba(255, 255, 255, 0.15);
+  --line-neutral: rgba(255, 255, 255, 0.15);
 }
 
 /**

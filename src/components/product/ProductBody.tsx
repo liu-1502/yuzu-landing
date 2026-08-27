@@ -651,7 +651,10 @@ export function Terms({
           {/* Một DẢI NGANG bo góc vuông: viền bao ngoài, và viền ngăn giữa các ô
               thay cho khe hở. Trên mobile lưới về một cột nên đường ngăn chuyển
               từ dọc sang ngang. */}
-          <div className="grid grid-cols-1 border border-line-solid sm:grid-cols-3">
+          {/* Bo 4 góc NGOÀI của cả dải. `overflow-hidden` là bắt buộc: các ô
+              trong dùng `border-r` / `border-b`, không cắt thì nét kẻ của ô đầu
+              và ô cuối chìa ra khỏi góc đã bo. */}
+          <div className="grid grid-cols-1 overflow-hidden rounded-md border border-[var(--line-neutral)] sm:grid-cols-3">
             {p.facts.map((f, i) => {
               const Icon = FACT_ICONS[f.icon as keyof typeof FACT_ICONS];
               return (
@@ -660,7 +663,7 @@ export function Terms({
                   className={cn(
                     "terms-fact flex items-center gap-3.5 px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center",
                     i < p.facts.length - 1 &&
-                      "border-b border-line-solid sm:border-r sm:border-b-0",
+                      "border-b border-[var(--line-neutral)] sm:border-r sm:border-b-0",
                   )}
                 >
                   {/* Theo đúng thẻ Spec ngoài home: icon 20px đặt trong ô bo 36px
