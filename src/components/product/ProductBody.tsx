@@ -157,7 +157,7 @@ function SliceCard({
 /** Số nhịp cuộn: một nhịp phóng to quả chanh, rồi mỗi múi một nhịp. */
 const ZOOM_FROM = 1;
 /** Cỡ lớn nhất khi cuộn hết nhịp phóng to. */
-const ZOOM_TO = 1.3;
+const ZOOM_TO = 1.5;
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -209,7 +209,20 @@ function useScrollBeat(ref: React.RefObject<HTMLDivElement | null>, on: boolean)
  * lúc đó bỏ hẳn phần ghim, xếp quả chanh trên rồi bốn thẻ dưới, hiện sẵn tất cả —
  * màn dàn dựng này cần cả chiều ngang lẫn chiều cao mới chạy được.
  */
-function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
+function SliceArt({
+  p,
+  on,
+  prog,
+  artRef,
+  dy,
+}: {
+  p: Product;
+  on: boolean;
+  prog: number;
+  artRef?: React.RefObject<HTMLDivElement | null>;
+  /** Số px cần đẩy xuống để quả chanh nằm đúng giữa khối đã ghim. */
+  dy?: number;
+}) {
   const [hover, setHover] = useState<number | null>(null);
 
   const goc = sliceAngles(p.slices);
@@ -284,8 +297,17 @@ function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
        KHÔNG phải một khung cao bằng màn hình: có vậy quả chanh mới nằm ngay dưới
        tiêu đề như lúc chưa có dàn dựng. Thẻ và phần chanh phóng to tràn ra ngoài
        khung này, nên section để `overflow-visible`. */
-    <div className="mt-9">
-        <div className="relative mx-auto h-[320px] w-full max-w-6xl">
+    <div
+      ref={artRef}
+      className="mt-9"
+      style={{
+        /* Nhịp zoom cũng ĐẨY quả chanh xuống giữa khối đã ghim: lúc nghỉ nó nằm
+           ngay dưới tiêu đề, zoom xong thì ra chính giữa như một màn riêng. */
+        transform: `translateY(${(dy ?? 0) * smooth(clamp01(prog * (1 + p.slices.length)))}px)`,
+        willChange: "transform",
+      }}
+    >
+        <div className="relative mx-auto h-[320px] w-full">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
@@ -305,11 +327,11 @@ function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
                nhau một bước cố định: bước cứng 108px nhỏ hơn chiều cao thẻ khi
                chữ xuống ba dòng nên hai thẻ đè lên nhau. Cột flex thì cao bao
                nhiêu cũng không chồng.
-               Bề rộng TỰ CO theo chỗ trống: chừa 590px ở giữa cho quả chanh lúc
-               phóng to hết (420 × 1.3 = 546px, cộng hở 22px mỗi bên). */
+               Bề rộng TỰ CO theo chỗ trống: chừa 680px ở giữa cho quả chanh lúc
+               phóng to hết (420 × 1.5 = 630px, cộng hở 25px mỗi bên). */
             <div
               key={String(right)}
-              className="absolute flex w-[min(300px,calc((100%-590px)/2))] flex-col gap-4"
+              className="absolute flex w-[min(300px,calc((100%-680px)/2))] flex-col gap-4"
               style={{ [right ? "right" : "left"]: 0, top: "50%", transform: "translateY(-50%)" }}
             >
               {cho
@@ -349,7 +371,32 @@ export function Composition({
 }) {
   const on = useChoreography() && !vaults;
   const track = useRef<HTMLDivElement>(null);
+  const pin = useRef<HTMLDivElement>(null);
+  const art = useRef<HTMLDivElement>(null);
   const prog = useScrollBeat(track, on);
+  const [dy, setDy] = useState(0);
+
+  /* Khoảng cách từ chỗ quả chanh đứng lúc nghỉ tới chính giữa khối đã ghim.
+     Đo bằng `offsetTop`/`offsetHeight` — hai giá trị LAYOUT, không bị `transform`
+     làm sai, nên đo được ngay cả khi khối đang bị đẩy đi. */
+  useEffect(() => {
+    if (!on) return;
+    const read = () => {
+      const a = art.current;
+      const k = pin.current;
+      if (!a || !k) return;
+      setDy(k.clientHeight / 2 - (a.offsetTop + a.offsetHeight / 2));
+    };
+    const raf = requestAnimationFrame(read);
+    window.addEventListener("resize", read);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", read);
+    };
+  }, [on]);
+
+  /* Tiêu đề tan dần trong đúng nhịp zoom: hết nhịp đó là màn chỉ còn quả chanh. */
+  const fade = on ? 1 - smooth(clamp01(prog * (1 + p.slices.length))) : 1;
 
   const head_ = (
     <div className={cn("relative", WRAP)}>
@@ -393,13 +440,13 @@ export function Composition({
 
   /* SliceArt nằm NGOÀI khối `max-w-5xl` của phần chữ: màn dàn dựng cần rộng hơn
      1024px thì quả chanh lúc phóng to mới không chạm vào hai cột thẻ. */
-  const art = !vaults ? <SliceArt p={p} on={on} prog={prog} /> : null;
+  const artNode = !vaults ? <SliceArt p={p} on={on} prog={prog} artRef={art} dy={dy} /> : null;
 
   if (!on) {
     return (
       <section className={cn("relative", SECTION, PAD)}>
         {head_}
-        {art}
+        {artNode}
       </section>
     );
   }
@@ -411,9 +458,23 @@ export function Composition({
        quả chanh nằm ngay dưới nó, đúng như lúc chưa có dàn dựng. */
     <section className={cn("relative", PAD)}>
       <div ref={track} className="h-[500svh]">
-        <div className={cn("sticky top-16", SECTION)}>
-          {head_}
-          {art}
+        {/* Cao hết màn để có một tâm thật mà đẩy quả chanh vào giữa. */}
+        <div
+          ref={pin}
+          className={cn("sticky top-16 h-[calc(100svh-4rem)] overflow-hidden", SECTION)}
+        >
+          {/* Tắt luôn tương tác khi đã tàng hình: trong đoạn chú thích có link
+              "asset whitelist", để nguyên thì nó vẫn bấm được dù không nhìn thấy. */}
+          <div
+            style={{
+              opacity: fade,
+              pointerEvents: fade < 0.05 ? "none" : undefined,
+              transition: "opacity .15s linear",
+            }}
+          >
+            {head_}
+          </div>
+          {artNode}
         </div>
       </div>
     </section>
