@@ -508,17 +508,16 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
     <div className="mt-9">
       {/* Số cột theo SỐ THẺ: bộ ba (Marketplace) dàn hàng ngang ba cột; bộ có
           lớp đỡ (Alpha) chỉ còn hai thẻ ở trên nên giữ hai cột, đặt ba cột thì
-          hụt một ô trống.
-          Cột KHÔNG phải `1fr` mà `minmax(0, 360px)` + `justify-center`: khổ nội
-          dung 1024px chia hai thì mỗi thẻ ra 504px, chỉ có tên và một dòng mô tả
-          nên nhìn dài thượt. Chốt trần 320px rồi canh giữa cả lưới; bộ ba thì
-          1024px vẫn chưa đủ 3×320 dàn hết nên chúng vừa khít. */}
+          hụt một ô trống. */}
       <div
         className={cn(
-          "grid justify-center gap-4",
+          "grid gap-4",
           upper.length === 3
-            ? "sm:grid-cols-[repeat(3,minmax(0,320px))]"
-            : "md:grid-cols-[repeat(2,minmax(0,260px))]",
+            ? // Bộ ba (Marketplace): cột `1fr`, chiếm hết khổ 1024 của section.
+              "sm:grid-cols-3"
+            : // Bộ có lớp đỡ (Alpha): hai thẻ xếp dọc nên chốt trần 260px và canh
+              // giữa, không thì mỗi thẻ ra 504px, nhìn dài thượt.
+              "justify-center md:grid-cols-[repeat(2,minmax(0,260px))]",
         )}
       >
         {upper.map((t, i) => (

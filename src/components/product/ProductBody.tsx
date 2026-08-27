@@ -651,10 +651,9 @@ export function Terms({
           {/* Một DẢI NGANG bo góc vuông: viền bao ngoài, và viền ngăn giữa các ô
               thay cho khe hở. Trên mobile lưới về một cột nên đường ngăn chuyển
               từ dọc sang ngang. */}
-          {/* Bo 4 góc NGOÀI của cả dải. `overflow-hidden` là bắt buộc: các ô
-              trong dùng `border-r` / `border-b`, không cắt thì nét kẻ của ô đầu
-              và ô cuối chìa ra khỏi góc đã bo. */}
-          <div className="grid grid-cols-1 overflow-hidden rounded-md border border-[var(--line-neutral)] sm:grid-cols-3">
+          {/* Góc VUÔNG — bỏ `rounded-md`, nên cũng bỏ luôn `overflow-hidden`: nó
+              vốn chỉ có để cắt nét kẻ của ô đầu/ô cuối chìa ra khỏi góc bo. */}
+          <div className="grid grid-cols-1 border border-[var(--line-neutral)] sm:grid-cols-3">
             {p.facts.map((f, i) => {
               const Icon = FACT_ICONS[f.icon as keyof typeof FACT_ICONS];
               return (
