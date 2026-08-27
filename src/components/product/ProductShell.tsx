@@ -366,12 +366,37 @@ export function KpiRow({ items }: { items: Kpi[] }) {
  *  nền gần đen nó sáng lên, khỏi phải khai riêng cho dark. */
 const TK_LINE = "rgba(128, 128, 128, 0.28)";
 
-function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
+function TokenRow({
+  token,
+  base,
+  stack,
+}: {
+  token: TokenCard;
+  base?: boolean;
+  /** Xếp DỌC: logo ở trên, tên và mô tả ở dưới. Chỉ hai thẻ trên của Alpha dùng. */
+  stack?: boolean;
+}) {
   const metrics = token.metrics ?? [];
 
   /* Thẻ RÚT GỌN — dùng cho bộ token không có chỉ số (Alpha): nền tint, không
      viền, chỉ tên + mô tả + logo. Giữ nguyên như trước. */
   if (metrics.length === 0) {
+    if (stack) {
+      return (
+        /* Logo TRÊN, chữ DƯỚI. Gọn hơn bản nằm ngang: logo 32px, chữ 15/12.5px,
+           padding 14px — thẻ chỉ còn ~260px bề rộng. */
+        <div className="flex h-full flex-col gap-2.5 rounded-md bg-[var(--background)] p-3.5 transition-colors duration-300">
+          {token.icon && (
+            <img src={asset(token.icon)} alt="" className="size-8 rounded-full" />
+          )}
+          <div className="min-w-0">
+            <p className="text-[15px] font-semibold leading-tight text-foreground">{token.name}</p>
+            <p className="mt-1 text-[12.5px] leading-[1.45] text-muted-foreground">{token.desc}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
         className={cn(
@@ -493,29 +518,34 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
           "grid justify-center gap-4",
           upper.length === 3
             ? "sm:grid-cols-[repeat(3,minmax(0,320px))]"
-            : "md:grid-cols-[repeat(2,minmax(0,320px))]",
+            : "md:grid-cols-[repeat(2,minmax(0,260px))]",
         )}
       >
         {upper.map((t, i) => (
           <Reveal key={t.name} delay={i * 0.08}>
-            <TokenRow token={t} />
+            <TokenRow token={t} stack={!!base} />
           </Reveal>
         ))}
       </div>
 
       {base && (
-        /* Thẻ đỡ rộng bằng ĐÚNG hàng trên (2×320 + 16px khe) và canh giữa, để hai
+        /* Thẻ đỡ rộng bằng ĐÚNG hàng trên (2×260 + 16px khe) và canh giữa, để hai
            mũi tên chỉ lên vẫn nằm dưới hai thẻ trên. */
-        <Reveal className="relative mx-auto mt-6 max-w-[656px]" delay={0.16}>
-          {/* Bản dev không soi mũi tên theo lưới: hai mũi tên đặt giữa, cách nhau
-              28% bề rộng — nên cả ở cột đơn vẫn thấy hai mũi. Và khoảng hở là
-              mt-6 / mt-2, không phải mt-8 / mt-3 (mình từng để cao hơn 12px). */}
+        <Reveal className="relative mx-auto mt-6 max-w-[536px]" delay={0.16}>
+          {/* Mũi tên soi ĐÚNG theo lưới: một lưới cùng số cột và cùng `gap-4` với
+              hàng thẻ trên, mỗi mũi canh giữa ô của nó. Trước đây đặt hai mũi
+              cách nhau `gap-[28%]` bề rộng thẻ đỡ — mỗi lần đổi bề rộng thẻ là
+              lệch, đo lần cuối lệch 55px so với tâm hai thẻ trên. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-[18px] right-0 left-0 flex justify-center gap-[28%] text-[color-mix(in_srgb,var(--accent)_50%,transparent)]"
+            className="pointer-events-none absolute -top-[18px] right-0 left-0 grid gap-4 text-[color-mix(in_srgb,var(--accent)_50%,transparent)]"
+            style={{ gridTemplateColumns: `repeat(${upper.length}, minmax(0, 1fr))` }}
           >
-            <ChevronUp className="size-4" />
-            <ChevronUp className="size-4" />
+            {upper.map((t) => (
+              <span key={t.name} className="flex justify-center">
+                <ChevronUp className="size-4" />
+              </span>
+            ))}
           </div>
           <TokenRow token={base} base />
           <p className="mt-2 text-center text-[13px] leading-[1.5] text-muted-foreground">
