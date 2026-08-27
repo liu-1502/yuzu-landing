@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPages";
 import { productOrder } from "@/data/productPages";
@@ -9,7 +8,7 @@ import {
   ChevronRight,
   ChevronUp,
 } from "@/components/ui/Icons";
-import VariableFontCursorProximity from "@/components/fancy/text/variable-font-cursor-proximity";
+import VariableFontHoverByLetter from "@/components/fancy/text/variable-font-hover-by-letter";
 import { LiquidSurface } from "@/components/ui/LiquidSurface";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { Reveal } from "@/components/product/Reveal";
@@ -191,16 +190,23 @@ function markIntro(text: string, marks: string[] | undefined, tone: string) {
  * Trần là 800 chứ không phải 900: font Bricolage Grotesque chặn trục ở đó — đo
  * bề rộng cùng một chữ ở 800 và 900 ra y hệt 175.3px.
  */
-const titleFx = (containerRef: React.RefObject<HTMLHeadingElement | null>) => ({
-  containerRef,
+/**
+ * Hiệu ứng H1: hover thì từng CHỮ CÁI đổi độ đậm, lệch pha nhau (stagger).
+ *
+ * Dải wght đi từ 700 xuống 400, KHÔNG phải 700 → 800: Instrument Sans nạp qua
+ * Google Fonts với `wght@400..700` nên 800 bị kẹp về 700, tức hiệu ứng cũ
+ * (700 → 800) không hề nhìn thấy gì. Chữ ở trạng thái nghỉ vẫn đúng 700 như
+ * thiết kế, chỉ mảnh dần khi rê chuột rồi đầy lại khi rời.
+ */
+const titleFx = {
   fromFontVariationSettings: "'wght' 700",
-  toFontVariationSettings: "'wght' 800",
-  radius: 90,
-  falloff: "gaussian" as const,
-});
+  toFontVariationSettings: "'wght' 400",
+  staggerDuration: 0.025,
+  staggerFrom: "first" as const,
+  transition: { type: "spring" as const, duration: 0.7 },
+};
 
 export function ProductHero({ page }: { page: HeroData }) {
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const prime = page.id === "prime";
   const cut = page.title.lastIndexOf(" ");
   const lead = cut > 0 ? page.title.slice(0, cut) : "";
@@ -250,20 +256,14 @@ export function ProductHero({ page }: { page: HeroData }) {
               nên trình đọc màn hình đọc rời rạc. */}
           <Reveal delay={prime ? 0 : 0.06}>
             <h1
-              ref={titleRef}
               className="text-balance font-sans text-5xl font-bold leading-[1.15] tracking-tight sm:text-6xl md:text-7xl"
             >
-              {lead && (
-                <VariableFontCursorProximity {...titleFx(titleRef)}>
-                  {`${lead} `}
-                </VariableFontCursorProximity>
-              )}
-              <VariableFontCursorProximity
+              {lead && <VariableFontHoverByLetter label={`${lead} `} {...titleFx} />}
+              <VariableFontHoverByLetter
+                label={tail}
                 style={{ color: "var(--heading-accent, var(--accent))" }}
-                {...titleFx(titleRef)}
-              >
-                {tail}
-              </VariableFontCursorProximity>
+                {...titleFx}
+              />
             </h1>
           </Reveal>
 

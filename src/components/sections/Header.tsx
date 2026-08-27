@@ -190,9 +190,12 @@ export function Header() {
 
           <div className="flex items-center gap-2 md:hidden">
             <ThemeToggle />
+            {/* Cùng khuôn với `ThemeToggle`: ô 36px, bo `rounded-btn`, có viền
+                ngoài và hover đậm viền lên. Trước đây nút này trơ, không viền,
+                nên đứng cạnh nút theme là lệch hẳn. */}
             <button
               type="button"
-              className="flex h-10 w-10 items-center justify-center text-foreground"
+              className="flex h-9 w-9 items-center justify-center rounded-btn border border-line-solid text-muted-foreground transition-colors duration-150 hover:border-line-strong hover:text-foreground [&_svg]:size-[18px]"
               onClick={() => setOpenMenu((v) => !v)}
               aria-label="Toggle menu"
             >
