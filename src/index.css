@@ -197,7 +197,8 @@
 }
 
 /* Product colour scopes — dùng cho section Products khi đổi tab */
-.prime-scope {
+.prime-scope,
+:root:has(main > .prime-scope) {
   /* Số lấy nguyên từ dev.yuzu.money/prime. `--mark` GIỮ xanh #2e5c11 chứ không
      đổi sang vàng — bản dev không đổi nó theo scope. */
   --background: #f9f7f0;
@@ -238,7 +239,8 @@
   --liquid-back: var(--prime);
 }
 
-.dark .prime-scope {
+.dark .prime-scope,
+.dark:has(main > .prime-scope) {
   /* --prime-accent / -strong / -dark, --heading-accent và bộ --liquid-* đã trỏ
      về var(--prime) ở khối sáng nên tự lật sang #edc15f, không khai lại ở đây. */
   --prime-card-border: #2a2418;
@@ -267,7 +269,8 @@
   --prime-card: #1a1610;
   --prime-bg: var(--tint-prime);
 }
-.mkt-scope {
+.mkt-scope,
+:root:has(main > .mkt-scope) {
   /* Số lấy nguyên từ dev.yuzu.money/marketplace. `--mark` giữ xanh như trên. */
   --background: #f3f0f6;
   --surface: #fbfafd;
@@ -295,8 +298,11 @@
  * Alpha cũng có scope riêng trên bản dev — trước đây mình để trang Alpha dùng
  * thẳng token gốc nên nền và viền nhạt hơn, ngả xanh ít hơn bản dev.
  */
-.alpha-scope {
+.alpha-scope,
+:root:has(main > .alpha-scope) {
   --background: #f2f7ef;
+  --accent: var(--alpha);
+  --accent-foreground: var(--alpha-ink);
   --surface: #fbfef9;
   --surface-2: #e7f0e1;
   --line-solid: #dae7d2;
@@ -304,7 +310,8 @@
   --faint: #5d7061;
 }
 
-.dark .mkt-scope {
+.dark .mkt-scope,
+.dark:has(main > .mkt-scope) {
   --background: var(--tint-mkt);
   --surface: #101223;
   --surface-2: #171a2e;
@@ -327,7 +334,8 @@
 /* THIẾU HẲN trước đây: không có khối này thì `.alpha-scope` (màu sáng) thắng
    `.dark` — cùng độ ưu tiên nhưng khai sau — nên trang Alpha vẫn sáng khi bật
    dark mode. Chỉ cần tối lại đúng sáu biến mà khối sáng ghi đè. */
-.dark .alpha-scope {
+.dark .alpha-scope,
+.dark:has(main > .alpha-scope) {
   --background: var(--tint-alpha);
   --surface: #101a12;
   --surface-2: #16221a;
@@ -363,54 +371,22 @@ main > .mkt-scope {
 }
 
 /**
- * Footer nằm NGOÀI `<main>` nên cũng ngoài scope: nó trong suốt và ăn nền của
- * `body`, tức nền xanh lá của landing — thành một vệt lệch tông ở đáy trang
- * Prime/Marketplace. Đổi nền của chính `body` theo trang đang mở; layout footer
- * không đụng tới, đúng yêu cầu "footer chỉ đổi màu theo theme".
+ * Header và footer nằm NGOÀI `<main>` nên cũng ngoài div scope: chúng đọc token
+ * của `:root`, tức bảng màu Alpha — nền footer ở trang Marketplace vì thế ra
+ * XANH LÁ giữa một trang tím, rõ nhất ở dark mode.
  *
- * `--tint-*` đã tự lật ở khối `.dark` nên dark mode theo luôn, không cần khai
- * lại. Giá trị ghi thẳng bằng đúng `--background` của scope để không hở một
- * đường ranh mảnh giữa main và footer.
+ * Cách chữa: nhét luôn `:root:has(main > .x-scope)` vào CHÍNH khối khai token
+ * của scope ở trên, thay vì chép lại giá trị ở một khối riêng — một nguồn duy
+ * nhất, sửa token trong scope là header/footer theo ngay.
+ *
+ * `main > .x-scope` (con TRỰC TIẾP) chứ không phải `.x-scope`: section Products
+ * ngoài trang chủ cũng mang class scope để đổi màu theo tab, khớp rộng thì cả
+ * landing bị nhuộm theo.
+ *
+ * Khối light `:root:has(...)` có specificity 0,2,0 nên THẮNG `.dark` (0,1,0);
+ * vì vậy mọi token khai ở khối light BẮT BUỘC phải được khai lại ở khối
+ * `.dark:has(...)` tương ứng, không thì dark mode ăn nhầm giá trị sáng.
  */
-:root:has(main > .alpha-scope) {
-  --background: #f2f7ef;
-
-  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
-     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
-     luôn accent của :root theo trang đang mở. `--alpha` tự lật ở khối `.dark` nên
-     một dòng này lo cả hai chế độ. */
-  --accent: var(--alpha);
-  --accent-foreground: var(--alpha-ink);
-}
-:root:has(main > .prime-scope) {
-  --background: #f9f7f0;
-
-  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
-     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
-     luôn accent của :root theo trang đang mở. `--prime` tự lật ở khối `.dark` nên
-     một dòng này lo cả hai chế độ. */
-  --accent: var(--prime);
-  --accent-foreground: var(--prime-ink);
-}
-:root:has(main > .mkt-scope) {
-  --background: #f3f0f6;
-
-  /* Header và footer nằm NGOÀI div scope nên vẫn đọc accent của :root — logo
-     nước ép ở footer vì thế cứ xanh lá kể cả trên trang Prime/Marketplace. Đổi
-     luôn accent của :root theo trang đang mở. `--mkt` tự lật ở khối `.dark` nên
-     một dòng này lo cả hai chế độ. */
-  --accent: var(--mkt);
-  --accent-foreground: var(--mkt-ink);
-}
-.dark:has(main > .alpha-scope) {
-  --background: var(--tint-alpha);
-}
-.dark:has(main > .prime-scope) {
-  --background: var(--tint-prime);
-}
-.dark:has(main > .mkt-scope) {
-  --background: var(--tint-mkt);
-}
 
 /* ==========================================================================
    Tailwind theme bridge — để dùng bg-surface / text-faint / border-line-solid…
