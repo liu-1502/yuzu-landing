@@ -150,7 +150,7 @@ export function Header() {
             <ThemeToggle />
             <a
               href="#"
-              className="launch-btn inline-flex h-9 min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-[14px] font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="launch-btn inline-flex h-9 min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-btn px-4 py-1.5 text-[14px] font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
               Launch app
             </a>
@@ -203,7 +203,7 @@ export function Header() {
             <li className="pb-3 pt-3">
               <a
                 href="#"
-                className="launch-btn flex h-9 min-h-9 items-center justify-center rounded-md px-4 py-1.5 text-[14px] font-medium transition-colors"
+                className="launch-btn flex h-9 min-h-9 items-center justify-center rounded-btn px-4 py-1.5 text-[14px] font-medium transition-colors"
               >
                 Launch app
               </a>

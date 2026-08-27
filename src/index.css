@@ -455,6 +455,10 @@ footer {
   --color-mark-2: var(--mark-2);
   --color-sun-amber: var(--sun-amber);
 
+  /* Bo góc RIÊNG cho nút — 8px, không có trong thang gốc (sm 6px, md 10px). Khai
+     thành token để mọi nút dùng chung `rounded-btn`, sửa một chỗ là đổi hết. */
+  --radius-btn: 8px;
+
   /* Thang bo góc copy 1:1 từ trang gốc (đo từ CSS build của bản gốc). */
   --radius-xs: 0.125rem;
   --radius-sm: 0.375rem;

@@ -28,7 +28,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggle}
-      className={`flex h-9 w-9 items-center justify-center rounded-md border border-line-solid text-muted-foreground transition-colors duration-150 hover:border-line-strong hover:text-foreground [&_svg]:size-[15px] ${className}`}
+      className={`flex h-9 w-9 items-center justify-center rounded-btn border border-line-solid text-muted-foreground transition-colors duration-150 hover:border-line-strong hover:text-foreground [&_svg]:size-[15px] ${className}`}
     >
       {/* hiện icon của theme sẽ chuyển tới, giống app.yuzu.money */}
       {dark ? <Sun /> : <Moon />}
