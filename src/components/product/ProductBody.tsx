@@ -153,7 +153,7 @@ const ZOOM_TO = 1.5;
 const ART_W = 420;
 /** Sàn bề rộng thẻ. Khung hẹp thì quả chanh nhường chỗ cho tới mức này.
  *  (Đo: 189px gãy chữ giữa từ, 234px thì không.) */
-const CARD_MIN = 280;
+const CARD_MIN = 320;
 const CARD_MAX = 480;
 /** Hở giữa quả chanh và thẻ. */
 const GAP = 16;
@@ -273,9 +273,8 @@ function SliceArt({
       )
     : ZOOM_TO;
   const scale = on ? ZOOM_FROM + (zoomTo - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
-  /* Thẻ NEO THEO QUẢ CHANH chứ không dán vào mép khung: `off` là khoảng cách từ
-     tâm ra tới mép trong của thẻ. Dán vào mép thì màn càng rộng khe giữa càng
-     toác — đúng chỗ bạn thấy xa nhau. */
+  /* `offL`/`offR` không dùng để đặt thẻ nữa (thẻ neo mép ngoài), mà để tính THẺ
+     ĐƯỢC DÀI TỚI ĐÂU: mép trong của thẻ phải dừng trước phần vẽ của biểu đồ. */
   const box = ART_W * zoomTo;
   /* Khoảng cách từ tâm ra mép nội dung của từng bên, cộng hở. */
   const offL = Math.round(box / 2 - pad.l * box + GAP);
@@ -389,7 +388,10 @@ function SliceArt({
               className="absolute flex flex-col gap-4"
               style={{
                 width: cardW,
-                [right ? "left" : "right"]: `calc(50% + ${right ? offR : offL}px)`,
+                /* Neo vào MÉP NGOÀI của khung như cũ. Thẻ dài ra thì nó ăn vào
+                   phía trong, nên khe tới quả chanh tự hẹp lại — `cardW` ở trên
+                   đã tính sao cho mép trong không chạm phần vẽ của biểu đồ. */
+                [right ? "right" : "left"]: 0,
                 top: "50%",
                 transform: "translateY(-50%)",
               }}
