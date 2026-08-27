@@ -399,6 +399,15 @@ footer {
   background: var(--surface);
 }
 
+/* Mục trong dropdown Products: nền hover lấy MÀU BRAND CỦA CHÍNH SẢN PHẨM, truyền
+   vào qua biến `--tint` ngay trên thẻ (xem `Header.tsx`). Alpha ra xanh lá nhạt,
+   Prime nâu nhạt, Marketplace tím nhạt. Phải làm ở CSS chứ không phải utility
+   `hover:bg-[...]`: giá trị đổi theo từng mục nên không sinh được class tĩnh. */
+.nav-prod:hover,
+.nav-prod:focus-visible {
+  background: color-mix(in srgb, var(--tint) 14%, transparent);
+}
+
 /* Hai ngoại lệ CHỈ cho trang Prime:
      - dải Partners bỏ nét kẻ mép trên (hai trang kia vẫn có)
      - footer thì ngược lại, CÓ nét kẻ mép trên

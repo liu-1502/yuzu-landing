@@ -17,19 +17,22 @@ function NavA({
   external,
   onClick,
   className,
+  style,
   children,
 }: {
   href: string;
   external?: boolean;
   onClick?: () => void;
   className?: string;
+  /** Cần cho mục dropdown Products: truyền `--tint` màu brand của từng sản phẩm. */
+  style?: React.CSSProperties;
   children: React.ReactNode;
 }) {
   const onLanding = useLocation().pathname === "/";
 
   if (external || href === "#") {
     return (
-      <a href={href} onClick={onClick} className={className}>
+      <a href={href} onClick={onClick} className={className} style={style}>
         {children}
       </a>
     );
@@ -37,19 +40,24 @@ function NavA({
   if (href.startsWith("#")) {
     if (onLanding) {
       return (
-        <a href={href} onClick={onClick} className={className}>
+        <a href={href} onClick={onClick} className={className} style={style}>
           {children}
         </a>
       );
     }
     return (
-      <Link to={{ pathname: "/", hash: href }} onClick={onClick} className={className}>
+      <Link
+        to={{ pathname: "/", hash: href }}
+        onClick={onClick}
+        className={className}
+        style={style}
+      >
         {children}
       </Link>
     );
   }
   return (
-    <Link to={href} onClick={onClick} className={className}>
+    <Link to={href} onClick={onClick} className={className} style={style}>
       {children}
     </Link>
   );
@@ -59,10 +67,13 @@ export function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openProducts, setOpenProducts] = useState(false);
 
+  /* `border-b`: nét kẻ xám nhạt ở mép dưới header, tách thanh nav khỏi nội dung
+     khi cuộn. `max-w-[1280px]` khớp với footer — hai dải này rộng hơn 1024 của
+     phần nội dung. */
   return (
-    <header className="sticky top-0 z-50 bg-surface">
+    <header className="sticky top-0 z-50 border-b border-[var(--line-neutral)] bg-surface">
       <div className="px-6 lg:px-[60px]">
-        <nav className="mx-auto flex h-16 max-w-[1024px] items-center justify-between">
+        <nav className="mx-auto flex h-16 max-w-[1280px] items-center justify-between">
           <Link to="/" aria-label="Yuzu" className="squeeze">
             <Wordmark className="h-8" />
           </Link>
@@ -108,7 +119,13 @@ export function Header() {
                         <NavA
                           href={p.href}
                           onClick={() => setOpenProducts(false)}
-                          className="flex items-start rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-surface-2 focus-visible:bg-surface-2"
+                          /* `--tint` = màu brand của chính sản phẩm; nền hover đọc
+                             biến này trong `index.css` (rule `.nav-prod`). Trước
+                             đây dùng `hover:bg-surface-2` — token đó ở `:root` là
+                             xanh lá nên cả Prime và Marketplace cũng hover ra
+                             xanh. Radius hạ 10px → 6px. */
+                          className="nav-prod flex items-start rounded-sm px-2.5 py-2 transition-colors duration-150"
+                          style={{ "--tint": p.color } as React.CSSProperties}
                         >
                           {/* Bỏ ô vuông màu 8px trước mỗi mục — trước đây nó là
                               chỉ dấu màu của từng sản phẩm. `gap-2.5` cũng bỏ
