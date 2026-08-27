@@ -156,8 +156,17 @@ function SliceCard({
 
 /** Số nhịp cuộn: một nhịp phóng to quả chanh, rồi mỗi múi một nhịp. */
 const ZOOM_FROM = 1;
-/** Cỡ lớn nhất khi cuộn hết nhịp phóng to. */
+/** Cỡ lớn nhất khi cuộn hết nhịp phóng to — trần, còn thực tế bị khung bó lại. */
 const ZOOM_TO = 1.5;
+/** Bề rộng quả chanh lúc nghỉ. */
+const ART_W = 420;
+/** Thẻ hẹp hơn mức này thì chữ bắt đầu gãy giữa từ (đo: 189px gãy, 234px không). */
+const CARD_MIN = 240;
+const CARD_MAX = 380;
+/** Hở giữa quả chanh và thẻ. Khung SVG của quả chanh rộng hơn cái đĩa nhìn thấy
+ *  khá nhiều (viewBox 176 đơn vị nhưng đĩa chỉ chiếm ~51%), nên không cần chừa
+ *  rộng: 32px đã thoáng. */
+const GAP = 32;
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -224,6 +233,18 @@ function SliceArt({
   dy?: number;
 }) {
   const [hover, setHover] = useState<number | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const [w, setW] = useState(0);
+
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || !on) return;
+    const read = () => setW(el.clientWidth);
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [on]);
 
   const goc = sliceAngles(p.slices);
   const beats = 1 + p.slices.length;
@@ -232,7 +253,19 @@ function SliceArt({
      không kịp thấy nó. */
   const beat = clamp01(prog / 0.92) * beats;
 
-  const scale = on ? ZOOM_FROM + (ZOOM_TO - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
+  /* Cỡ phóng to THỰC TẾ do khung quyết định: giữ cho mỗi thẻ ít nhất CARD_MIN,
+     thiếu chỗ thì quả chanh nhỏ lại chứ không ép thẻ hẹp tới mức gãy chữ. Ở khung
+     rộng thì chạm trần ZOOM_TO. */
+  const zoomTo = w
+    ? Math.min(ZOOM_TO, Math.max(1, (w - 2 * CARD_MIN - 2 * GAP) / ART_W))
+    : ZOOM_TO;
+  const scale = on ? ZOOM_FROM + (zoomTo - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
+  /* Chỗ quả chanh chiếm lúc to nhất, cộng hở hai bên — phần còn lại chia đôi cho
+     hai cột thẻ. */
+  const chua = Math.round(ART_W * zoomTo + 2 * GAP);
+  const cardW = w
+    ? Math.round(Math.min(CARD_MAX, Math.max(CARD_MIN, (w - chua) / 2)))
+    : CARD_MAX;
   /** Độ hiện của thẻ thứ k: 0 → 1 trong đúng nhịp của nó. */
   const reveal = (k: number) => (on ? smooth(clamp01(beat - 1 - k)) : 1);
   /** Múi đang được nhấn: múi của nhịp hiện tại, giữ tới khi nhịp sau tiếp quản. */
@@ -307,7 +340,7 @@ function SliceArt({
         willChange: "transform",
       }}
     >
-        <div className="relative mx-auto h-[320px] w-full">
+        <div ref={stage} className="relative mx-auto h-[320px] w-full">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
@@ -327,12 +360,19 @@ function SliceArt({
                nhau một bước cố định: bước cứng 108px nhỏ hơn chiều cao thẻ khi
                chữ xuống ba dòng nên hai thẻ đè lên nhau. Cột flex thì cao bao
                nhiêu cũng không chồng.
-               Bề rộng TỰ CO theo chỗ trống: chừa 680px ở giữa cho quả chanh lúc
-               phóng to hết (420 × 1.5 = 630px, cộng hở 25px mỗi bên). */
+               Bề rộng tính trong JS cùng lúc với cỡ quả chanh: hai thứ thương
+               lượng với nhau theo bề rộng khung, xem `zoomTo`/`cardW`. Trước đây
+               chừa CỨNG 680px cho quả chanh nên ở khung ~1000px thẻ chỉ còn 189px
+               và chữ gãy giữa từ ("Overcollater / alized"). */
             <div
               key={String(right)}
-              className="absolute flex w-[min(300px,calc((100%-680px)/2))] flex-col gap-4"
-              style={{ [right ? "right" : "left"]: 0, top: "50%", transform: "translateY(-50%)" }}
+              className="absolute flex flex-col gap-4"
+              style={{
+                width: cardW,
+                [right ? "right" : "left"]: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
             >
               {cho
                 .filter((c) => c.right === right)
@@ -395,8 +435,9 @@ export function Composition({
     };
   }, [on]);
 
-  /* Tiêu đề tan dần trong đúng nhịp zoom: hết nhịp đó là màn chỉ còn quả chanh. */
-  const fade = on ? 1 - smooth(clamp01(prog * (1 + p.slices.length))) : 1;
+  /* Tiêu đề ẩn NGAY khi bắt đầu cuộn, không mờ dần: vừa chạm cuộn là màn chuyển
+     hẳn sang phần quả chanh. Ngưỡng 0.005 chỉ để tránh nhấp nháy ở đúng mép trên. */
+  const fade = on && prog > 0.005 ? 0 : 1;
 
   const head_ = (
     <div className={cn("relative", WRAP)}>
@@ -469,7 +510,6 @@ export function Composition({
             style={{
               opacity: fade,
               pointerEvents: fade < 0.05 ? "none" : undefined,
-              transition: "opacity .15s linear",
             }}
           >
             {head_}
