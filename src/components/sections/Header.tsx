@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { nav } from "@/data/content";
 import { ArrowUpRight, ChevronDown, Menu, X } from "@/components/ui/Icons";
@@ -66,12 +66,27 @@ function NavA({
 export function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openProducts, setOpenProducts] = useState(false);
+  const [daCuon, setDaCuon] = useState(false);
 
-  /* `border-b`: nét kẻ xám nhạt ở mép dưới header, tách thanh nav khỏi nội dung
-     khi cuộn. `max-w-[1280px]` khớp với footer — hai dải này rộng hơn 1024 của
-     phần nội dung. */
+  /* Nét kẻ mép dưới chỉ hiện khi trang đã cuộn. Ở đỉnh trang header nằm liền
+     mạch với hero nên một đường kẻ ở đó là thừa. */
+  useEffect(() => {
+    const doc = () => setDaCuon(window.scrollY > 4);
+    doc();
+    window.addEventListener("scroll", doc, { passive: true });
+    return () => window.removeEventListener("scroll", doc);
+  }, []);
+
+  /* `border-b` LUÔN có mặt, chỉ đổi MÀU từ trong suốt sang xám nhạt khi cuộn —
+     không thêm/bớt viền, vì thêm 1px lúc cuộn sẽ làm cả trang nhích một pixel.
+     `max-w-[1280px]` khớp với footer, rộng hơn 1024 của phần nội dung. */
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line-neutral)] bg-surface">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b bg-surface transition-colors duration-200",
+        daCuon ? "border-[var(--line-neutral)]" : "border-transparent",
+      )}
+    >
       <div className="px-6 lg:px-[60px]">
         <nav className="mx-auto flex h-16 max-w-[1280px] items-center justify-between">
           <Link to="/" aria-label="Yuzu" className="squeeze">
