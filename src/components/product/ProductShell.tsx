@@ -526,20 +526,39 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
     <section className={cn(SECTION, PAD)}>
       <Reveal>
-        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl bg-surface px-6 pt-14 pb-20 text-center">
+        {/* Thẻ nền MÀU BRAND (`--accent` của từng scope) thay vì trắng. Cả chữ
+            lẫn nút bên trong phải lật theo `--accent-foreground`, không thì mất
+            tương phản: nút chính vốn cũng nền accent nên đặt trên thẻ accent sẽ
+            tàng hình. */}
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 overflow-hidden rounded-xl bg-accent px-6 pt-14 pb-20 text-center">
           <div className="relative z-10 flex flex-col items-center gap-6">
-            <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
-              {closing.title}
-            </h2>
-            <p className="max-w-[460px] text-[15px] leading-[1.6] text-muted-foreground">
-              {closing.body}
-            </p>
+            {/* Tiêu đề và mô tả gom thành một cụm gap-3 (12px) thay vì cùng ăn
+                gap-6 của cột — trước hai dòng này rời nhau bằng đúng khoảng cách
+                tới hàng nút. */}
+            <div className="flex flex-col items-center gap-3">
+              <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-accent-foreground md:text-[38px]">
+                {closing.title}
+              </h2>
+              {/* Chữ ĐỦ độ đục, không hạ xuống 82%: đo trên nền brand ở light
+                  mode thì 82% chỉ còn tương phản 3.9 (Alpha) / 3.83 (Prime),
+                  dưới ngưỡng 4.5 cho chữ 15px. */}
+              <p className="max-w-[460px] text-[15px] leading-[1.6] text-accent-foreground">
+                {closing.body}
+              </p>
+            </div>
             <div className="mt-1 flex flex-col items-center gap-3 sm:flex-row">
-              <a href={closing.primary.href} className={BTN_PRIMARY}>
+              {/* Nút chính ĐẢO lại: nền sáng, chữ màu brand. */}
+              <a
+                href={closing.primary.href}
+                className="group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm bg-[var(--accent-foreground)] px-5 text-[15px] font-medium text-[var(--accent)] shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90"
+              >
                 {closing.primary.label}
                 <ArrowRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
               </a>
-              <a href={closing.secondary.href} className={BTN_GHOST}>
+              <a
+                href={closing.secondary.href}
+                className="group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm border border-[color-mix(in_srgb,var(--accent-foreground)_38%,transparent)] px-5 text-[15px] font-medium text-accent-foreground transition-colors duration-300 hover:border-[var(--accent-foreground)]"
+              >
                 {closing.secondary.label}
                 <ArrowUpRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
               </a>
