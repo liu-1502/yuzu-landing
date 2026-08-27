@@ -124,13 +124,8 @@ function SliceCard({
     <div
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="flex items-start gap-3 rounded-lg bg-surface px-3.5 py-3 transition-[box-shadow,transform] duration-300"
-      style={{
-        boxShadow: on
-          ? "0 8px 22px color-mix(in srgb, var(--foreground) 10%, transparent)"
-          : "0 4px 14px color-mix(in srgb, var(--foreground) 5%, transparent)",
-        transform: on ? "translateY(-2px)" : undefined,
-      }}
+      className="flex items-start gap-3 rounded-lg bg-surface px-3.5 py-3 transition-transform duration-300"
+      style={{ transform: on ? "translateY(-2px)" : undefined }}
     >
       <span className="min-w-0 flex-1">
         <span className="block text-[12.5px] font-medium leading-tight text-foreground">
@@ -156,11 +151,14 @@ const ZOOM_FROM = 1;
 const ZOOM_TO = 1.5;
 /** Bề rộng quả chanh lúc nghỉ. */
 const ART_W = 420;
-/** Thẻ hẹp hơn mức này thì chữ bắt đầu gãy giữa từ (đo: 189px gãy, 234px không). */
-const CARD_MIN = 240;
+/** Sàn bề rộng thẻ. Khung hẹp thì quả chanh nhường chỗ cho tới mức này.
+ *  (Đo: 189px gãy chữ giữa từ, 234px thì không.) */
+const CARD_MIN = 280;
 const CARD_MAX = 480;
-/** Hở giữa mép khung quả chanh và thẻ. */
+/** Hở giữa quả chanh và thẻ. */
 const GAP = 16;
+/** Lề trống mặc định hai bên khung SVG, dùng tạm trước khi đo được thật. */
+const PAD0 = { l: 0.149, r: 0.072 };
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -229,11 +227,29 @@ function SliceArt({
   const [hover, setHover] = useState<number | null>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(0);
+  const [pad, setPad] = useState(PAD0);
 
   useEffect(() => {
     const el = stage.current;
     if (!el || !on) return;
-    const read = () => setW(el.clientWidth);
+    const read = () => {
+      setW(el.clientWidth);
+      /* Lề trống thật của khung SVG, tính bằng `getBBox` trong hệ toạ độ viewBox
+         nên không phụ thuộc cỡ hiển thị. Khung rộng hơn phần vẽ, và lệch: đo trên
+         Alpha ra trái 14.9% / phải 7.2%. Neo mỗi bên theo mép nội dung của CHÍNH
+         bên đó thì khe nhìn hai bên mới bằng nhau. */
+      const svg = el.querySelector("svg");
+      if (svg instanceof SVGSVGElement) {
+        const bb = svg.getBBox();
+        const vb = svg.viewBox.baseVal;
+        if (vb.width > 0 && bb.width > 0) {
+          setPad({
+            l: (bb.x - vb.x) / vb.width,
+            r: (vb.x + vb.width - (bb.x + bb.width)) / vb.width,
+          });
+        }
+      }
+    };
     read();
     const ro = new ResizeObserver(read);
     ro.observe(el);
@@ -251,15 +267,24 @@ function SliceArt({
      thiếu chỗ thì quả chanh nhỏ lại chứ không ép thẻ hẹp tới mức gãy chữ. Ở khung
      rộng thì chạm trần ZOOM_TO. */
   const zoomTo = w
-    ? Math.min(ZOOM_TO, Math.max(1, (w - 2 * CARD_MIN - 2 * GAP) / ART_W))
+    ? Math.min(
+        ZOOM_TO,
+        Math.max(1, (w - 2 * CARD_MIN - 2 * GAP) / (ART_W * (1 - PAD0.r * 2))),
+      )
     : ZOOM_TO;
   const scale = on ? ZOOM_FROM + (zoomTo - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
   /* Thẻ NEO THEO QUẢ CHANH chứ không dán vào mép khung: `off` là khoảng cách từ
      tâm ra tới mép trong của thẻ. Dán vào mép thì màn càng rộng khe giữa càng
      toác — đúng chỗ bạn thấy xa nhau. */
-  const off = Math.round((ART_W * zoomTo) / 2 + GAP);
+  const box = ART_W * zoomTo;
+  /* Khoảng cách từ tâm ra mép nội dung của từng bên, cộng hở. */
+  const offL = Math.round(box / 2 - pad.l * box + GAP);
+  const offR = Math.round(box / 2 - pad.r * box + GAP);
+  /* Hai bên dùng CHUNG một bề rộng cho cân, lấy theo bên chật hơn. */
   const cardW = w
-    ? Math.round(Math.min(CARD_MAX, Math.max(CARD_MIN, w / 2 - off)))
+    ? Math.round(
+        Math.min(CARD_MAX, Math.max(CARD_MIN, Math.min(w / 2 - offL, w / 2 - offR))),
+      )
     : CARD_MAX;
   /** Độ hiện của thẻ thứ k: 0 → 1 trong đúng nhịp của nó. */
   const reveal = (k: number) => (on ? smooth(clamp01(beat - 1 - k)) : 1);
@@ -364,7 +389,7 @@ function SliceArt({
               className="absolute flex flex-col gap-4"
               style={{
                 width: cardW,
-                [right ? "left" : "right"]: `calc(50% + ${off}px)`,
+                [right ? "left" : "right"]: `calc(50% + ${right ? offR : offL}px)`,
                 top: "50%",
                 transform: "translateY(-50%)",
               }}
