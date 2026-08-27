@@ -9,9 +9,10 @@ import {
   TokenSet,
   WRAP,
 } from "@/components/product/ProductShell";
-import { CitrusChart } from "@/components/ui/CitrusChart";
+import { CitrusChart, sliceAngles } from "@/components/ui/CitrusChart";
 import { Reveal } from "@/components/product/Reveal";
-import { useState } from "react";
+import { useChoreography } from "@/lib/useChoreography";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as const;
@@ -153,44 +154,168 @@ function SliceCard({
   );
 }
 
+/** Số nhịp cuộn: một nhịp phóng to quả chanh, rồi mỗi múi một nhịp. */
+const ZOOM_FROM = 0.55;
+
+/** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
+const smooth = (t: number) => t * t * (3 - 2 * t);
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
+/**
+ * Tiến độ cuộn qua khối đã ghim, 0 → 1.
+ *
+ * Đo trên chính khối cao `h-[500svh]`: phần trôi được bằng chiều cao khối trừ
+ * một màn hình, vì màn cuối cùng là lúc khối vừa hết ghim.
+ */
+function useScrollBeat(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
+  const [p, setP] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !on) return;
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const travel = r.height - window.innerHeight;
+      setP(travel <= 0 ? 1 : clamp01(-r.top / travel));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref, on]);
+
+  return p;
+}
+
+/**
+ * Tỉ trọng dàn dựng theo cuộn.
+ *
+ * Mặc định chỉ có quả chanh, chưa thẻ nào. Cuộn nhịp đầu thì quả chanh phóng to
+ * dần tới cỡ thật; mỗi nhịp sau nổi một múi lên và thả thẻ tương ứng ra ĐÚNG phía
+ * múi đó — bốn múi thì tổng cộng năm nhịp, nên khối cao `500svh`.
+ *
+ * Dưới `lg`, hoặc khi người dùng tắt animation, `useChoreography()` trả false:
+ * lúc đó bỏ hẳn phần ghim, xếp quả chanh trên rồi bốn thẻ dưới, hiện sẵn tất cả —
+ * màn dàn dựng này cần cả chiều ngang lẫn chiều cao mới chạy được.
+ */
 function SliceArt({ p }: { p: Product }) {
-  const [active, setActive] = useState<number | null>(null);
-  const half = Math.ceil(p.slices.length / 2);
-  const cot = (from: number, to: number) =>
-    p.slices.slice(from, to).map((s, k) => {
-      const i = from + k;
-      return (
-        <SliceCard
-          key={s.label}
-          s={s}
-          accent={p.color}
-          on={i === active}
-          onEnter={() => setActive(i)}
-          onLeave={() => setActive(null)}
-        />
-      );
+  const on = useChoreography();
+  const wrap = useRef<HTMLDivElement>(null);
+  const prog = useScrollBeat(wrap, on);
+  const [hover, setHover] = useState<number | null>(null);
+
+  const goc = sliceAngles(p.slices);
+  const beats = 1 + p.slices.length;
+  /* Nén các nhịp vào 92% quãng cuộn rồi GIỮ nguyên ở 8% cuối: nếu trải đều tới
+     100% thì thẻ cuối vừa hiện xong đúng lúc khối nhả ghim, người xem gần như
+     không kịp thấy nó. */
+  const beat = clamp01(prog / 0.92) * beats;
+
+  const scale = on ? ZOOM_FROM + (1 - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
+  /** Độ hiện của thẻ thứ k: 0 → 1 trong đúng nhịp của nó. */
+  const reveal = (k: number) => (on ? smooth(clamp01(beat - 1 - k)) : 1);
+  /** Múi đang được nhấn: múi của nhịp hiện tại, giữ tới khi nhịp sau tiếp quản. */
+  const active = on
+    ? beat < 1
+      ? null
+      : Math.min(Math.floor(beat - 1), p.slices.length - 1)
+    : hover;
+
+  /* Chia thẻ về hai bên theo góc múi, rồi trong mỗi bên xếp từ trên xuống theo
+     chính thứ tự góc đó. */
+  const cho = (() => {
+    const ben = (r: boolean) =>
+      goc.filter((g) => g.right === r).sort((a, b) => Math.sin(a.mid) - Math.sin(b.mid));
+    return [true, false].flatMap((r) => {
+      const ds = ben(r);
+      return ds.map((g, hang) => ({ i: g.i, right: r, hang, trong: ds.length }));
     });
+  })();
+
+  const cards = p.slices.map((s, i) => (
+    <SliceCard
+      key={s.label}
+      s={s}
+      accent={p.color}
+      on={i === active}
+      onEnter={() => setHover(i)}
+      onLeave={() => setHover(null)}
+    />
+  ));
+
+  const chart = (
+    <CitrusChart
+      id={`comp-${p.id}`}
+      accent={p.color}
+      slices={p.slices}
+      active={active}
+      setActive={on ? () => {} : setHover}
+    />
+  );
+
+  /* Không dàn dựng: xếp thường, hiện sẵn tất cả. */
+  if (!on) {
+    return (
+      <Reveal y={24}>
+        <div className="mt-9 flex flex-col items-center gap-6">
+          <div className="w-full max-w-[420px]">{chart}</div>
+          <div className="flex w-full flex-col gap-4">{cards}</div>
+        </div>
+      </Reveal>
+    );
+  }
 
   return (
-    <Reveal y={24}>
-      {/* Thứ tự trên mobile: quả chanh trước rồi tới thẻ — nên cột trái mang
-          `order-2`, quả chanh `order-1`. Từ `lg` mới xếp ba cột thật. */}
-      <div className="mt-9 grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-8">
-        <div className="order-2 flex flex-col gap-4 lg:order-1">{cot(0, half)}</div>
+    <div ref={wrap} className="mt-9 h-[500svh]">
+      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center justify-center">
+        <div className="relative mx-auto h-[460px] w-full max-w-5xl">
+          {/* KHÔNG dùng class `-translate-x-1/2`: Tailwind v4 biên dịch nó thành
+              thuộc tính `translate` RIÊNG chứ không phải `transform`, nên nó cộng
+              dồn với `transform` inline bên dưới và quả chanh bị đẩy lệch hẳn nửa
+              bề rộng. Gộp cả căn giữa lẫn phóng to vào một `transform`. */}
+          <div
+            className="absolute top-1/2 left-1/2 w-[360px] max-w-full"
+            style={{ transform: `translate(-50%, -50%) scale(${scale})`, willChange: "transform" }}
+          >
+            {chart}
+          </div>
 
-        <div className="order-1 mx-auto w-full max-w-[420px] lg:order-2 lg:w-[420px]">
-          <CitrusChart
-            id={`comp-${p.id}`}
-            accent={p.color}
-            slices={p.slices}
-            active={active}
-            setActive={setActive}
-          />
+          {cho.map(({ i, right, hang, trong }) => {
+            const r = reveal(i);
+            return (
+              <div
+                key={p.slices[i].label}
+                className="absolute w-[300px]"
+                style={{
+                  /* Góc của múi chỉ dùng để CHỌN BÊN. Độ cao thì xếp chồng theo
+                     thứ tự góc trong cùng bên, cách nhau 108px — nếu lấy thẳng
+                     `sin(mid)` làm toạ độ thì hai múi sát nhau (8% và 1% của
+                     Alpha lệch nhau có 8px) sẽ chồng khít lên nhau. */
+                  [right ? "right" : "left"]: 0,
+                  top: `calc(50% + ${(hang - (trong - 1) / 2) * 108}px)`,
+                  transform: `translateY(-50%) translateX(${(right ? 1 : -1) * (1 - r) * 16}px)`,
+                  opacity: r,
+                  pointerEvents: r > 0.9 ? "auto" : "none",
+                  transition: "opacity .25s linear",
+                  willChange: "opacity, transform",
+                }}
+              >
+                {cards[i]}
+              </div>
+            );
+          })}
         </div>
-
-        <div className="order-3 flex flex-col gap-4">{cot(half, p.slices.length)}</div>
       </div>
-    </Reveal>
+    </div>
   );
 }
 

@@ -21,6 +21,15 @@ const EASE = "cubic-bezier(.25,.46,.45,.94)";
  */
 const GAP = 0.03;
 
+/**
+ * Góc giữa của từng múi, để chỗ khác đặt thẻ mô tả đúng vị trí múi đó.
+ * `right` = múi nằm nửa phải của quả chanh — cùng phép thử mà nhãn trong biểu đồ
+ * đang dùng để chọn bên đặt chữ.
+ */
+export function sliceAngles(slices: Slice[]) {
+  return layout(slices).map(({ i, mid }) => ({ i, mid, right: Math.cos(mid) >= 0 }));
+}
+
 function layout(slices: Slice[]) {
   const total = slices.reduce((a, s) => a + (s.weight ?? 0), 0);
   const even = total <= 0;
