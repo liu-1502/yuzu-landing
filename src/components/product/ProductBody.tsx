@@ -162,11 +162,9 @@ const ZOOM_TO = 1.5;
 const ART_W = 420;
 /** Thẻ hẹp hơn mức này thì chữ bắt đầu gãy giữa từ (đo: 189px gãy, 234px không). */
 const CARD_MIN = 240;
-const CARD_MAX = 380;
-/** Hở giữa quả chanh và thẻ. Khung SVG của quả chanh rộng hơn cái đĩa nhìn thấy
- *  khá nhiều (viewBox 176 đơn vị nhưng đĩa chỉ chiếm ~51%), nên không cần chừa
- *  rộng: 32px đã thoáng. */
-const GAP = 32;
+const CARD_MAX = 420;
+/** Hở giữa mép khung quả chanh và thẻ. */
+const GAP = 16;
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -260,11 +258,12 @@ function SliceArt({
     ? Math.min(ZOOM_TO, Math.max(1, (w - 2 * CARD_MIN - 2 * GAP) / ART_W))
     : ZOOM_TO;
   const scale = on ? ZOOM_FROM + (zoomTo - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
-  /* Chỗ quả chanh chiếm lúc to nhất, cộng hở hai bên — phần còn lại chia đôi cho
-     hai cột thẻ. */
-  const chua = Math.round(ART_W * zoomTo + 2 * GAP);
+  /* Thẻ NEO THEO QUẢ CHANH chứ không dán vào mép khung: `off` là khoảng cách từ
+     tâm ra tới mép trong của thẻ. Dán vào mép thì màn càng rộng khe giữa càng
+     toác — đúng chỗ bạn thấy xa nhau. */
+  const off = Math.round((ART_W * zoomTo) / 2 + GAP);
   const cardW = w
-    ? Math.round(Math.min(CARD_MAX, Math.max(CARD_MIN, (w - chua) / 2)))
+    ? Math.round(Math.min(CARD_MAX, Math.max(CARD_MIN, w / 2 - off)))
     : CARD_MAX;
   /** Độ hiện của thẻ thứ k: 0 → 1 trong đúng nhịp của nó. */
   const reveal = (k: number) => (on ? smooth(clamp01(beat - 1 - k)) : 1);
@@ -369,7 +368,7 @@ function SliceArt({
               className="absolute flex flex-col gap-4"
               style={{
                 width: cardW,
-                [right ? "right" : "left"]: 0,
+                [right ? "left" : "right"]: `calc(50% + ${off}px)`,
                 top: "50%",
                 transform: "translateY(-50%)",
               }}
