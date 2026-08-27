@@ -26,6 +26,7 @@ export default function Alpha() {
         head={alphaPage.terms}
         tokens={alphaPage.tokens}
         tokensNote={alphaPage.tokensNote}
+        overlap
       />
       <Protection {...alphaPage.protection} />
       <PathIn {...alphaPage.path} />

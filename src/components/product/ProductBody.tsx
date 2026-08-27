@@ -258,10 +258,10 @@ function SliceArt({
 
   const goc = sliceAngles(p.slices);
   const beats = 1 + p.slices.length;
-  /* Nén các nhịp vào 92% quãng cuộn rồi GIỮ nguyên ở 8% cuối: nếu trải đều tới
-     100% thì thẻ cuối vừa hiện xong đúng lúc khối nhả ghim, người xem gần như
-     không kịp thấy nó. */
-  const beat = clamp01(prog / 0.92) * beats;
+  /* Nén các nhịp vào 75% quãng cuộn — tức xong sau 3 trong 4 màn trôi được — rồi
+     GIỮ nguyên. Một màn cuối để nguyên làm chỗ cho section kế tiếp trượt lên đè,
+     đúng cách #products và Security trên landing bắt tay nhau. */
+  const beat = clamp01(prog / 0.75) * beats;
 
   /* Cỡ phóng to THỰC TẾ do khung quyết định: giữ cho mỗi thẻ ít nhất CARD_MIN,
      thiếu chỗ thì quả chanh nhỏ lại chứ không ép thẻ hẹp tới mức gãy chữ. Ở khung
@@ -359,7 +359,10 @@ function SliceArt({
         willChange: "transform",
       }}
     >
-        <div ref={stage} className="relative mx-auto h-[320px] w-full">
+        {/* Khổ tối đa 1280px như phần còn lại của trang, lề hai bên là `PAD` của
+            section. Trước để `w-full` nên ở màn rộng stage kéo tới 1552px và thẻ
+            dính sát mép màn. */}
+        <div ref={stage} className="relative mx-auto h-[320px] w-full max-w-[1280px]">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
@@ -555,14 +558,30 @@ export function Terms({
   head,
   tokens,
   tokensNote,
+  overlap,
 }: {
   p: Product;
   head: ProductPage["terms"];
   tokens: ProductPage["tokens"];
   tokensNote?: string;
+  /** Trượt lên đè vào màn cuối của Composition đang ghim. Chỉ bật ở trang có
+   *  Composition dàn dựng (Alpha) — Marketplace dùng lưới vault, không ghim. */
+  overlap?: boolean;
 }) {
+  const trot = useChoreography() && !!overlap;
+
   return (
-    <section className={cn("border-y border-line-solid", SECTION, PAD)}>
+    <section
+      /* `-mt-[100svh]` kéo cả section lên đè vào màn cuối của khối ghim phía
+         trên; lúc đó quả chanh vẫn đang ghim nên nó bị PHỦ chứ không bị đẩy đi.
+         `z-10` để nằm trên, nền đục để không lộ quả chanh phía sau. */
+      className={cn(
+        "border-y border-line-solid",
+        trot && "relative z-10 -mt-[100svh] bg-background",
+        SECTION,
+        PAD,
+      )}
+    >
       <div className={WRAP}>
         {/* Theo nếp home: tiêu đề canh GIỮA, thẻ nền xanh nhạt (--surface-2) và
             BỎ stroke — giống stat box ngoài trang chủ, không phải thẻ viền nền
