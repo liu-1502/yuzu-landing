@@ -570,12 +570,12 @@ export function Terms({
 
   return (
     <section
-      /* `-mt-[100svh]` kéo cả section lên đè vào màn cuối của khối ghim phía
-         trên; lúc đó quả chanh vẫn đang ghim nên nó bị PHỦ chứ không bị đẩy đi.
-         `z-10` để nằm trên, nền đục để không lộ quả chanh phía sau. */
+      /* Nền TRẮNG (`--surface`) chứ không phải nền trang — nên khi trượt lên đè
+         nó cũng chính là lớp đục che quả chanh phía sau, khỏi cần `bg-background`
+         riêng. */
       className={cn(
-        "border-y border-line-solid",
-        trot && "relative z-10 -mt-[100svh] bg-background",
+        "border-y border-line-solid bg-surface",
+        trot && "relative z-10 -mt-[100svh]",
         SECTION,
         PAD,
       )}
@@ -587,13 +587,20 @@ export function Terms({
         <SectionHead kicker={head.kicker} title={head.title} center />
 
         <Reveal className="mt-9" delay={0.08}>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-            {p.facts.map((f) => {
+          {/* Một DẢI NGANG bo góc vuông: viền bao ngoài, và viền ngăn giữa các ô
+              thay cho khe hở. Trên mobile lưới về một cột nên đường ngăn chuyển
+              từ dọc sang ngang. */}
+          <div className="grid grid-cols-1 border border-line-solid sm:grid-cols-3">
+            {p.facts.map((f, i) => {
               const Icon = FACT_ICONS[f.icon as keyof typeof FACT_ICONS];
               return (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3.5 rounded-md bg-surface px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center"
+                  className={cn(
+                    "flex items-center gap-3.5 px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center",
+                    i < p.facts.length - 1 &&
+                      "border-b border-line-solid sm:border-r sm:border-b-0",
+                  )}
                 >
                   {/* Theo đúng thẻ Spec ngoài home: icon 20px đặt trong ô bo 36px
                       nền `--foreground 6%`, KHÔNG phải icon 28px màu accent nhấp
