@@ -386,6 +386,32 @@ function Timeline({ eras }: { eras: Era[] }) {
               )}
             </div>
           ))}
+
+          {/* Chấm tròn NGAY TRÊN đường, giống hệt bản dọc dưới `lg`. Phải là một
+              lớp riêng chứ không nhét vào khối thẻ ở trên: khối đó bị đẩy hẳn lên
+              trên đường bằng `translateY(calc(-100% - lift))`, chấm nằm trong đó
+              sẽ trôi theo và không còn chạm đường nữa. Vẽ sau nên nằm đè lên sợi
+              chỉ dọc, che gọn chỗ chỉ gặp đường. */}
+          {pts.map((pt, i) => (
+            <div
+              key={`dot-${eras[i]?.year ?? i}`}
+              aria-hidden
+              className="absolute size-3.5"
+              style={{
+                left: `${(pt.x / SNAKE_W) * 100}%`,
+                top: `${(pt.y / SNAKE_H) * 100}%`,
+                transform: "translate(-50%, -50%)",
+                opacity: pWide >= ERA_AT[i] ? 1 : 0,
+                transition: "opacity .6s ease",
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-full bg-[var(--prime-accent)]"
+                style={{ filter: "blur(2px)" }}
+              />
+              <div className="absolute inset-0 rounded-full bg-[var(--prime-accent)]" />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -430,7 +456,7 @@ function Timeline({ eras }: { eras: Era[] }) {
 
 export function Clo({ data }: { data: PrimePage["clo"] }) {
   return (
-    <section className={cn("py-15", PAD)}>
+    <section className={cn("border-t border-line-solid py-15", PAD)}>
       {/* max-w-5xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-16">
         <Reveal y={60}>
