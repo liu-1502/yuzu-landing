@@ -347,8 +347,8 @@ function Timeline({ eras }: { eras: Era[] }) {
           dùng bản danh sách dọc — nó không bao giờ chồng. */}
       <div ref={wide} className="relative hidden w-full overflow-visible pt-32 xl:block">
         {/* Khung rộng hết khổ CHA (khối này đã được đưa ra ngoài `max-w-5xl`, xem
-            `Clo`), tối đa 1140px — càng rộng thì các mốc càng giãn ra. */}
-        <div className="relative z-10 mx-auto w-full" style={{ maxWidth: 1140 }}>
+            `Clo`), tối đa 1080px — càng rộng thì các mốc càng giãn ra. */}
+        <div className="relative z-10 mx-auto w-full" style={{ maxWidth: 1080 }}>
           <svg viewBox={`0 0 ${SNAKE_W} ${SNAKE_H}`} fill="none" className="block w-full" aria-hidden>
             {/* Vạch nền: bản dev để trắng 15% — trên nền kem gần như không thấy,
                 nên thực tế người xem chỉ thấy nét vàng được vẽ dần. Giữ đúng
@@ -490,17 +490,6 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
           </div>
         </Reveal>
 
-        {/* Dòng thời gian PHÁ KHỔ 1024 của cột — cho rộng tới 1140px. Các mốc nằm
-            theo % bề rộng khung nên khung càng rộng thì thẻ càng giãn ra; đó là
-            cách duy nhất để bảy thẻ 360px không đè nhau.
-            KHÔNG cần `left-1/2` + `-translate-x-1/2`: cột cha là
-            `flex flex-col items-center` nên một item rộng hơn cột đã tự canh giữa
-            sẵn; thêm hai lớp dịch đó vào là lệch hẳn 176px sang trái (đã đo).
-            `mt-30` cộng `gap-10` của cột = 160px khoảng cách tới cụm vòng tròn. */}
-        <div className="relative mt-30 w-[min(1140px,100vw-4rem)]">
-          <Timeline eras={data.timeline} />
-        </div>
-
         <Reveal y={60} className="w-full">
           <div className="relative mx-auto">
             <div className="relative flex flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-0">
@@ -510,8 +499,16 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
           </div>
         </Reveal>
 
-        {/* Timeline rộng hết khổ max-w-5xl như bản dev, không bó vào max-w-5xl:
-            đường cong cần cả bề ngang mới ra hình chữ S. */}
+        {/* Dòng thời gian PHÁ KHỔ 1024 của cột — cho rộng tới 1080px. Các mốc nằm
+            theo % bề rộng khung nên khung càng rộng thì thẻ càng giãn ra; đó là
+            cách duy nhất để bảy thẻ 360px không đè nhau.
+            KHÔNG cần `left-1/2` + `-translate-x-1/2`: cột cha là
+            `flex flex-col items-center` nên một item rộng hơn cột đã tự canh giữa
+            sẵn; thêm hai lớp dịch đó vào là lệch hẳn 176px sang trái (đã đo).
+            `mt-30` cộng `gap-10` của cột = 160px khoảng cách tới cụm vòng tròn. */}
+        <div className="relative mt-30 w-[min(1080px,100vw-4rem)]">
+          <Timeline eras={data.timeline} />
+        </div>
 
         <Reveal y={60} className="w-full">
           {/* Bản dev KHÔNG dựng hai thẻ bo 40px ở đây: chỉ là một dải kẻ trên/dưới,
