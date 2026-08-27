@@ -22,8 +22,8 @@ type BallSkin = {
   glow: string;
   /** Viền — Prime dùng vàng đậm hơn glow, hai màu kia trùng glow. */
   rim?: string;
-  /** Icon token ở giữa. */
-  icon: string;
+  /** Icon token ở giữa. Nhiều icon thì xếp chồng mép nhau thành một cụm. */
+  icon: string | string[];
 };
 
 /* Quả cầu KHÔNG có nền.
@@ -45,15 +45,29 @@ const SKIN: Record<ProductPage["id"], BallSkin> = {
   },
   marketplace: {
     glow: "#a8adff",
-    icon: "/assets/tokens/yzCash.svg",
+    /* Marketplace không có MỘT token đại diện như hai trang kia — nó là chỗ
+       chứa nhiều vault — nên hero xếp cả ba token đang mở, đúng ba cái mà
+       section Terms liệt kê. */
+    icon: [
+      "/assets/tokens/yzCash.svg",
+      "/assets/tokens/yzSyrup.svg",
+      "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png",
+    ],
   },
 };
 
 const CENTER = "absolute left-1/2 top-1/2 size-full -translate-x-1/2 -translate-y-1/2";
 const NOISE = { backgroundImage: `url(${asset("/assets/landing/noise.png")})`, backgroundSize: "200px" };
 
+/** Bề rộng một huy hiệu, tính theo % bề rộng cụm — ba cái chồng nhau vừa kín
+ *  khung: 45.8*3 - 45.8*0.4*2 ≈ 100. */
+const BADGE = 45.8;
+/** Cái sau lùi vào 40% bề rộng của chính nó. */
+const OVERLAP = 0.4;
+
 export function HeroBall({ id }: { id: ProductPage["id"] }) {
   const s = SKIN[id];
+  const icons = Array.isArray(s.icon) ? s.icon : [s.icon];
   const mix = (pct: number) => `color-mix(in srgb, ${s.glow} ${pct}%, transparent)`;
 
   return (
@@ -110,10 +124,33 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
           }}
         />
 
-        {/* 4. icon token */}
-        <div className="absolute left-1/2 top-1/2 h-[52%] w-[52%] -translate-x-1/2 -translate-y-1/2">
-          <img src={asset(s.icon)} alt="" className="size-full object-contain" />
-        </div>
+        {/* 4. icon token — một cái thì canh giữa như cũ; nhiều cái thì xếp chồng
+            mép nhau, cái trước đè lên cái sau.
+            Bề rộng cụm và mức chồng đều tính bằng % của khung nên tự co theo quả
+            cầu (200px dưới `sm`, 225px từ `sm`), khỏi phải gán cứng px. Cụm ba
+            rộng 48% thay vì 52%: ba huy hiệu cạnh nhau đã nặng hơn một icon đơn,
+            để 52% là chạm sát vành sáng. */}
+        {icons.length === 1 ? (
+          <div className="absolute left-1/2 top-1/2 h-[52%] w-[52%] -translate-x-1/2 -translate-y-1/2">
+            <img src={asset(icons[0])} alt="" className="size-full object-contain" />
+          </div>
+        ) : (
+          <div className="absolute left-1/2 top-1/2 flex w-[48%] -translate-x-1/2 -translate-y-1/2 items-center">
+            {icons.map((src, i) => (
+              <img
+                key={src}
+                src={asset(src)}
+                alt=""
+                className="block rounded-full"
+                style={{
+                  width: `${BADGE}%`,
+                  marginLeft: i === 0 ? 0 : `${-BADGE * OVERLAP}%`,
+                  zIndex: icons.length - i,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
