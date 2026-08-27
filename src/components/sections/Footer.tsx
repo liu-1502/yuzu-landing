@@ -73,10 +73,22 @@ function JuiceWordmark() {
 }
 
 export function Footer() {
-  /* Mép trên footer KHÔNG có kẻ nét nào: cặp vạch gradient + chấm tròn đã dời
-     lên đầu section CTA ("Put a dollar to work…"), xem `ClosingCta`. */
   return (
     <footer className="relative overflow-hidden bg-surface pb-0 pt-8 md:pt-16">
+      {/* Vạch kẻ mép trên: dày 2px, đậm ở giữa và mờ dần ra CẢ HAI mép màn hình.
+          Khác cặp vạch có chấm ở đầu section CTA — chỗ này chỉ một đường liền,
+          không chấm, không chữ.
+          `absolute top-0` để nó nằm đúng mép footer, không ăn vào `pt-8 md:pt-16`
+          của phần nội dung — layout footer giữ nguyên. Màu theo `--accent` nên
+          Alpha xanh lá, Prime nâu vàng, Marketplace tím. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[2px]"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 45%, transparent) 25%, color-mix(in srgb, var(--accent) 45%, transparent) 75%, transparent)",
+        }}
+      />
       <div className="relative px-6 md:px-[60px]">
         <div className="mx-auto max-w-[1024px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}

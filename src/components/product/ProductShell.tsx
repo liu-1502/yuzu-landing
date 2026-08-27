@@ -641,68 +641,60 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
  * thẻ chứ không phải cả section. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
-    <section className={cn("relative overflow-hidden bg-surface", SECTION, PAD)}>
-      {/* Vạch kẻ ở MÉP TRÊN section này (trước đây nằm ở mép trên footer): một
-          đường LIỀN dày 2px với hai chấm tròn trên đường, mờ dần ra hai mép màn
-          hình. Màu lấy `--accent` nên Alpha ra xanh lá,
-          Prime nâu vàng, Marketplace tím; pha trong suốt vì 2px nguyên độ màu
-          brand là quá gắt.
-          `absolute top-0` để nó nằm đúng mép section, không ăn vào `py` của
-          nội dung bên trong. Vạch chạy sát hai mép màn hình, không bó trong lề. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-center"
-      >
-        <span
-          className="h-[2px] flex-1"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
-          }}
-        />
-        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
-        {/* Đoạn giữa cũng là vạch (trước để trống) — cả đường liền một mạch từ
-            mép này sang mép kia, chỉ mờ dần ở HAI ĐẦU. */}
-        <span className="h-[2px] w-[26%] max-w-[380px] shrink-0 bg-[color-mix(in_srgb,var(--accent)_55%,transparent)]" />
-        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
-        <span
-          className="h-[2px] flex-1"
-          style={{
-            background:
-              "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
-          }}
-        />
-      </div>
-
+    /* PAD KHÔNG đặt ở section mà ở khối chữ bên dưới: hàng tiêu đề cần chạy sát
+       hai mép màn hình để hai vạch kẻ kéo hết khổ, có lề thì vạch cụt vào 16/24px. */
+    <section className={cn("relative overflow-hidden bg-surface", SECTION)}>
       <Reveal>
-        {/* KHÔNG còn nền màu brand: cụm CTA đặt thẳng trên nền trắng của section.
-            Vì vậy chữ và nút phải trả về bảng màu thường (`--foreground`,
-            `--accent`) — để `--accent-foreground` như hồi có thẻ brand thì chữ
-            gần trắng nằm trên nền trắng, mất hẳn. */}
-        <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 pt-4 pb-6 text-center">
-          <div className="relative z-10 flex flex-col items-center gap-6">
-            {/* Tiêu đề và mô tả gom thành một cụm gap-3 (12px) thay vì cùng ăn
-                gap-6 của cột — trước hai dòng này rời nhau bằng đúng khoảng cách
-                tới hàng nút. */}
-            <div className="flex flex-col items-center gap-3">
-              <h2 className="max-w-[520px] text-balance text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
-                {closing.title}
-              </h2>
-              <p className="max-w-[460px] text-[15px] leading-[1.6] text-muted-foreground">
-                {closing.body}
-              </p>
-            </div>
-            <div className="mt-1 flex flex-col items-center gap-3 sm:flex-row">
-              {/* Nút chính về đúng dạng chung của trang: nền brand, chữ sáng. */}
-              <a href={closing.primary.href} className={BTN_PRIMARY}>
-                {closing.primary.label}
-                <ArrowRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
-              </a>
-              <a href={closing.secondary.href} className={BTN_GHOST}>
-                {closing.secondary.label}
-                <ArrowUpRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
-              </a>
-            </div>
+        {/* Tiêu đề nằm GIỮA hai vạch kẻ: vạch trái mờ dần từ mép màn hình vào,
+            kết thúc bằng một chấm tròn sát tiêu đề, rồi đối xứng sang phải.
+            Vạch là `flex-1 min-w-0` nên tự co khi tiêu đề dài hoặc màn hẹp; chấm
+            và tiêu đề `shrink-0`/`shrink` để chấm không bao giờ bị bóp méo.
+            Màu lấy `--accent` — token này ở `:root` lật theo trang đang mở nên
+            Alpha ra xanh lá, Prime nâu vàng, Marketplace tím. Pha trong suốt vì
+            2px nguyên độ màu brand là quá gắt. */}
+        <div className="flex items-center gap-3 md:gap-5">
+          <span
+            aria-hidden
+            className="h-[2px] min-w-6 flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
+            }}
+          />
+          <span
+            aria-hidden
+            className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]"
+          />
+          <h2 className="max-w-[520px] text-balance text-center text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
+            {closing.title}
+          </h2>
+          <span
+            aria-hidden
+            className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]"
+          />
+          <span
+            aria-hidden
+            className="h-[2px] min-w-6 flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
+            }}
+          />
+        </div>
+
+        <div className={cn("mx-auto mt-6 flex max-w-5xl flex-col items-center gap-6 text-center", PAD)}>
+          <p className="max-w-[560px] text-[15px] leading-[1.6] text-muted-foreground">
+            {closing.body}
+          </p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <a href={closing.primary.href} className={BTN_PRIMARY}>
+              {closing.primary.label}
+              <ArrowRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
+            </a>
+            <a href={closing.secondary.href} className={BTN_GHOST}>
+              {closing.secondary.label}
+              <ArrowUpRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
+            </a>
           </div>
         </div>
       </Reveal>
