@@ -30,6 +30,10 @@ import { productOrder } from "@/data/productPages";
 const DEPTH = 112.5;
 const STEP = 90;
 const DUR = 620;
+/** Quả cầu trôi tối đa bấy nhiêu px theo con trỏ. */
+const DRIFT = 10;
+/** Ngoài bán kính này thì coi như con trỏ ở xa, quả cầu về chỗ. */
+const REACH = 420;
 
 const SCOPE: Record<ProductPage["id"], string> = {
   alpha: "alpha-scope",
@@ -55,6 +59,48 @@ function step(from: ProductPage["id"], to: ProductPage["id"]) {
   const n = productOrder.length;
   const d = (productOrder.indexOf(to) - productOrder.indexOf(from) + n) % n;
   return d === 1 ? 1 : -1;
+}
+
+/**
+ * Quả cầu nhích nhẹ theo con trỏ.
+ *
+ * Nghe `mousemove` ở cấp `window` chứ không gắn vào chính quả cầu: lớp phủ chứa
+ * nó là `pointer-events: none` nên không bao giờ tự nhận được sự kiện chuột.
+ *
+ * Chỉ TỊNH TIẾN, không xoay: hộp bên trong đang giữ `rotateY` của màn xoay
+ * prev/next, thêm xoay ở đây sẽ đánh nhau với nó.
+ */
+function useDrift(ref: React.RefObject<HTMLDivElement | null>, on: boolean) {
+  const [d, setD] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (!on) return;
+    let raf = 0;
+    let last = { x: 0, y: 0 };
+    const onMove = (e: MouseEvent) => {
+      last = { x: e.clientX, y: e.clientY };
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const el = ref.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const dx = last.x - (r.left + r.width / 2);
+        const dy = last.y - (r.top + r.height / 2);
+        const dist = Math.hypot(dx, dy);
+        // Càng ra xa càng nhạt dần, quá REACH thì đứng yên hẳn.
+        const k = dist > REACH ? 0 : (1 - dist / REACH) / Math.max(dist, 1);
+        setD({ x: dx * k * DRIFT, y: dy * k * DRIFT });
+      });
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref, on]);
+
+  return d;
 }
 
 /** Đo ô giữ chỗ trong hero để đặt stage đúng vị trí, thay vì gán cứng 112px:
@@ -102,6 +148,16 @@ export function HeroBallStage() {
   const [shown, setShown] = useState(false);
   const fromRef = useRef(active);
   const angleRef = useRef(0);
+  const ball = useRef<HTMLDivElement>(null);
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* `(hover: hover)`: chỉ chạy trên máy có con trỏ thật. Máy cảm ứng đôi khi tự
+     sinh một `mousemove` khi chạm — không chặn thì quả cầu kẹt lệch vĩnh viễn vì
+     sẽ không bao giờ có sự kiện tiếp theo kéo nó về. */
+  const coTro =
+    typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
+  const drift = useDrift(ball, !!active && !reducedMotion && coTro);
 
   useEffect(() => {
     const from = fromRef.current;
@@ -133,9 +189,7 @@ export function HeroBallStage() {
 
   if (!active || !slot) return null;
 
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduced = reducedMotion;
   const depth = (slot.size / 225) * DEPTH;
 
   return (
@@ -150,15 +204,22 @@ export function HeroBallStage() {
       aria-hidden
     >
       <div
+        ref={ball}
         className={`relative ${SCOPE[active]}`}
         style={{
           width: slot.size,
           height: slot.size,
           opacity: shown ? 1 : 0,
-          transform: shown ? "none" : "translateY(16px)",
+          transform: shown
+            ? `translate3d(${drift.x.toFixed(1)}px, ${drift.y.toFixed(1)}px, 0)`
+            : "translateY(16px)",
+          /* Lúc chưa hiện thì dùng nhịp .6s của màn hiện dần; hiện rồi thì đổi
+             sang nhịp ngắn để bám con trỏ cho kịp mà vẫn mượt. */
           transition: reduced
             ? undefined
-            : "opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1)",
+            : shown
+              ? "transform .45s cubic-bezier(.22,.61,.36,1)"
+              : "opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1)",
         }}
       >
         <div
