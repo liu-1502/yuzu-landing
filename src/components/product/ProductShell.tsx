@@ -375,9 +375,10 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
     return (
       <div
         className={cn(
-          /* Nền TRẮNG như section, phân biệt bằng VIỀN xám trung tính — không
-             dùng `--line-solid` vì token đó ngả theo tông sản phẩm. */
-          "flex h-full items-start justify-between gap-3 rounded-md border border-[var(--line-neutral)] bg-surface p-5 transition-colors duration-300",
+          /* Nền `--background` (xanh lá / nâu / tím nhạt tuỳ trang), KHÔNG viền:
+             trên section trắng thì mảng nhạt đó đã đủ tách nền. Padding 16px cho
+             gọn, trước để 20px. */
+          "flex h-full items-start justify-between gap-3 rounded-md bg-[var(--background)] p-4 transition-colors duration-300",
           base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
         )}
       >
@@ -386,7 +387,7 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
         </div>
         {token.icon && (
-          <img src={asset(token.icon)} alt="" className="size-11 shrink-0 rounded-full" />
+          <img src={asset(token.icon)} alt="" className="size-10 shrink-0 rounded-full" />
         )}
       </div>
     );
@@ -485,14 +486,14 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
           hụt một ô trống.
           Cột KHÔNG phải `1fr` mà `minmax(0, 360px)` + `justify-center`: khổ nội
           dung 1024px chia hai thì mỗi thẻ ra 504px, chỉ có tên và một dòng mô tả
-          nên nhìn dài thượt. Chốt trần 360px rồi canh giữa cả lưới; bộ ba thì
-          1024px vẫn chưa đủ 3×360 nên chúng tự co còn ~331px như trước. */}
+          nên nhìn dài thượt. Chốt trần 320px rồi canh giữa cả lưới; bộ ba thì
+          1024px vẫn chưa đủ 3×320 dàn hết nên chúng vừa khít. */}
       <div
         className={cn(
           "grid justify-center gap-4",
           upper.length === 3
-            ? "sm:grid-cols-[repeat(3,minmax(0,360px))]"
-            : "md:grid-cols-[repeat(2,minmax(0,360px))]",
+            ? "sm:grid-cols-[repeat(3,minmax(0,320px))]"
+            : "md:grid-cols-[repeat(2,minmax(0,320px))]",
         )}
       >
         {upper.map((t, i) => (
@@ -503,9 +504,9 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
       </div>
 
       {base && (
-        /* Thẻ đỡ rộng bằng ĐÚNG hàng trên (2×360 + 16px khe) và canh giữa, để hai
+        /* Thẻ đỡ rộng bằng ĐÚNG hàng trên (2×320 + 16px khe) và canh giữa, để hai
            mũi tên chỉ lên vẫn nằm dưới hai thẻ trên. */
-        <Reveal className="relative mx-auto mt-6 max-w-[736px]" delay={0.16}>
+        <Reveal className="relative mx-auto mt-6 max-w-[656px]" delay={0.16}>
           {/* Bản dev không soi mũi tên theo lưới: hai mũi tên đặt giữa, cách nhau
               28% bề rộng — nên cả ở cột đơn vẫn thấy hai mũi. Và khoảng hở là
               mt-6 / mt-2, không phải mt-8 / mt-3 (mình từng để cao hơn 12px). */}
