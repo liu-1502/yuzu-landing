@@ -376,9 +376,13 @@ main > .mkt-scope {
    nền gần đen thì không còn thấy gì. */
 :root {
   --line-neutral: rgba(0, 0, 0, 0.15);
+  /* Bản NHẠT HƠN của nét xám trên, dùng cho nét kẻ mép dưới header khi cuộn —
+     chỗ đó chỉ cần một gợi ý phân tách, 15% là quá rõ. */
+  --line-neutral-soft: rgba(0, 0, 0, 0.07);
 }
 .dark {
   --line-neutral: rgba(255, 255, 255, 0.15);
+  --line-neutral-soft: rgba(255, 255, 255, 0.08);
 }
 
 /**

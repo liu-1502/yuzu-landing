@@ -84,7 +84,7 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-50 border-b bg-surface transition-colors duration-200",
-        daCuon ? "border-[var(--line-neutral)]" : "border-transparent",
+        daCuon ? "border-[var(--line-neutral-soft)]" : "border-transparent",
       )}
     >
       <div className="px-6 lg:px-[60px]">
