@@ -359,23 +359,98 @@ export function KpiRow({ items }: { items: Kpi[] }) {
 /* --------------------------------- token ---------------------------------- */
 
 function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
-  return (
-    <div
-      className={cn(
-        /* Nếp home: nền xanh nhạt, không stroke. Thẻ đỡ (yzPP) giữ nhấn bằng
-           một vệt accent ở viền TRÊN — đó là thứ nói nó đứng dưới hai thẻ kia. */
-        /* Tên + mô tả canh TRÁI, logo nằm bên PHẢI ngang hàng với tên. */
-        "flex h-full items-start justify-between gap-3 rounded-lg bg-surface-2 p-5 transition-colors duration-300",
-        base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
-      )}
-    >
-      <div className="min-w-0">
-        <p className="text-[18px] font-semibold leading-tight text-foreground">{token.name}</p>
-        <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
+  const metrics = token.metrics ?? [];
+
+  /* Thẻ RÚT GỌN — dùng cho bộ token không có chỉ số (Alpha): nền tint, không
+     viền, chỉ tên + mô tả + logo. Giữ nguyên như trước. */
+  if (metrics.length === 0) {
+    return (
+      <div
+        className={cn(
+          "flex h-full items-start justify-between gap-3 rounded-lg bg-surface-2 p-5 transition-colors duration-300",
+          base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
+        )}
+      >
+        <div className="min-w-0">
+          <p className="text-[18px] font-semibold leading-tight text-foreground">{token.name}</p>
+          <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
+        </div>
+        {token.icon && (
+          <img src={asset(token.icon)} alt="" className="size-14 shrink-0 rounded-full" />
+        )}
       </div>
-      {token.icon && (
-        <img src={asset(token.icon)} alt="" className="size-14 shrink-0 rounded-full" />
-      )}
+    );
+  }
+
+  /* Thẻ ĐẦY ĐỦ: nền trắng có viền, tên + phụ đề mono in hoa ở trên, nút mũi tên
+     tròn góc phải, khung logo ở giữa có kẻ dọc mờ, dưới cùng là ba chỉ số ngăn
+     bằng vạch dọc. */
+  return (
+    <div className="flex h-full flex-col rounded-md border border-line-solid bg-surface p-5 transition-colors duration-300">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[20px] font-semibold leading-tight text-foreground">{token.name}</p>
+          {/* Mô tả chuyển thành phụ đề mono IN HOA. `uppercase` là utility chỉ đặt
+              `text-transform` nên không đụng cỡ chữ 10px mà `.x-scope .microlabel`
+              đang giữ — không có tranh chấp specificity ở đây. */}
+          <p className="microlabel microlabel-muted mt-2 block uppercase">{token.desc}</p>
+        </div>
+        {token.href && (
+          <a
+            href={token.href}
+            aria-label={`Explore ${token.name}`}
+            className="group/tk flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-foreground transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_16%,transparent)]"
+          >
+            <ArrowRight className="size-4 transition-transform duration-300 group-hover/tk:translate-x-0.5" />
+          </a>
+        )}
+      </div>
+
+      {/* Khung logo: bốn kẻ dọc mờ dựng bằng một `repeating-linear-gradient` chứ
+          không phải bốn thẻ div — khỏi phải tính lại khi bề rộng thẻ đổi. */}
+      <div className="relative mt-5 flex h-[150px] items-center justify-center overflow-hidden rounded-sm bg-[color-mix(in_srgb,var(--foreground)_2%,transparent)]">
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--line-solid) calc(25% - 1px) 25%)",
+            opacity: 0.7,
+          }}
+        />
+        {token.icon && (
+          <img src={asset(token.icon)} alt="" className="relative size-16 rounded-full" />
+        )}
+      </div>
+
+      <div className="mt-auto grid grid-cols-3 pt-5">
+        {metrics.map((m, i) => (
+          <div
+            key={m.label}
+            className={cn(
+              "border-t border-line-solid pt-3.5",
+              i > 0 && "border-l pl-3",
+              i < metrics.length - 1 && "pr-3",
+            )}
+          >
+            <p className="microlabel microlabel-muted uppercase">{m.label}</p>
+            {/* Chỉ số ĐẦU (Net APY) tô màu brand — đúng như bản mẫu để mắt bắt
+                được con số quan trọng nhất trước. */}
+            <p
+              /* `min-h` đủ HAI dòng: giá trị dài ("Low-Moderate") xuống dòng còn
+                 các giá trị khác một dòng, mà khối chỉ số neo đáy bằng `mt-auto`
+                 nên khối nào cao hơn thì ĐƯỜNG KẺ của thẻ đó bị đẩy lên — ba thẻ
+                 cạnh nhau lệch kẻ 18px. Chốt chiều cao là ba thẻ thẳng hàng. */
+              className={cn(
+                "mt-1.5 min-h-[36px] text-[14px] leading-[1.3]",
+                i === 0 ? "text-accent" : "text-foreground",
+              )}
+            >
+              {m.value}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

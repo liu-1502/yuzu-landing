@@ -11,7 +11,15 @@ export type Kpi = { value: string; label: string };
 export type Layer = { title: string; desc: string };
 export type Step = { label: string; value: string };
 /** Thẻ token trong khối Terms. `icon` là icon tròn nhấp nhẹ trên bản dev. */
-export type TokenCard = { name: string; desc: string; icon?: string };
+export type TokenCard = {
+  name: string;
+  desc: string;
+  icon?: string;
+  /** Ba chỉ số hiện dưới đường kẻ trong thẻ. Không có thì thẻ ở dạng gọn. */
+  metrics?: { label: string; value: string }[];
+  /** Nút ở đáy thẻ. Chỉ hiện khi có `metrics`. */
+  href?: string;
+};
 /** Thẻ vault của Marketplace: mô tả + 6 chỉ số. */
 export type Vault = {
   name: string;
@@ -209,10 +217,42 @@ export const marketplacePage: ProductPage = {
     kicker: "Terms",
     title: "Who can get in, how fast you get out, what stands under you.",
   },
+  /* Ba chỉ số của mỗi token LẤY LẠI từ `vaults` ở trên (cùng tên vault), không
+     phải số mới: giữ một nguồn duy nhất cho APY / thanh khoản / mức rủi ro. */
   tokens: [
-    { name: "yzCash", icon: "/assets/tokens/yzCash.svg", desc: "Tokenized T-Bill cash management" },
-    { name: "yzSyrup", icon: "/assets/tokens/yzSyrup.svg", desc: "Maple Syrup institutional lending" },
-    { name: "yzmGLOBAL", icon: "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png", desc: "Asset-Backed Credit" },
+    {
+      name: "yzCash",
+      icon: "/assets/tokens/yzCash.svg",
+      desc: "Tokenized T-Bill cash management",
+      metrics: [
+        { label: "Net APY", value: "6%" },
+        { label: "Liquidity", value: "24 hours" },
+        { label: "Risk", value: "Low" },
+      ],
+      href: "#",
+    },
+    {
+      name: "yzSyrup",
+      icon: "/assets/tokens/yzSyrup.svg",
+      desc: "Maple Syrup institutional lending",
+      metrics: [
+        { label: "Net APY", value: "10%" },
+        { label: "Liquidity", value: "3 days" },
+        { label: "Risk", value: "Low-Moderate" },
+      ],
+      href: "#",
+    },
+    {
+      name: "yzmGLOBAL",
+      icon: "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png",
+      desc: "Asset-Backed Credit",
+      metrics: [
+        { label: "Net APY", value: "11.8%" },
+        { label: "Liquidity", value: "Monthly" },
+        { label: "Risk", value: "Moderate" },
+      ],
+      href: "#",
+    },
   ],
   protection: {
     kicker: "Protection",
