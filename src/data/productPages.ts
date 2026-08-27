@@ -220,9 +220,17 @@ export const marketplacePage: ProductPage = {
     kicker: "Terms",
     title: "Who can get in, how fast you get out, what stands under you.",
   },
-  /* Marketplace KHÔNG liệt kê token ở section Terms: ba vault đã có thẻ riêng
-     đầy đủ chỉ số ở section Composition, để thêm một lưới nữa là nói hai lần. */
-  tokens: [],
+  /* Ba token dàn ngang ở section Terms — chỉ tên + mô tả + logo, không kèm chỉ
+     số: bộ chỉ số đầy đủ đã có ở thẻ vault section Composition. */
+  tokens: [
+    { name: "yzCash", icon: "/assets/tokens/yzCash.svg", desc: "Tokenized T-Bill cash management" },
+    { name: "yzSyrup", icon: "/assets/tokens/yzSyrup.svg", desc: "Maple Syrup institutional lending" },
+    {
+      name: "yzmGLOBAL",
+      icon: "https://assets.yuzu.money/vault-catalog/1-0x7c5ed3b2dc8c353d685005b9e06e3250d47d839e/icon-9923fa43-2149-402f-bc3c-eaf1ef715f78.png",
+      desc: "Asset-Backed Credit",
+    },
+  ],
 
   protection: {
     kicker: "Protection",
