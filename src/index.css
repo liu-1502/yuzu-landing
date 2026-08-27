@@ -578,6 +578,15 @@ main > .mkt-scope {
   letter-spacing: 1px;
 }
 
+/* Nhãn của bốn thẻ "The path in": to hơn nhãn mono 10px mặc định của trang sản
+   phẩm — thẻ ở đây chỉ có hai dòng chữ nên nhãn 10px trông hụt. Phải là rule
+   riêng chứ không dùng utility: `.x-scope .microlabel` ở trên đã là 0,2,0 nên
+   `text-[12px]` của Tailwind (0,1,0) không thắng nổi. */
+.path-step .microlabel {
+  font-size: 12px;
+  letter-spacing: 0.8px;
+}
+
 /**
  * Biến thể màu phụ. Phải là class riêng chứ không dùng `text-muted-foreground`:
  * `.microlabel` khai ngoài `@layer` nên thắng mọi utility của Tailwind.

@@ -70,7 +70,13 @@ export function ProductPartners() {
       aria-label={partnerHeading}
       className="flex flex-col items-center gap-8 py-14"
     >
-      <p className="text-center text-lg font-normal text-foreground">{partnerHeading}</p>
+      {/* Cùng dạng với kicker của các section: IN HOA, giãn chữ, màu brand —
+          `.kicker` tự đọc `--accent` trong scope sản phẩm nên Alpha ra xanh lá,
+          Prime nâu vàng, Marketplace tím. `text-center` không ăn vì `.kicker`
+          là `inline-flex`, nên căn giữa bằng flex ở thẻ bọc. */}
+      <p className="flex justify-center">
+        <span className="kicker">{partnerHeading}</span>
+      </p>
       <div className="flex w-full flex-col gap-10">
         <Row logos={partnerRowA} />
         <Row logos={partnerRowB} reverse />

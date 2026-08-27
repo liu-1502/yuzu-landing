@@ -483,7 +483,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-y border-line-solid bg-surface",
+        "relative overflow-hidden border-t border-line-solid bg-surface",
         SECTION,
         PAD,
       )}
@@ -497,7 +497,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {steps.map((s, i) => (
             <Reveal key={s.label} y={16} delay={i * 0.07}>
-              <li className="relative h-full overflow-hidden rounded-lg bg-surface-2 p-5">
+              <li className="path-step relative h-full overflow-hidden rounded-lg bg-surface-2 p-5">
                 {/* Số thứ tự to nằm sau chữ, màu accent nhạt — cùng mô-típ với con
                     số khổng lồ ở section Security của trang chủ. Nằm GỌN trong
                     thẻ chứ không tràn mép: tràn ra thì phần bị `overflow-hidden`
