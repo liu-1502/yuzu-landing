@@ -84,7 +84,9 @@ export function Footer() {
        `index.css`, xem rule `footer`. */
     <footer className="relative overflow-hidden border-t border-[var(--line-neutral)] pb-0 pt-8 md:pt-16">
       <div className="relative px-6 md:px-[60px]">
-        <div className="mx-auto max-w-[1024px]">
+        {/* Footer là ngoại lệ DUY NHẤT còn giữ 1280: mọi section khác đã gom về
+            1024 cho đồng bộ, riêng đây rộng hơn theo yêu cầu. */}
+        <div className="mx-auto max-w-[1280px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
             <div>
