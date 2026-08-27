@@ -73,44 +73,10 @@ function JuiceWordmark() {
 }
 
 export function Footer() {
-  /* Mép trên footer KHÔNG còn kẻ nét nào: bỏ cả `border-t` lẫn sợi gradient
-     accent `h-px` từng nằm đè lên nó — để lại một trong hai thì vẫn thấy vạch. */
+  /* Mép trên footer KHÔNG có kẻ nét nào: cặp vạch gradient + chấm tròn đã dời
+     lên đầu section CTA ("Put a dollar to work…"), xem `ClosingCta`. */
   return (
     <footer className="relative overflow-hidden bg-surface pb-0 pt-8 md:pt-16">
-      {/* Hai vạch kẻ ở mép trên, mỗi vạch kết thúc bằng một chấm tròn hướng vào
-          giữa, chừa một khoảng hở ở giữa (bản mẫu để tiêu đề ở đó, ở đây bỏ chữ).
-          Đặt `absolute top-0` chứ không phải một phần tử trong luồng: như vậy nó
-          nằm đúng mép footer và KHÔNG đụng tới `pt-8 md:pt-16` của phần nội dung
-          bên dưới — layout footer giữ nguyên. Vạch chạy sát hai mép màn hình,
-          không bó trong lề như nội dung. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 flex items-center"
-      >
-        {/* Vạch dày 2px, đậm nhất ở đầu có chấm rồi nhạt dần ra mép màn hình.
-            Màu lấy `--accent` — token này ở `:root` đã lật theo trang đang mở, nên
-            Alpha ra xanh lá, Prime nâu vàng, Marketplace tím. Pha trong suốt chứ
-            không dùng nguyên màu brand: 2px nguyên độ ở mép footer là quá gắt. */}
-        <span
-          className="h-[2px] flex-1"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
-          }}
-        />
-        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
-        <span className="w-[26%] max-w-[380px] shrink-0" />
-        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
-        <span
-          className="h-[2px] flex-1"
-          style={{
-            background:
-              "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
-          }}
-        />
-      </div>
-
-
       <div className="relative px-6 md:px-[60px]">
         <div className="mx-auto max-w-[1024px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}
