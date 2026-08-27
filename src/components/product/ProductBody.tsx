@@ -628,7 +628,10 @@ export function Terms({
           </div>
         </Reveal>
 
-        <TokenSet tokens={tokens} note={tokensNote} />
+        {/* Trang nào không khai `tokens` thì section Terms dừng ở dải ba ô đặc
+            điểm — Marketplace ở dạng đó, vì bộ vault đã được liệt kê đầy đủ ở
+            section Composition phía trên. */}
+        {tokens.length > 0 && <TokenSet tokens={tokens} note={tokensNote} />}
       </div>
     </section>
   );
