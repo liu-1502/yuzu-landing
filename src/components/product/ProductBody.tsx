@@ -33,11 +33,13 @@ function VaultCard({ v }: { v: Vault }) {
         "will-change-transform transition-transform duration-300 hover:-translate-y-1",
       )}
     >
-      <div className="flex items-center gap-2.5">
+      {/* Logo TRÊN, tên token DƯỚI — và cả hai to hẳn lên: logo 28 -> 48px,
+          tên 17 -> 24px. */}
+      <div className="flex flex-col items-start gap-3">
         {v.icon && (
-          <img src={asset(v.icon)} alt="" className="size-7 shrink-0 rounded-full" />
+          <img src={asset(v.icon)} alt="" className="size-12 shrink-0 rounded-full" />
         )}
-        <h3 className="text-[17px] font-semibold text-foreground">{v.name}</h3>
+        <h3 className="text-2xl font-semibold leading-tight text-foreground">{v.name}</h3>
       </div>
       <p className="text-[13.5px] leading-[1.55] text-muted-foreground">{v.desc}</p>
       {v.metrics.length > 0 && (
