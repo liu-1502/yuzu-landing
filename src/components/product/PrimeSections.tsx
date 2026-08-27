@@ -48,7 +48,9 @@ function Pill({ children }: { children: string }) {
 
 function PrimeH2({ children }: { children: string }) {
   return (
-    <h2 className="text-center text-2xl font-bold leading-[1.2] tracking-tight text-[var(--prime-text)] md:text-4xl">
+    /* Cùng cỡ với `SectionHead` của Alpha/Marketplace: 30px, 40px từ `md`. Trước
+       để 24px/36px nên tiêu đề Prime nhỏ hơn hai trang kia một nấc. */
+    <h2 className="text-center text-3xl font-bold leading-[1.2] tracking-tight text-[var(--prime-text)] md:text-[40px]">
       {children}
     </h2>
   );
@@ -57,7 +59,9 @@ function PrimeH2({ children }: { children: string }) {
 function Lead({ text, width }: { text: string; width: string }) {
   return (
     <div className={cn("mx-auto", width)}>
-      <p className="text-center text-xl leading-[1.3] text-[var(--prime-text-subtle)]">
+      {/* 15.5px như đoạn mô tả ở mọi section của hai trang kia. Trước để 20px
+          (`text-xl`) nên chữ Prime bự hơn hẳn. */}
+      <p className="text-center text-[15.5px] leading-[1.65] text-[var(--prime-text-subtle)]">
         {withRefs(text)}
       </p>
     </div>
@@ -110,11 +114,14 @@ export function TBills({ data }: { data: PrimePage["tbills"] }) {
   return (
     <section className={cn("py-15", PAD)}>
       <div className={cn(WRAP, "flex flex-col items-center gap-10")}>
+        {/* Kicker + tiêu đề nằm trong MỘT cụm cách nhau 16px, đúng nếp
+            `SectionHead` của hai trang kia. Trước đây chúng là con riêng của cột
+            `gap-10` nên cách nhau 40px — xa hơn hẳn. */}
         <Reveal y={60}>
-          <Pill>{data.kicker}</Pill>
-        </Reveal>
-        <Reveal y={60}>
-          <PrimeH2>{data.title}</PrimeH2>
+          <div className="flex flex-col items-center gap-4">
+            <Pill>{data.kicker}</Pill>
+            <PrimeH2>{data.title}</PrimeH2>
+          </div>
         </Reveal>
         <Reveal y={60} className="w-full">
           <StatRule stats={data.stats} />
@@ -184,7 +191,7 @@ function CloRing() {
         }}
         aria-hidden
       />
-      <span className="pointer-events-none absolute inset-0 flex select-none items-center justify-center text-5xl font-bold text-[var(--prime-text)] lg:text-6xl">
+      <span className="pointer-events-none absolute inset-0 flex select-none items-center justify-center text-5xl font-bold text-[var(--prime-accent)] lg:text-6xl">
         CLOs
       </span>
     </div>
@@ -194,18 +201,18 @@ function CloRing() {
 /** Số liệu dạng viên thuốc: badge tròn viền vàng chứa số, rồi nhãn. */
 function StatPills({ stats }: { stats: Stat[] }) {
   return (
-    <div className="flex flex-col gap-4 lg:ml-12 lg:gap-5">
+    <div className="flex flex-col gap-4 lg:ml-20 lg:gap-5">
       {stats.map((s, i) => (
         <Reveal key={s.label} y={20} delay={i * 0.07}>
           <div className="relative">
             {/* Sợi chỉ nối vòng tròn sang viên này. Neo vào CHÍNH viên
                 (`right-full`, `top-1/2`) nên nó luôn nằm giữa viên và luôn lấp
-                đúng khe `lg:ml-12` (48px) — trước đây bốn sợi đặt theo % của cả
+                đúng khe `lg:ml-20` (80px) — trước đây bốn sợi đặt theo % của cả
                 khối nên lệch tâm viên (20/36/52/70% so với tâm thật
                 16.3/38.8/61.3/83.8%) và còn kéo xuyên qua viên. */}
             <span
               aria-hidden
-              className="absolute top-1/2 right-full hidden h-px w-12 -translate-y-1/2 lg:block"
+              className="absolute top-1/2 right-full hidden h-px w-20 -translate-y-1/2 lg:block"
               style={{
                 background: "linear-gradient(90deg, transparent 0%, var(--prime-accent) 100%)",
               }}
@@ -456,9 +463,15 @@ function Timeline({ eras }: { eras: Era[] }) {
 
 export function Clo({ data }: { data: PrimePage["clo"] }) {
   return (
-    <section className={cn("border-t border-line-solid py-15", PAD)}>
+    <section
+      className={cn(
+        /* Nền trắng, KHÔNG nét kẻ trên/dưới. */
+        "bg-surface py-15",
+        PAD,
+      )}
+    >
       {/* max-w-5xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-16">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-10">
         <Reveal y={60}>
           <div className="flex flex-col items-center gap-4">
             <Pill>{data.kicker}</Pill>
@@ -513,16 +526,14 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
 export function Lending({ data }: { data: PrimePage["lending"] }) {
   return (
-    <section className={cn("border-t border-line-solid py-15", PAD)}>
+    <section className={cn("py-15", PAD)}>
       <div className={cn(WRAP, "flex flex-col items-center gap-10")}>
         <Reveal y={60}>
-          <Pill>{data.kicker}</Pill>
-        </Reveal>
-        <Reveal y={60}>
-          <PrimeH2>{data.title}</PrimeH2>
-        </Reveal>
-        <Reveal y={60}>
-          <Lead text={data.body} width="max-w-2xl" />
+          <div className="flex flex-col items-center gap-4">
+            <Pill>{data.kicker}</Pill>
+            <PrimeH2>{data.title}</PrimeH2>
+            <Lead text={data.body} width="max-w-2xl" />
+          </div>
         </Reveal>
 
         <Reveal y={60} className="w-full">

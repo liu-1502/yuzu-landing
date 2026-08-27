@@ -77,10 +77,12 @@ export function MapleIcon({ src, className }: { src: string; className?: string 
 
   return (
     <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
+      {/* Đĩa tròn nền ở 10% — file gốc để 20%, mà `currentColor` ở đây là nâu
+          vàng Prime nên 20% đọc ra thành một mảng nâu đậm. */}
       <path
         d="M0 24C0 10.7452 10.7452 0 24 0C37.2548 0 48 10.7452 48 24C48 37.2548 37.2548 48 24 48C10.7452 48 0 37.2548 0 24Z"
         fill="currentColor"
-        fillOpacity="0.2"
+        fillOpacity="0.1"
       />
       {SHAPES[key]}
     </svg>
