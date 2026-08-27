@@ -375,10 +375,9 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
     return (
       <div
         className={cn(
-          /* Nền `--background` (nền trang) chứ không `--surface-2`: trên section
-             trắng thì đó là mảng xanh nhạt vừa đủ tách nền, còn `--surface-2`
-             đậm hơn một nấc nên nhìn nặng. Cùng cách với thẻ "The path in". */
-          "flex h-full items-start justify-between gap-3 rounded-md bg-[var(--background)] p-5 transition-colors duration-300",
+          /* Nền TRẮNG như section, phân biệt bằng VIỀN xám trung tính — không
+             dùng `--line-solid` vì token đó ngả theo tông sản phẩm. */
+          "flex h-full items-start justify-between gap-3 rounded-md border border-[var(--line-neutral)] bg-surface p-5 transition-colors duration-300",
           base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
         )}
       >

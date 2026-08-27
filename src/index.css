@@ -399,6 +399,19 @@ footer {
   background: var(--surface);
 }
 
+/* Hai ngoại lệ CHỈ cho trang Prime:
+     - dải Partners bỏ nét kẻ mép trên (hai trang kia vẫn có)
+     - footer thì ngược lại, CÓ nét kẻ mép trên
+   Cả hai component đều dùng chung cho ba trang nên không sửa được trong JSX mà
+   không thêm prop; khai ở đây gọn hơn. Selector đủ nặng để thắng utility
+   `border-t` của Tailwind (0,1,0). */
+.prime-scope > section[aria-label="Trusted by leading institutions"] {
+  border-top-width: 0;
+}
+:root:has(main > .prime-scope) footer {
+  border-top: 1px solid var(--line-neutral);
+}
+
 /**
  * Header và footer nằm NGOÀI `<main>` nên cũng ngoài div scope: chúng đọc token
  * của `:root`, tức bảng màu Alpha — nền footer ở trang Marketplace vì thế ra
