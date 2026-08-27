@@ -281,13 +281,22 @@ export function Terms({
               return (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3.5 rounded-lg bg-surface px-3.5 py-3 text-center sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5"
+                  className="flex items-center gap-3.5 rounded-md bg-surface px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center"
                 >
+                  {/* Theo đúng thẻ Spec ngoài home: icon 20px đặt trong ô bo 36px
+                      nền `--foreground 6%`, KHÔNG phải icon 28px màu accent nhấp
+                      nháy; nhãn dùng biến thể muted; bo `rounded-md`; và chỉ canh
+                      giữa từ `sm` chứ không canh giữa cả ở mobile.
+                      Một chỗ CỐ Ý khác home: home ghi `bg-white` cứng nên ở dark
+                      mode thẻ vẫn trắng tinh trên nền gần đen — dùng `bg-surface`
+                      để nó theo theme. */}
                   <div className="shrink-0 sm:mb-2.5">
-                    <Icon className="citrus-bob-fast size-7 text-accent" />
+                    <span className="flex size-9 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-foreground">
+                      <Icon className="size-5" />
+                    </span>
                   </div>
                   <div className="min-w-0">
-                    <div className="microlabel">{f.label}</div>
+                    <div className="microlabel microlabel-muted">{f.label}</div>
                     <div className="mt-1 text-[12.5px] font-medium leading-[1.4] text-foreground">
                       {f.value}
                     </div>
