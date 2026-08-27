@@ -513,7 +513,7 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
 export function Lending({ data }: { data: PrimePage["lending"] }) {
   return (
-    <section className={cn("py-15", PAD)}>
+    <section className={cn("border-t border-line-solid py-15", PAD)}>
       <div className={cn(WRAP, "flex flex-col items-center gap-10")}>
         <Reveal y={60}>
           <Pill>{data.kicker}</Pill>
