@@ -639,6 +639,24 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
 
 /** Bản dev bọc CTA trong một thẻ bo `rounded-xl` có viền; hạt cam rơi bên trong
  * thẻ chứ không phải cả section. */
+/**
+ * Tô màu brand cho cụm "in <Tên sản phẩm>." ở cuối tiêu đề CTA.
+ *
+ * Cắt tại " in " CUỐI CÙNG chứ không phải chuỗi cố định: cả ba trang đều là
+ * "Put a dollar to work in <Alpha|Prime|Marketplace>." nên một chỗ lo hết, và
+ * tiêu đề nào không có " in " thì trả về nguyên văn, không hỏng.
+ */
+function ClosingTitle({ title }: { title: string }) {
+  const i = title.lastIndexOf(" in ");
+  if (i < 0) return <>{title}</>;
+
+  return (
+    <>
+      {title.slice(0, i)} <span className="text-accent">{title.slice(i + 1)}</span>
+    </>
+  );
+}
+
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
     /* PAD KHÔNG đặt ở section mà ở khối chữ bên dưới: hàng tiêu đề cần chạy sát
@@ -646,13 +664,16 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
     <section className={cn("relative overflow-hidden bg-surface", SECTION)}>
       <Reveal>
         {/* Tiêu đề nằm GIỮA hai vạch kẻ: vạch trái mờ dần từ mép màn hình vào,
-            kết thúc bằng một chấm tròn sát tiêu đề, rồi đối xứng sang phải.
-            Vạch là `flex-1 min-w-0` nên tự co khi tiêu đề dài hoặc màn hẹp; chấm
-            và tiêu đề `shrink-0`/`shrink` để chấm không bao giờ bị bóp méo.
+            DÍNH LIỀN một chấm tròn sát tiêu đề, rồi đối xứng sang phải.
+            Vạch là `flex-1` nên tự co khi tiêu đề dài hoặc màn hẹp; chấm giữ
+            `shrink-0` để không bao giờ bị bóp méo.
+            Hàng này KHÔNG dùng `gap`: gap chèn khoảng trống giữa MỌI cặp con nên
+            vạch bị tách khỏi chấm, nhìn ra một đoạn hở rồi mới tới chấm. Khoảng
+            cách chỉ đặt bằng lề ngang của chính tiêu đề — 10px, 12px từ `md`.
             Màu lấy `--accent` — token này ở `:root` lật theo trang đang mở nên
             Alpha ra xanh lá, Prime nâu vàng, Marketplace tím. Pha trong suốt vì
             2px nguyên độ màu brand là quá gắt. */}
-        <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex items-center">
           <span
             aria-hidden
             className="h-[2px] min-w-6 flex-1"
@@ -665,8 +686,8 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
             aria-hidden
             className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]"
           />
-          <h2 className="max-w-[520px] text-balance text-center text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:text-[38px]">
-            {closing.title}
+          <h2 className="mx-2.5 max-w-[520px] text-balance text-center text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:mx-3 md:text-[38px]">
+            <ClosingTitle title={closing.title} />
           </h2>
           <span
             aria-hidden
