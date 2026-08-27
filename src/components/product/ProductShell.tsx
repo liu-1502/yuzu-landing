@@ -481,7 +481,13 @@ export function Protection({
 
 export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[]; note: string }) {
   return (
-    <section className={cn("relative overflow-hidden border-y border-line-solid", SECTION, PAD)}>
+    <section
+      className={cn(
+        "relative overflow-hidden border-y border-line-solid bg-surface",
+        SECTION,
+        PAD,
+      )}
+    >
       <div className={cn("relative", WRAP)}>
         <SectionHead kicker={kicker} />
         {/* Khe rộng 32px CHỈ từ `lg` — đúng chỗ mũi tên nối hiện ra: `-right-6`
@@ -491,11 +497,24 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {steps.map((s, i) => (
             <Reveal key={s.label} y={16} delay={i * 0.07}>
-              <li className="relative h-full rounded-lg bg-surface p-5">
-                <span className="microlabel">{s.label}</span>
-                <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
-                  {s.value}
-                </p>
+              <li className="relative h-full overflow-hidden rounded-lg bg-surface-2 p-5">
+                {/* Số thứ tự to nằm sau chữ, màu accent nhạt — cùng mô-típ với con
+                    số khổng lồ ở section Security của trang chủ. Nằm GỌN trong
+                    thẻ chứ không tràn mép: tràn ra thì phần bị `overflow-hidden`
+                    cắt mất làm con số đọc không ra. */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute right-3 bottom-1 select-none text-[68px] font-bold leading-none tracking-tight"
+                  style={{ color: "var(--accent)", opacity: 0.2 }}
+                >
+                  {i + 1}
+                </span>
+                <span className="relative z-10 block">
+                  <span className="microlabel">{s.label}</span>
+                  <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
+                    {s.value}
+                  </p>
+                </span>
                 {i < steps.length - 1 && (
                   <span
                     aria-hidden
