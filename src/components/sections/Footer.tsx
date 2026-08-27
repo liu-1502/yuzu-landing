@@ -87,17 +87,26 @@ export function Footer() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 flex items-center"
       >
-        {/* Vạch dày 2px, đậm nhất ở đầu có chấm rồi nhạt dần ra mép màn hình. */}
+        {/* Vạch dày 2px, đậm nhất ở đầu có chấm rồi nhạt dần ra mép màn hình.
+            Màu lấy `--accent` — token này ở `:root` đã lật theo trang đang mở, nên
+            Alpha ra xanh lá, Prime nâu vàng, Marketplace tím. Pha trong suốt chứ
+            không dùng nguyên màu brand: 2px nguyên độ ở mép footer là quá gắt. */}
         <span
           className="h-[2px] flex-1"
-          style={{ background: "linear-gradient(90deg, transparent, var(--line-strong))" }}
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
+          }}
         />
-        <span className="size-2.5 shrink-0 rounded-full bg-[var(--line-strong)]" />
+        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
         <span className="w-[26%] max-w-[380px] shrink-0" />
-        <span className="size-2.5 shrink-0 rounded-full bg-[var(--line-strong)]" />
+        <span className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
         <span
           className="h-[2px] flex-1"
-          style={{ background: "linear-gradient(90deg, var(--line-strong), transparent)" }}
+          style={{
+            background:
+              "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
+          }}
         />
       </div>
 
