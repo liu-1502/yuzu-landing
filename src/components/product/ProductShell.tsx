@@ -670,7 +670,16 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
     /* PAD KHÔNG đặt ở section mà ở khối chữ bên dưới: hàng tiêu đề cần chạy sát
        hai mép màn hình để hai vạch kẻ kéo hết khổ, có lề thì vạch cụt vào 16/24px. */
-    <section className={cn("relative overflow-hidden bg-surface", SECTION)}>
+        /* Nền TINT màu brand 12% pha trên nền trắng — nâu ở Prime, xanh lá ở Alpha,
+       tím ở Marketplace. Không dùng `--accent` nguyên độ: cả tiêu đề, mô tả và
+       nút bên trong đang ăn bảng màu thường, đặt trên khối brand đặc thì mất
+       tương phản hết. */
+    <section
+      className={cn(
+        "relative overflow-hidden bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface))]",
+        SECTION,
+      )}
+    >
       {/* Lưới ô vuông 48px, cùng mô-típ với section Transparency ngoài trang chủ.
           Che dần về phía TRÊN bằng `mask-image` chứ không phủ thêm một lớp nền:
           lưới nhạt hẳn ở vùng có tiêu đề và đoạn mô tả, chỉ hiện rõ ở phần dưới
