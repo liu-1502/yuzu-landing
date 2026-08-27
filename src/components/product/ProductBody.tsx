@@ -132,10 +132,6 @@ function SliceCard({
         transform: on ? "translateY(-2px)" : undefined,
       }}
     >
-      <span
-        className="mt-[5px] h-[7px] w-[7px] shrink-0 rounded-[2px]"
-        style={{ background: s.upcoming ? "var(--faint)" : (s.color ?? accent) }}
-      />
       <span className="min-w-0 flex-1">
         <span className="block text-[12.5px] font-medium leading-tight text-foreground">
           {s.label}
