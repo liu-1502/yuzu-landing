@@ -162,7 +162,7 @@ const ZOOM_TO = 1.5;
 const ART_W = 420;
 /** Thẻ hẹp hơn mức này thì chữ bắt đầu gãy giữa từ (đo: 189px gãy, 234px không). */
 const CARD_MIN = 240;
-const CARD_MAX = 420;
+const CARD_MAX = 480;
 /** Hở giữa mép khung quả chanh và thẻ. */
 const GAP = 16;
 
