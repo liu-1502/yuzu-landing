@@ -579,7 +579,7 @@ export function Sources({ data }: { data: PrimePage["sources"] }) {
   return (
     /* Bản dev: px-6 rồi BỎ lề từ md (md:px-0) vì khối đã có max-w-5xl mx-auto —
        không phải px-4 sm:px-6 như các section khác. */
-    <section className="border-t border-[var(--prime-card-border)] px-6 py-15 md:px-0">
+    <section className="border-t border-[var(--prime-card-border)] bg-surface px-6 py-15 md:px-0">
       {/* Ba khối cách nhau gap-6, không phải mt-6/mt-8 xen kẽ. Chữ 11px, danh sách
           gap-1 — mình từng để 11.5px và gap-3 nên khối này cao hơn bản gốc 141px. */}
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
