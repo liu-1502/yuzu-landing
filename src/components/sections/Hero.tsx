@@ -24,7 +24,7 @@ export function Hero() {
       id="top"
       className="flex min-h-[calc(100svh-64px)] flex-col justify-center px-6 py-8 md:py-16 lg:px-[60px]"
     >
-      <div className="mx-auto w-full max-w-[1024px]">
+      <div className="mx-auto w-full max-w-[1280px]">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:gap-14">
           <div>
             <div className="text-center lg:text-left">

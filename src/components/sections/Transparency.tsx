@@ -116,7 +116,7 @@ export function Transparency() {
         }}
       />
 
-      <div className="relative mx-auto flex max-w-[1024px] flex-col items-center gap-16">
+      <div className="relative mx-auto flex max-w-[1280px] flex-col items-center gap-16">
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="kicker">{transparency.kicker}</span>
           <h2 className="text-[30px] font-semibold text-foreground md:text-[40px] md:leading-[1.15]">

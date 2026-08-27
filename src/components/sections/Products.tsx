@@ -203,7 +203,7 @@ function Pinned() {
         )}
         style={{ top: 64, height: "calc(100svh - 64px)" }}
       >
-        <div className="mx-auto w-full max-w-[1024px]">
+        <div className="mx-auto w-full max-w-[1280px]">
           <Heading
             trailing={
               <div className="inline-flex gap-1 rounded-full bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] p-1">
@@ -400,7 +400,7 @@ function StackedCard({ p }: { p: Product }) {
       aria-label={`${p.name}, ${p.kind}`}
       className={cn("section-tint px-6 py-8 md:py-16 lg:px-[60px]", p.scope)}
     >
-      <div className="mx-auto w-full max-w-[1024px]">
+      <div className="mx-auto w-full max-w-[1280px]">
         <div className="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h3 className="text-[22px] font-semibold" style={{ color: p.color }}>
             {p.name}
@@ -438,7 +438,7 @@ function Stacked() {
   return (
     <div id="products">
       <div className="px-6 pt-8 md:pt-16 lg:px-[60px]">
-        <div className="mx-auto w-full max-w-[1024px]">
+        <div className="mx-auto w-full max-w-[1280px]">
           <Heading />
         </div>
       </div>

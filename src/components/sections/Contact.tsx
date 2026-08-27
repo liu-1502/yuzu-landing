@@ -18,7 +18,7 @@ const BULLET_ICONS = [CompassIcon, IdIcon, ChartIcon, ChatIcon];
 export function Contact() {
   return (
     <section id="contact" className="section-tint border-t border-line-solid px-6 py-8 md:py-16 lg:px-[60px]">
-      <div className="mx-auto grid max-w-[1024px] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,580px)] lg:items-start lg:gap-16">
+      <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,580px)] lg:items-start lg:gap-16">
         <div>
           <span className="kicker mb-4">{concierge.kicker}</span>
           <h2 className="max-w-[20ch] text-[24px] font-semibold leading-[1.1] text-foreground md:text-[30px]">

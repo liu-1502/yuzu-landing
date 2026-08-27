@@ -78,7 +78,7 @@ export function Partners() {
       className="bg-surface"
     >
       <div className="px-6 lg:px-[60px]">
-        <div className="relative mx-auto max-w-[1024px] before:absolute before:inset-x-[calc(50%-50vw)] before:top-0 before:h-px before:bg-line-solid before:content-[''] after:absolute after:inset-x-[calc(50%-50vw)] after:bottom-0 after:z-[2] after:h-px after:bg-line-solid after:content-['']">
+        <div className="relative mx-auto max-w-[1280px] before:absolute before:inset-x-[calc(50%-50vw)] before:top-0 before:h-px before:bg-line-solid before:content-[''] after:absolute after:inset-x-[calc(50%-50vw)] after:bottom-0 after:z-[2] after:h-px after:bg-line-solid after:content-['']">
           <div className="grid grid-cols-3 gap-px border-x border-line-solid bg-line-solid md:grid-cols-9">
             {/* hàng nhãn — mỗi nhóm span 2 cột ở desktop */}
             {partnerRows.map((row, g) => (
