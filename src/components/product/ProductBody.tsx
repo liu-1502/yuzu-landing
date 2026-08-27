@@ -445,7 +445,7 @@ function SliceArt({
                và chữ gãy giữa từ ("Overcollater / alized"). */
             <div
               key={String(right)}
-              className="absolute flex flex-col gap-20"
+              className="absolute flex flex-col gap-10"
               style={{
                 width: cardW,
                 /* Neo vào MÉP NGOÀI của khung như cũ. Thẻ dài ra thì nó ăn vào
