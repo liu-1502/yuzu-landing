@@ -431,8 +431,8 @@ function Timeline({ eras }: { eras: Era[] }) {
 export function Clo({ data }: { data: PrimePage["clo"] }) {
   return (
     <section className={cn("py-15", PAD)}>
-      {/* max-w-7xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-16">
+      {/* max-w-5xl chứ không phải 5xl: vòng tròn + cột viên thuốc cần chỗ. */}
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-16">
         <Reveal y={60}>
           <div className="flex flex-col items-center gap-4">
             <Pill>{data.kicker}</Pill>
@@ -450,7 +450,7 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
           </div>
         </Reveal>
 
-        {/* Timeline rộng hết khổ max-w-7xl như bản dev, không bó vào max-w-5xl:
+        {/* Timeline rộng hết khổ max-w-5xl như bản dev, không bó vào max-w-5xl:
             đường cong cần cả bề ngang mới ra hình chữ S. */}
         <Timeline eras={data.timeline} />
 

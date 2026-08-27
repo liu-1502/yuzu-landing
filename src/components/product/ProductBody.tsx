@@ -359,7 +359,7 @@ function SliceArt({
         {/* Khổ tối đa 1280px như phần còn lại của trang, lề hai bên là `PAD` của
             section. Trước để `w-full` nên ở màn rộng stage kéo tới 1552px và thẻ
             dính sát mép màn. */}
-        <div ref={stage} className="relative mx-auto h-[320px] w-full max-w-[1280px]">
+        <div ref={stage} className="relative mx-auto h-[320px] w-full max-w-[1024px]">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch

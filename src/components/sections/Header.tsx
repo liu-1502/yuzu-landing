@@ -62,7 +62,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-surface">
       <div className="px-6 lg:px-[60px]">
-        <nav className="mx-auto flex h-16 max-w-[1280px] items-center justify-between">
+        <nav className="mx-auto flex h-16 max-w-[1024px] items-center justify-between">
           <Link to="/" aria-label="Yuzu" className="squeeze">
             <Wordmark className="h-8" />
           </Link>

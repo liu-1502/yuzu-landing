@@ -78,7 +78,7 @@ export function Footer() {
       <div className="pointer-events-none absolute left-0 right-0 top-0 h-px bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--accent)_45%,transparent),transparent)]" />
 
       <div className="relative px-6 md:px-[60px]">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[1024px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
             <div>

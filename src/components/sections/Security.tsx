@@ -147,7 +147,7 @@ function Panel({
   return (
     <div
       ref={faceRef}
-      className="security-panel relative mx-auto w-full max-w-[1280px] overflow-clip rounded-[24px] md:rounded-[40px]"
+      className="security-panel relative mx-auto w-full max-w-[1024px] overflow-clip rounded-[24px] md:rounded-[40px]"
       style={{
         backgroundColor: tinted ? "var(--surface-2)" : "var(--surface)",
       }}
@@ -158,7 +158,7 @@ function Panel({
        * cũng ở 60px thì mép thẻ phải ở 0, tức thẻ tràn viền, mất lề.
        */}
       <div className="relative z-10 px-6 py-6 md:py-12 lg:px-[60px]">
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-8 md:flex-row md:items-stretch md:gap-[60px]">
+        <div className="mx-auto flex max-w-[1024px] flex-col gap-8 md:flex-row md:items-stretch md:gap-[60px]">
           {/*
                      * `min-w-0` là bắt buộc: `h3` có `md:whitespace-nowrap` nên
                      * min-content của cột chữ = bề rộng tiêu đề dài nhất (đo được
@@ -477,7 +477,7 @@ export function Security() {
           stacking && "md:sticky md:top-16 md:z-0",
         )}
       >
-        <div className="mx-auto max-w-[1280px] text-center">
+        <div className="mx-auto max-w-[1024px] text-center">
           <span className="kicker mb-5">{securityIntro.kicker}</span>
           <h2 className="text-[30px] font-semibold text-foreground md:text-[40px] md:leading-[1.15]">
             {securityIntro.title}
