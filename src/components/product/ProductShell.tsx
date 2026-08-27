@@ -358,6 +358,12 @@ export function KpiRow({ items }: { items: Kpi[] }) {
 
 /* --------------------------------- token ---------------------------------- */
 
+/** Nét kẻ TRUNG TÍNH cho thẻ token đầy đủ. `--line-solid` ngả theo tông sản phẩm
+ *  (tím ở Marketplace, xanh ở Alpha) nên nhìn ra viền màu; ở đây cần xám thật.
+ *  Một mã xám 50% pha trong suốt hợp cả hai theme: trên nền trắng nó tối đi, trên
+ *  nền gần đen nó sáng lên, khỏi phải khai riêng cho dark. */
+const TK_LINE = "rgba(128, 128, 128, 0.28)";
+
 function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
   const metrics = token.metrics ?? [];
 
@@ -386,7 +392,10 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
      tròn góc phải, khung logo ở giữa có kẻ dọc mờ, dưới cùng là ba chỉ số ngăn
      bằng vạch dọc. */
   return (
-    <div className="flex h-full flex-col rounded-md border border-line-solid bg-surface p-5 transition-colors duration-300">
+    <div
+      className="flex h-full flex-col rounded-md border border-[var(--tk-line)] bg-surface p-5 transition-colors duration-300"
+      style={{ "--tk-line": TK_LINE } as React.CSSProperties}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[20px] font-semibold leading-tight text-foreground">{token.name}</p>
@@ -398,10 +407,11 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
         {token.href && (
           <a
             href={token.href}
-            aria-label={`Explore ${token.name}`}
-            className="group/tk flex size-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--foreground)_6%,transparent)] text-foreground transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_16%,transparent)]"
+            className="group/tk flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-foreground transition-opacity duration-300 hover:opacity-80"
           >
-            <ArrowRight className="size-4 transition-transform duration-300 group-hover/tk:translate-x-0.5" />
+            View detail
+            {/* Mũi tên tô màu phụ, nhạt hơn chữ. */}
+            <ArrowRight className="size-4 text-muted-foreground transition-transform duration-300 group-hover/tk:translate-x-0.5" />
           </a>
         )}
       </div>
@@ -414,8 +424,7 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           className="absolute inset-0"
           style={{
             background:
-              "repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--line-solid) calc(25% - 1px) 25%)",
-            opacity: 0.7,
+              "repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), var(--tk-line) calc(25% - 1px) 25%)",
           }}
         />
         {token.icon && (
@@ -428,8 +437,8 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           <div
             key={m.label}
             className={cn(
-              "border-t border-line-solid pt-3.5",
-              i > 0 && "border-l pl-3",
+              "border-t border-[var(--tk-line)] pt-3.5",
+              i > 0 && "border-l border-l-[var(--tk-line)] pl-3",
               i < metrics.length - 1 && "pr-3",
             )}
           >
