@@ -110,7 +110,9 @@ export function Footer() {
             </div>
 
             <nav>
-              <ul className="grid grid-cols-3 gap-x-6 gap-y-3 md:flex md:flex-wrap md:justify-end md:gap-x-7">
+              {/* Mobile: MỘT cột, bốn link thành bốn hàng — trước để `grid-cols-3` nên
+                  ra 3 + 1, dòng cuối trơ một link. Từ `md` mới xếp ngang. */}
+              <ul className="grid grid-cols-1 gap-y-3 md:flex md:flex-wrap md:justify-end md:gap-x-7">
                 {footer.links.map((l) => (
                   <li key={l.label}>
                     <CenterUnderline

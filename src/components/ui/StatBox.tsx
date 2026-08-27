@@ -40,7 +40,7 @@ export function StatBox({ stat, active = true }: { stat: Stat; active?: boolean 
       </div>
 
       {/* tooltip breakdown */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-2 w-64 -translate-x-1/2 rounded-md border border-line-solid bg-surface p-3.5 opacity-0 shadow-[0_16px_40px_color-mix(in_srgb,var(--foreground)_16%,transparent)] transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-40 mb-2 w-64 -translate-x-1/2 rounded-md border border-line-solid bg-surface p-3.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
         <div className="mb-2.5 flex items-baseline justify-between gap-2">
           <span className="microlabel">Breakdown</span>
         </div>

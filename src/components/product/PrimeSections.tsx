@@ -341,8 +341,14 @@ function Timeline({ eras }: { eras: Era[] }) {
 
   return (
     <>
-      <div ref={wide} className="relative hidden w-full overflow-visible pt-32 lg:block">
-        <div className="relative z-10 mx-auto" style={{ width: "80%", maxWidth: 1050 }}>
+      {/* Bản snake chỉ hiện từ `xl` (1280px) chứ không phải `lg` (1024px): bảy thẻ
+          mốc rộng 360px, ở khổ 1024 thì khoảng cách ngang giữa các mốc chỉ còn
+          ~320px nên thẻ đè nhau (đo được ba cặp chồng 38 / 43 / 11px). Dưới 1280
+          dùng bản danh sách dọc — nó không bao giờ chồng. */}
+      <div ref={wide} className="relative hidden w-full overflow-visible pt-32 xl:block">
+        {/* Khung rộng hết khổ CHA (khối này đã được đưa ra ngoài `max-w-5xl`, xem
+            `Clo`), tối đa 1400px — càng rộng thì các mốc càng giãn ra. */}
+        <div className="relative z-10 mx-auto w-full" style={{ maxWidth: 1400 }}>
           <svg viewBox={`0 0 ${SNAKE_W} ${SNAKE_H}`} fill="none" className="block w-full" aria-hidden>
             {/* Vạch nền: bản dev để trắng 15% — trên nền kem gần như không thấy,
                 nên thực tế người xem chỉ thấy nét vàng được vẽ dần. Giữ đúng
@@ -365,6 +371,10 @@ function Timeline({ eras }: { eras: Era[] }) {
               style={{
                 left: `${(pt.x / SNAKE_W) * 100}%`,
                 top: `${(pt.y / SNAKE_H) * 100}%`,
+                /* Không cho thẻ chìa ra khỏi mép phải khung: mốc nằm ở 80% bề
+                   rộng thì thẻ chỉ được dùng 20% còn lại. Thiếu dòng này thì hai
+                   thẻ cuối tràn ra ngoài và bị `overflow-x: clip` của body cắt. */
+                maxWidth: `${(1 - pt.x / SNAKE_W) * 100}%`,
                 opacity: pWide >= ERA_AT[i] ? 1 : 0,
                 transform: `translateX(-8px) translateY(calc(-100% - ${ERA_LIFT[i]}px))`,
                 transition: "opacity .6s ease",
@@ -383,7 +393,7 @@ function Timeline({ eras }: { eras: Era[] }) {
                         "linear-gradient(90deg, transparent 0%, var(--prime-card-border) 100%)",
                     }}
                   />
-                  <div className="flex w-90 flex-col gap-2 pl-6 text-left">
+                  <div className="flex w-90 max-w-full flex-col gap-2 pl-6 text-left">
                     <EraText
                       era={eras[i]}
                       bodyClass="text-sm font-normal leading-tight text-[var(--prime-text-subtle)]"
@@ -422,7 +432,7 @@ function Timeline({ eras }: { eras: Era[] }) {
         </div>
       </div>
 
-      <div ref={narrow} className="relative w-full pl-8 lg:hidden">
+      <div ref={narrow} className="relative w-full pl-8 xl:hidden">
         <div aria-hidden className="absolute left-0 top-0 h-full w-px bg-[var(--prime-card-border)]" />
         <div
           aria-hidden
@@ -480,6 +490,17 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
           </div>
         </Reveal>
 
+        {/* Dòng thời gian PHÁ KHỔ 1024 của cột — cho rộng tới 1400px. Các mốc nằm
+            theo % bề rộng khung nên khung càng rộng thì thẻ càng giãn ra; đó là
+            cách duy nhất để bảy thẻ 360px không đè nhau.
+            KHÔNG cần `left-1/2` + `-translate-x-1/2`: cột cha là
+            `flex flex-col items-center` nên một item rộng hơn cột đã tự canh giữa
+            sẵn; thêm hai lớp dịch đó vào là lệch hẳn 176px sang trái (đã đo).
+            `mt-30` cộng `gap-10` của cột = 160px khoảng cách tới cụm vòng tròn. */}
+        <div className="relative mt-30 w-[min(1400px,100vw-4rem)]">
+          <Timeline eras={data.timeline} />
+        </div>
+
         <Reveal y={60} className="w-full">
           <div className="relative mx-auto">
             <div className="relative flex flex-col items-center gap-10 lg:flex-row lg:justify-center lg:gap-0">
@@ -491,11 +512,6 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
         {/* Timeline rộng hết khổ max-w-5xl như bản dev, không bó vào max-w-5xl:
             đường cong cần cả bề ngang mới ra hình chữ S. */}
-        {/* `mt-30` (120px) cộng với `gap-10` của cột thành đúng 160px giữa cụm
-            vòng tròn CLOs và dòng thời gian bên dưới. */}
-        <div className="mt-30 w-full">
-          <Timeline eras={data.timeline} />
-        </div>
 
         <Reveal y={60} className="w-full">
           {/* Bản dev KHÔNG dựng hai thẻ bo 40px ở đây: chỉ là một dải kẻ trên/dưới,
