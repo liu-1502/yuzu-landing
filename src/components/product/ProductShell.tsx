@@ -364,18 +364,18 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
       className={cn(
         /* Nếp home: nền xanh nhạt, không stroke. Thẻ đỡ (yzPP) giữ nhấn bằng
            một vệt accent ở viền TRÊN — đó là thứ nói nó đứng dưới hai thẻ kia. */
-        /* Logo TRÊN, chữ DƯỚI, cả khối canh giữa. */
-        "flex h-full flex-col items-center gap-3 rounded-lg bg-surface-2 p-5 text-center transition-colors duration-300",
+        /* Tên + mô tả canh TRÁI, logo nằm bên PHẢI ngang hàng với tên. */
+        "flex h-full items-start justify-between gap-3 rounded-lg bg-surface-2 p-5 transition-colors duration-300",
         base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
       )}
     >
-      {token.icon && (
-        <img src={asset(token.icon)} alt="" className="size-12 shrink-0 rounded-full" />
-      )}
       <div className="min-w-0">
-        <p className="font-mono text-[15px] font-semibold text-foreground">{token.name}</p>
-        <p className="mt-1 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
+        <p className="text-[18px] font-semibold leading-tight text-foreground">{token.name}</p>
+        <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
       </div>
+      {token.icon && (
+        <img src={asset(token.icon)} alt="" className="size-14 shrink-0 rounded-full" />
+      )}
     </div>
   );
 }
@@ -506,7 +506,10 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
                   absolute thì mỗi lần chữ dài thêm một dòng là lại dính vào số.
                   Cũng nhờ vậy bỏ được `overflow-hidden`, trả lại mũi tên nối
                   `-right-6` vốn thò ra ngoài thẻ. */}
-              <li className="path-step relative flex h-full items-center gap-2 rounded-lg bg-surface-2 p-5">
+              {/* Nền thẻ là `--background` (nền trang) chứ không phải `--surface-2`:
+                  trên section trắng thì đó là mảng tím/xanh nhạt vừa đủ tách khỏi
+                  nền, còn `--surface-2` đậm hơn một nấc nên nhìn nặng. */}
+              <li className="path-step relative flex h-full items-center gap-2 rounded-lg bg-[var(--background)] p-5">
                 <span className="min-w-0 flex-1">
                   <span className="microlabel">{s.label}</span>
                   <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
@@ -523,8 +526,14 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
                 {i < steps.length - 1 && (
                   <span
                     aria-hidden
-                    className="absolute -right-6 top-1/2 hidden -translate-y-1/2 text-faint lg:block"
+                    /* Hai mũi tên chồng mép: cái sau nhạt, cái trước đậm — đọc ra
+                       như một vệt đuôi chỉ về phía thẻ kế.
+                       `-right-7` chứ không `-right-6` như hồi một mũi: cặp mũi
+                       rộng 24px (16+16 trừ 8px chồng), khe `lg:gap-8` là 32px,
+                       nên lùi 28px thì cặp nằm đúng giữa khe. */
+                    className="absolute -right-7 top-1/2 hidden -translate-y-1/2 items-center text-faint lg:flex"
                   >
+                    <ChevronRight className="-mr-2 size-4 opacity-40" />
                     <ChevronRight className="size-4" />
                   </span>
                 )}

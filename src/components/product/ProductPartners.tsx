@@ -26,11 +26,11 @@ function Row({ logos, reverse }: { logos: PartnerLogo[]; reverse?: boolean }) {
     <div className="relative w-full overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r from-[var(--background)] to-transparent"
+        className="pointer-events-none absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r from-[var(--surface)] to-transparent"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l from-[var(--background)] to-transparent"
+        className="pointer-events-none absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l from-[var(--surface)] to-transparent"
       />
       <div
         className={cn(
@@ -68,7 +68,7 @@ export function ProductPartners() {
   return (
     <section
       aria-label={partnerHeading}
-      className="flex flex-col items-center gap-8 py-14"
+      className="flex flex-col items-center gap-8 border-y border-line-solid bg-surface py-14"
     >
       {/* Cùng dạng với kicker của các section: IN HOA, giãn chữ, màu brand —
           `.kicker` tự đọc `--accent` trong scope sản phẩm nên Alpha ra xanh lá,
