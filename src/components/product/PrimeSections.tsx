@@ -371,10 +371,13 @@ function Timeline({ eras }: { eras: Era[] }) {
               style={{
                 left: `${(pt.x / SNAKE_W) * 100}%`,
                 top: `${(pt.y / SNAKE_H) * 100}%`,
-                /* Không cho thẻ chìa ra khỏi mép phải khung: mốc nằm ở 80% bề
-                   rộng thì thẻ chỉ được dùng 20% còn lại. Thiếu dòng này thì hai
-                   thẻ cuối tràn ra ngoài và bị `overflow-x: clip` của body cắt. */
-                maxWidth: `${(1 - pt.x / SNAKE_W) * 100}%`,
+                /* Kẹp thẻ theo mép phải khung: mốc nằm ở 80% bề rộng thì thẻ chỉ
+                   được dùng 20% còn lại. Thiếu dòng này thì hai thẻ cuối tràn ra
+                   ngoài và bị `overflow-x: clip` của body cắt.
+                   Cộng thêm 88px: khung 1080 nằm giữa màn ≥1280 (bản snake chỉ
+                   hiện từ `xl`) nên còn ≥100px lề mỗi bên — mượn phần đó cho hai
+                   thẻ sát mép, đỡ phải co xuống 204px. */
+                maxWidth: `calc(${(1 - pt.x / SNAKE_W) * 100}% + 88px)`,
                 opacity: pWide >= ERA_AT[i] ? 1 : 0,
                 transform: `translateX(-8px) translateY(calc(-100% - ${ERA_LIFT[i]}px))`,
                 transition: "opacity .6s ease",
@@ -393,7 +396,11 @@ function Timeline({ eras }: { eras: Era[] }) {
                         "linear-gradient(90deg, transparent 0%, var(--prime-card-border) 100%)",
                     }}
                   />
-                  <div className="flex w-90 max-w-full flex-col gap-2 pl-6 text-left">
+                  {/* 416px thay vì 360px (`w-90`): khoảng cách ngang giữa hai mốc kề
+                        nhau là 432px, nên thẻ rộng tối đa 416px là vừa chừa 16px
+                        hở — trước để 360px thì hở tới 74px, thẻ nhìn nhỏ mà chữ
+                        lại xuống nhiều dòng. */}
+                  <div className="flex w-[416px] max-w-full flex-col gap-2 pl-6 text-left">
                     <EraText
                       era={eras[i]}
                       bodyClass="text-sm font-normal leading-tight text-[var(--prime-text-subtle)]"
