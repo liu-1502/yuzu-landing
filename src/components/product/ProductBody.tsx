@@ -157,7 +157,7 @@ function SliceCard({
 /** Số nhịp cuộn: một nhịp phóng to quả chanh, rồi mỗi múi một nhịp. */
 const ZOOM_FROM = 1;
 /** Cỡ lớn nhất khi cuộn hết nhịp phóng to. */
-const ZOOM_TO = 1.18;
+const ZOOM_TO = 1.3;
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -229,11 +229,17 @@ function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
       : Math.min(Math.floor(beat - 1), p.slices.length - 1)
     : hover;
 
-  /* Chia thẻ về hai bên theo góc múi, rồi trong mỗi bên xếp từ trên xuống theo
-     chính thứ tự góc đó. */
+  /* Chia ĐỀU hai bên: nửa số múi nghiêng về phải nhất thì thẻ nằm bên phải, còn
+     lại bên trái. Nếu chỉ xét `right` (múi nằm nửa nào) thì Alpha ra 1 thẻ phải /
+     3 thẻ trái vì ba múi nhỏ dồn hết sang trái — lệch hẳn. Trong mỗi bên vẫn xếp
+     từ trên xuống theo đúng thứ tự góc. */
   const cho = (() => {
+    const xep = [...goc].sort((a, b) => Math.cos(b.mid) - Math.cos(a.mid));
+    const nua = Math.ceil(xep.length / 2);
     const ben = (r: boolean) =>
-      goc.filter((g) => g.right === r).sort((a, b) => Math.sin(a.mid) - Math.sin(b.mid));
+      (r ? xep.slice(0, nua) : xep.slice(nua)).sort(
+        (a, b) => Math.sin(a.mid) - Math.sin(b.mid),
+      );
     return [true, false].flatMap((r) => {
       const ds = ben(r);
       return ds.map((g, hang) => ({ i: g.i, right: r, hang, trong: ds.length }));
@@ -294,34 +300,39 @@ function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
             </div>
           </div>
 
-          {cho.map(({ i, right, hang, trong }) => {
-            const r = reveal(i);
-            return (
-              <div
-                key={p.slices[i].label}
-                /* Bề rộng thẻ TỰ CO theo chỗ trống hai bên: chừa 540px ở giữa
-                   cho quả chanh lúc phóng to hết (496px + hở 22px mỗi bên), phần
-                   còn lại chia đôi, tối đa 300px. Để cứng 300px thì ở khung hẹp
-                   hơn 1152px thẻ sẽ chạm vào chanh. */
-                className="absolute w-[min(300px,calc((100%-540px)/2))]"
-                style={{
-                  /* Góc của múi chỉ dùng để CHỌN BÊN. Độ cao thì xếp chồng theo
-                     thứ tự góc trong cùng bên, cách nhau 108px — nếu lấy thẳng
-                     `sin(mid)` làm toạ độ thì hai múi sát nhau (8% và 1% của
-                     Alpha lệch nhau có 8px) sẽ chồng khít lên nhau. */
-                  [right ? "right" : "left"]: 0,
-                  top: `calc(50% + ${(hang - (trong - 1) / 2) * 108}px)`,
-                  transform: `translateY(-50%) translateX(${(right ? 1 : -1) * (1 - r) * 16}px)`,
-                  opacity: r,
-                  pointerEvents: r > 0.9 ? "auto" : "none",
-                  transition: "opacity .25s linear",
-                  willChange: "opacity, transform",
-                }}
-              >
-                {cards[i]}
-              </div>
-            );
-          })}
+          {[true, false].map((right) => (
+            /* Mỗi bên là một CỘT FLEX chứ không phải mấy thẻ đặt tuyệt đối cách
+               nhau một bước cố định: bước cứng 108px nhỏ hơn chiều cao thẻ khi
+               chữ xuống ba dòng nên hai thẻ đè lên nhau. Cột flex thì cao bao
+               nhiêu cũng không chồng.
+               Bề rộng TỰ CO theo chỗ trống: chừa 590px ở giữa cho quả chanh lúc
+               phóng to hết (420 × 1.3 = 546px, cộng hở 22px mỗi bên). */
+            <div
+              key={String(right)}
+              className="absolute flex w-[min(300px,calc((100%-590px)/2))] flex-col gap-4"
+              style={{ [right ? "right" : "left"]: 0, top: "50%", transform: "translateY(-50%)" }}
+            >
+              {cho
+                .filter((c) => c.right === right)
+                .map(({ i }) => {
+                  const r = reveal(i);
+                  return (
+                    <div
+                      key={p.slices[i].label}
+                      style={{
+                        opacity: r,
+                        transform: `translateX(${(right ? 1 : -1) * (1 - r) * 16}px)`,
+                        pointerEvents: r > 0.9 ? "auto" : "none",
+                        transition: "opacity .25s linear",
+                        willChange: "opacity, transform",
+                      }}
+                    >
+                      {cards[i]}
+                    </div>
+                  );
+                })}
+            </div>
+          ))}
         </div>
     </div>
   );
