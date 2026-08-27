@@ -356,10 +356,11 @@ function SliceArt({
         willChange: "transform",
       }}
     >
-        {/* Khổ tối đa 1280px như phần còn lại của trang, lề hai bên là `PAD` của
-            section. Trước để `w-full` nên ở màn rộng stage kéo tới 1552px và thẻ
-            dính sát mép màn. */}
-        <div ref={stage} className="relative mx-auto h-[320px] w-full max-w-[1024px]">
+        {/* RIÊNG stage này giữ 1280px, rộng hơn khổ 1024 chung của cả web: quả
+            chanh và hai cột thẻ chia nhau bề ngang, bó vào 1024 thì phép thương
+            lượng không còn dư chỗ và quả chanh hết zoom hẳn (đo được `scale: 1`
+            ở mọi mốc cuộn). */}
+        <div ref={stage} className="relative mx-auto h-[320px] w-full max-w-[1280px]">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
