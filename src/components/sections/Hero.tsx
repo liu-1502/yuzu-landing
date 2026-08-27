@@ -51,14 +51,14 @@ export function Hero() {
               <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
                 <a
                   href={hero.primary.href}
-                  className="group inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-foreground px-[18px] text-[13.5px] font-semibold text-background outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--foreground)_86%,var(--background))] focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="group inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-foreground px-[18px] text-[13.5px] font-semibold text-background outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--foreground)_86%,var(--background))] focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   {hero.primary.label}
                   <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
                 <a
                   href={hero.secondary.href}
-                  className="inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-sm border border-line-strong bg-transparent px-[18px] text-[13.5px] font-semibold text-foreground outline-none transition-colors hover:border-accent hover:text-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                  className="inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-line-strong bg-transparent px-[18px] text-[13.5px] font-semibold text-foreground outline-none transition-colors hover:border-accent hover:text-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   {hero.secondary.label}
                 </a>

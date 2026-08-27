@@ -33,22 +33,22 @@ export const CARD =
 /** Nút hero của Alpha & Marketplace: cao 48px, chữ 15px, nút chính có vệt tối
  *  inset ở đáy. Cả HAI nút đều dùng mũi tên NGANG 18px trượt sang phải khi hover
  *  — trước đây mình để nút phụ mũi tên chéo lên và icon 16px. */
-/* Nút lấy DÁNG của nút "Launch app" trên header — bo `rounded-sm`, có vệt tối
+/* Nút lấy DÁNG của nút "Launch app" trên header — bo `rounded-md`, có vệt tối
    inset ở đáy — nhưng MÀU thì theo màu brand của từng trang chứ không phải nền
    #1a1a1a: `--accent` đổi theo scope nên Alpha ra xanh, Prime vàng, Marketplace
    tím. Không dùng class `.launch-btn` nữa vì nó ghim cứng màu đen. */
 const BTN_PRIMARY =
-  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm bg-accent px-5 text-[15px] font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-md bg-accent px-5 text-[15px] font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-opacity duration-300 hover:opacity-90";
 const BTN_GHOST =
-  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-sm border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
+  "group/cta inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-md border border-line-solid bg-surface px-5 text-[15px] font-medium text-foreground transition-colors duration-300 hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)]";
 
 /** Prime dùng bộ riêng: py-2 nên chỉ cao 44px, chữ 16px, số liệu to hơn (20px).
  *  Nền lấy --prime-accent (vàng nâu) chứ không phải --prime-text: biến đó là màu
  *  mực gần ĐEN, để vậy thì nút Prime ra đen giữa một trang vàng nâu. */
 const BTN_PRIME =
-  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-sm bg-[var(--prime-accent)] px-4 py-2 text-base font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
+  "group/cta relative inline-flex items-center gap-2 whitespace-nowrap rounded-md bg-[var(--prime-accent)] px-4 py-2 text-base font-medium text-accent-foreground shadow-[inset_0_-2px_0_0_rgba(0,0,0,0.11)] transition-all duration-300 hover:opacity-90";
 const BTN_PRIME_GHOST =
-  "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-sm border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
+  "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-md border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
 
 /** Mũi tên trong nút — 18px cho Alpha/Marketplace, 20px cho Prime. */
 /* Mũi tên nay là loại CHÉO LÊN, nên cú nhích khi hover cũng đi chéo cùng hướng —
@@ -631,9 +631,9 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
           ))}
         </ol>
         <Reveal delay={0.2}>
-          <p className="mt-5 max-w-[640px] text-[13px] leading-[1.6] text-muted-foreground">
-            {note}
-          </p>
+          {/* Không bó `max-w`: dòng ghi chú chạy hết khổ nội dung (max-w-5xl của
+              khối bọc) thay vì cụt ở 640px. */}
+          <p className="mt-5 text-[13px] leading-[1.6] text-muted-foreground">{note}</p>
         </Reveal>
       </div>
     </section>

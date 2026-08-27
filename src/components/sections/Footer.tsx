@@ -82,7 +82,7 @@ export function Footer() {
        nhạt như thân trang) và trang sản phẩm (trắng), mà utility của Tailwind
        thắng mọi selector phần tử nên không ghi đè được từ CSS. Màu nền khai trong
        `index.css`, xem rule `footer`. */
-    <footer className="relative overflow-hidden border-t border-[rgba(128,128,128,0.22)] pb-0 pt-8 md:pt-16">
+    <footer className="relative overflow-hidden border-t border-[var(--footer-line)] pb-0 pt-8 md:pt-16">
       <div className="relative px-6 md:px-[60px]">
         <div className="mx-auto max-w-[1024px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}
@@ -129,7 +129,7 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-line-solid pt-6 md:flex-row">
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-[var(--footer-line)] pt-6 md:flex-row">
             <p className="flex w-full flex-wrap items-center justify-center gap-x-2.5 font-mono text-[11px] leading-[1.7] text-muted-foreground md:justify-start">
               {footer.legalLine.map((t, i) => (
                 <Fragment key={t}>

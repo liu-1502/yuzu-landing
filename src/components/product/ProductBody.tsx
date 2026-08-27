@@ -12,7 +12,7 @@ import {
 import { CitrusChart, sliceAngles } from "@/components/ui/CitrusChart";
 import { Reveal } from "@/components/product/Reveal";
 import { useChoreography } from "@/lib/useChoreography";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as const;
@@ -110,19 +110,26 @@ function SliceCard({
   on,
   onEnter,
   onLeave,
+  minH,
 }: {
   s: Product["slices"][number];
   accent: string;
   on: boolean;
   onEnter: () => void;
   onLeave: () => void;
+  /** Chiều cao chung, bằng thẻ CAO NHẤT trong bộ. 0 = chưa đo xong. */
+  minH?: number;
 }) {
   return (
     <div
+      data-slice-card
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       className="flex items-start gap-3 rounded-lg bg-surface px-3.5 py-3 transition-transform duration-300"
-      style={{ transform: on ? "translateY(-2px)" : undefined }}
+      style={{
+        transform: on ? "translateY(-2px)" : undefined,
+        minHeight: minH || undefined,
+      }}
     >
       <span className="min-w-0 flex-1">
         <span className="block text-[12.5px] font-medium leading-tight text-foreground">
@@ -253,6 +260,51 @@ function SliceArt({
     return () => ro.disconnect();
   }, [on]);
 
+  /* Bốn thẻ CAO BẰNG NHAU, lấy theo thẻ cao nhất. Không làm được bằng CSS: hai
+     bên là hai cột flex đặt tuyệt đối riêng biệt, `align-items: stretch` của cột
+     dọc chỉ kéo BỀ RỘNG. Nên phải đo: xoá `min-height` đang đặt, đọc chiều cao tự
+     nhiên của từng thẻ rồi gán lại cái lớn nhất.
+     Vòng lặp tự dừng: gán `min-height` làm `ResizeObserver` kêu lần nữa, nhưng
+     lần đó đo lại vẫn ra đúng con số cũ nên `setState` không tạo render mới. */
+  const [cardH, setCardH] = useState(0);
+  const wrap = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    /* Đo trong `wrap` chứ không phải `stage`: `stage` chỉ có ở nhánh CÓ dàn dựng,
+       còn nhánh xếp thường (màn hẹp / reduced-motion) thì không, nên thẻ ở đó
+       chẳng bao giờ được cân chiều cao. */
+    const el = wrap.current;
+    if (!el) return;
+    let raf = 0;
+    const read = () => {
+      const ds = [...el.querySelectorAll<HTMLElement>("[data-slice-card]")];
+      if (!ds.length) return;
+      /* Tính chiều cao TỰ NHIÊN từ nội dung + padding, KHÔNG đọc `offsetHeight`
+         của chính thẻ: thẻ đang mang `min-height` mình vừa gán nên đọc ra lại
+         chính con số đó. Từng thử xoá `min-height` rồi đo — hỏng: lần đo sau ra
+         đúng giá trị cũ nên `setState` không tạo render mới, và cái `min-height`
+         vừa xoá bằng tay không bao giờ được gán lại. */
+      const nat = ds.map((n) => {
+        const cao = Math.max(
+          ...[...n.children].map((k) => (k as HTMLElement).offsetHeight),
+        );
+        const cs = getComputedStyle(n);
+        return cao + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      });
+      setCardH(Math.ceil(Math.max(...nat)));
+    };
+    raf = requestAnimationFrame(read);
+    const ro = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(read);
+    });
+    ro.observe(el);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [on, w]);
+
   const goc = sliceAngles(p.slices);
   const beats = 1 + p.slices.length;
   /* Nén các nhịp vào 75% quãng cuộn — tức xong sau 3 trong 4 màn trôi được — rồi
@@ -316,6 +368,7 @@ function SliceArt({
       on={i === active}
       onEnter={() => setHover(i)}
       onLeave={() => setHover(null)}
+      minH={cardH}
     />
   ));
 
@@ -333,7 +386,7 @@ function SliceArt({
   if (!on) {
     return (
       <Reveal y={24}>
-        <div className="mt-9 flex flex-col items-center gap-6">
+        <div ref={wrap} className="mt-9 flex flex-col items-center gap-6">
           <div className="w-full max-w-[420px]">{chart}</div>
           <div className="flex w-full flex-col gap-4">{cards}</div>
         </div>
@@ -347,7 +400,13 @@ function SliceArt({
        tiêu đề như lúc chưa có dàn dựng. Thẻ và phần chanh phóng to tràn ra ngoài
        khung này, nên section để `overflow-visible`. */
     <div
-      ref={artRef}
+      /* Một thẻ, HAI ref: `wrap` để đo chiều cao thẻ, `artRef` để `Composition`
+         tính `dy` (đẩy quả chanh vào giữa khối đã ghim). Dùng callback ref vì
+         React chỉ nhận một `ref` cho mỗi phần tử. */
+      ref={(n) => {
+        wrap.current = n;
+        if (artRef) artRef.current = n;
+      }}
       className="mt-9"
       style={{
         /* Nhịp zoom cũng ĐẨY quả chanh xuống giữa khối đã ghim: lúc nghỉ nó nằm

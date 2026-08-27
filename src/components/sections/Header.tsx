@@ -108,12 +108,11 @@ export function Header() {
                         <NavA
                           href={p.href}
                           onClick={() => setOpenProducts(false)}
-                          className="flex items-start gap-2.5 rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-surface-2 focus-visible:bg-surface-2"
+                          className="flex items-start rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-surface-2 focus-visible:bg-surface-2"
                         >
-                          <span
-                            className="mt-[7px] size-2 shrink-0 rounded-[3px]"
-                            style={{ background: p.color }}
-                          />
+                          {/* Bỏ ô vuông màu 8px trước mỗi mục — trước đây nó là
+                              chỉ dấu màu của từng sản phẩm. `gap-2.5` cũng bỏ
+                              luôn, không thì còn lại 10px lề trái vô nghĩa. */}
                           <span className="min-w-0">
                             <span className="block text-[13.5px] font-medium text-foreground">
                               {p.name}
@@ -151,7 +150,7 @@ export function Header() {
             <ThemeToggle />
             <a
               href="#"
-              className="launch-btn inline-flex h-9 min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-sm px-4 py-1.5 text-[14px] font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="launch-btn inline-flex h-9 min-h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-[14px] font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50"
             >
               Launch app
             </a>
@@ -204,7 +203,7 @@ export function Header() {
             <li className="pb-3 pt-3">
               <a
                 href="#"
-                className="launch-btn flex h-9 min-h-9 items-center justify-center rounded-sm px-4 py-1.5 text-[14px] font-medium transition-colors"
+                className="launch-btn flex h-9 min-h-9 items-center justify-center rounded-md px-4 py-1.5 text-[14px] font-medium transition-colors"
               >
                 Launch app
               </a>

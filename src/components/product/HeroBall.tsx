@@ -59,10 +59,16 @@ const SKIN: Record<ProductPage["id"], BallSkin> = {
 const CENTER = "absolute left-1/2 top-1/2 size-full -translate-x-1/2 -translate-y-1/2";
 const NOISE = { backgroundImage: `url(${asset("/assets/landing/noise.png")})`, backgroundSize: "200px" };
 
-/** Bề rộng một huy hiệu, tính theo % bề rộng cụm — ba cái chồng nhau vừa kín
- *  khung: 45.8*3 - 45.8*0.4*2 ≈ 100. */
+/**
+ * Cụm ba huy hiệu xếp MỘT HÀNG NGANG, chồng mép nhau, cái trước đè cái sau.
+ *
+ * Mọi số đo tính theo % (không phải px) nên cụm tự co theo quả cầu — 200px dưới
+ * `sm`, 225px từ `sm`.
+ *
+ * Huy hiệu rộng 45.8% bề rộng cụm, mỗi cái sau lùi vào 40% bề rộng của chính nó,
+ * nên ba cái vừa kín cụm: 45.8*3 - 45.8*0.4*2 ≈ 100.
+ */
 const BADGE = 45.8;
-/** Cái sau lùi vào 40% bề rộng của chính nó. */
 const OVERLAP = 0.4;
 
 export function HeroBall({ id }: { id: ProductPage["id"] }) {
@@ -124,18 +130,17 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
           }}
         />
 
-        {/* 4. icon token — một cái thì canh giữa như cũ; nhiều cái thì xếp chồng
-            mép nhau, cái trước đè lên cái sau.
-            Bề rộng cụm và mức chồng đều tính bằng % của khung nên tự co theo quả
-            cầu (200px dưới `sm`, 225px từ `sm`), khỏi phải gán cứng px. Cụm ba
-            rộng 60%: to hơn mức 48% ban đầu nhưng vẫn còn 20% bán kính hở tới
-            vành sáng ở hai đầu. */}
+        {/* 4. icon token — một cái thì canh giữa như cũ; ba cái thì một hàng
+            ngang chồng mép nhau.
+            Cụm rộng 78% đường kính, tức mỗi huy hiệu ra 35.7% đường kính (80px
+            trên quả cầu 225px). Góc huy hiệu hai đầu cách tâm √(39² + 17.9²) ≈
+            43% bán kính, còn hở tới vành sáng. */}
         {icons.length === 1 ? (
           <div className="absolute left-1/2 top-1/2 h-[52%] w-[52%] -translate-x-1/2 -translate-y-1/2">
             <img src={asset(icons[0])} alt="" className="size-full object-contain" />
           </div>
         ) : (
-          <div className="absolute left-1/2 top-1/2 flex w-[60%] -translate-x-1/2 -translate-y-1/2 items-center">
+          <div className="absolute left-1/2 top-1/2 flex w-[78%] -translate-x-1/2 -translate-y-1/2 items-center">
             {icons.map((src, i) => (
               <img
                 key={src}

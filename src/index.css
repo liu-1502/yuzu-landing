@@ -370,6 +370,16 @@ main > .mkt-scope {
   min-height: 100svh;
 }
 
+/* Nét kẻ trong footer — XÁM TRUNG TÍNH, không lấy `--line-solid` (token đó ngả
+   theo tông sản phẩm nên ra viền tím/nâu). Light: overlay đen 15%. Dark: lật sang
+   trắng 15%, vì đen 15% trên nền gần đen thì không còn thấy gì. */
+:root {
+  --footer-line: rgba(0, 0, 0, 0.15);
+}
+.dark {
+  --footer-line: rgba(255, 255, 255, 0.15);
+}
+
 /**
  * Nền footer: TRANG CHỦ giữ xanh nhạt như thân trang (`--background`), còn ba
  * trang sản phẩm thì trắng (`--surface`). Phải khai ở CSS chứ không phải utility

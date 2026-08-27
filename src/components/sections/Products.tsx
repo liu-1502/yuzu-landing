@@ -82,7 +82,7 @@ function Cta({ p }: { p: Product }) {
       <span className="microlabel microlabel-regular w-full">{p.cta.note}</span>
       <a
         href="#"
-        className="group inline-flex items-center gap-2 rounded-sm px-[18px] py-2.5 text-[13.5px] font-semibold transition-transform duration-200 hover:-translate-y-0.5"
+        className="group inline-flex items-center gap-2 rounded-md px-[18px] py-2.5 text-[13.5px] font-semibold transition-transform duration-200 hover:-translate-y-0.5"
         style={{ background: p.color, color: p.ink }}
       >
         {p.cta.label}
