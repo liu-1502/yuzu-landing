@@ -59,6 +59,8 @@ export type ProductPage = {
   protection: { kicker: string; title: string; layers: Layer[] };
   path: { kicker: string; steps: Step[]; note: string };
   closing: {
+    /** Nhãn nhỏ IN HOA ngay trên tiêu đề. */
+    kicker: string;
     title: string;
     body: string;
     primary: { label: string; href: string };
@@ -135,6 +137,7 @@ export const alphaPage: ProductPage = {
       "Yuzu takes the greater of 10% of yield generated or 1% a year on assets. Posted rates are what is distributed, so they are already net of it.",
   },
   closing: {
+    kicker: "Get started",
     title: "Put a dollar to work in Alpha.",
     body:
       "Staking open, minting gated. Positions and reserves are attested every fifteen minutes, and the attestation is public.",
@@ -252,6 +255,7 @@ export const marketplacePage: ProductPage = {
       "Yuzu takes the greater of 10% of yield generated or 1% a year on assets. Posted rates are what is distributed, so they are already net of it.",
   },
   closing: {
+    kicker: "Get started",
     title: "Put a dollar to work in Marketplace.",
     body:
       "Permissionless. Positions and reserves are attested every fifteen minutes, and the attestation is public.",
@@ -448,6 +452,7 @@ export const primePage: PrimePage = {
     note: "Collateral ratios verified on-chain 24/7 via 3 independent price feeds",
   },
   closing: {
+    kicker: "Get started",
     title: "Put a dollar to work in Prime.",
     body:
       "Deposit USDC to mint yzPrime. Your capital is deployed into investment-grade fixed-income strategies from traditional finance, reachable entirely on-chain, and the reserves behind it are attested every fifteen minutes.",

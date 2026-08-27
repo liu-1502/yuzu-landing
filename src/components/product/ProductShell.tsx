@@ -4,7 +4,6 @@ import type { Kpi, Layer, ProductPage, Step, TokenCard } from "@/data/productPag
 import { productOrder } from "@/data/productPages";
 import { asset } from "@/data/content";
 import {
-  ArrowRight,
   ArrowUpRight,
   ChevronLeft,
   ChevronRight,
@@ -52,7 +51,10 @@ const BTN_PRIME_GHOST =
   "group/cta inline-flex items-center gap-2 whitespace-nowrap rounded-sm border border-[var(--prime-card-border)] bg-[var(--prime-bg)] px-4 py-2 text-base font-medium text-[var(--prime-text)] transition-all duration-300 hover:border-[color-mix(in_srgb,var(--prime-accent)_40%,transparent)]";
 
 /** Mũi tên trong nút — 18px cho Alpha/Marketplace, 20px cho Prime. */
-const CTA_ARROW = "transition-transform duration-300 group-hover/cta:translate-x-0.5";
+/* Mũi tên nay là loại CHÉO LÊN, nên cú nhích khi hover cũng đi chéo cùng hướng —
+   nhích ngang thuần thì mũi chỉ một phía mà chuyển động lại phía khác. */
+const CTA_ARROW =
+  "transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5";
 
 export function SectionHead({
   kicker,
@@ -290,11 +292,11 @@ export function ProductHero({ page }: { page: HeroData }) {
                       {page.primary.rate}
                     </span>
                   )}
-                  <ArrowRight className={arrow} />
+                  <ArrowUpRight className={arrow} />
                 </a>
                 <a href={page.secondary.href} className={prime ? BTN_PRIME_GHOST : BTN_GHOST}>
                   {page.secondary.label}
-                  <ArrowRight className={arrow} />
+                  <ArrowUpRight className={arrow} />
                 </a>
               </div>
             </div>
@@ -373,7 +375,10 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
     return (
       <div
         className={cn(
-          "flex h-full items-start justify-between gap-3 rounded-lg bg-surface-2 p-5 transition-colors duration-300",
+          /* Nền `--background` (nền trang) chứ không `--surface-2`: trên section
+             trắng thì đó là mảng xanh nhạt vừa đủ tách nền, còn `--surface-2`
+             đậm hơn một nấc nên nhìn nặng. Cùng cách với thẻ "The path in". */
+          "flex h-full items-start justify-between gap-3 rounded-lg bg-[var(--background)] p-5 transition-colors duration-300",
           base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
         )}
       >
@@ -411,7 +416,7 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
           >
             View detail
             {/* Mũi tên tô màu phụ, nhạt hơn chữ. */}
-            <ArrowRight className="size-4 text-muted-foreground transition-transform duration-300 group-hover/tk:translate-x-0.5" />
+            <ArrowUpRight className="size-4 text-muted-foreground transition-transform duration-300 group-hover/tk:translate-x-0.5 group-hover/tk:-translate-y-0.5" />
           </a>
         )}
       </div>
@@ -650,9 +655,13 @@ function ClosingTitle({ title }: { title: string }) {
   const i = title.lastIndexOf(" in ");
   if (i < 0) return <>{title}</>;
 
+  /* `block` để cụm này LUÔN xuống dòng riêng, không phụ thuộc bề rộng: tiêu đề
+     Alpha ngắn nên vốn nằm gọn một dòng, còn Marketplace thì tự ngắt — hai trang
+     ra hai kiểu khác nhau. */
   return (
     <>
-      {title.slice(0, i)} <span className="text-accent">{title.slice(i + 1)}</span>
+      {title.slice(0, i)}
+      <span className="block text-accent">{title.slice(i + 1)}</span>
     </>
   );
 }
@@ -662,45 +671,82 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
     /* PAD KHÔNG đặt ở section mà ở khối chữ bên dưới: hàng tiêu đề cần chạy sát
        hai mép màn hình để hai vạch kẻ kéo hết khổ, có lề thì vạch cụt vào 16/24px. */
     <section className={cn("relative overflow-hidden bg-surface", SECTION)}>
-      <Reveal>
+      {/* Lưới ô vuông 48px, cùng mô-típ với section Transparency ngoài trang chủ.
+          Che dần về phía TRÊN bằng `mask-image` chứ không phủ thêm một lớp nền:
+          lưới nhạt hẳn ở vùng có tiêu đề và đoạn mô tả, chỉ hiện rõ ở phần dưới
+          section — chữ vẫn đọc rõ mà không cần thêm div nào.
+          Nằm TRƯỚC nội dung trong DOM, còn `Reveal` mang `relative`: hai khối
+          đều z-index auto nên khối sau trong DOM vẽ lên trên, chữ không bị lưới
+          cắt qua. Không dùng `-z-10` được vì section có `bg-surface`, lưới sẽ
+          chìm hẳn xuống dưới nền. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.055]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, var(--foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "linear-gradient(to bottom, transparent 0%, transparent 32%, black 78%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, transparent 32%, black 78%)",
+        }}
+      />
+
+      <Reveal className="relative">
+        {/* Nhãn nhỏ IN HOA ngay trên tiêu đề. `.kicker` là `inline-flex` nên
+            `text-center` không ăn — canh giữa bằng flex ở thẻ bọc. */}
+        <p className="mb-5 flex justify-center">
+          <span className="kicker">{closing.kicker}</span>
+        </p>
+
         {/* Tiêu đề nằm GIỮA hai vạch kẻ: vạch trái mờ dần từ mép màn hình vào,
             DÍNH LIỀN một chấm tròn sát tiêu đề, rồi đối xứng sang phải.
-            Vạch là `flex-1` nên tự co khi tiêu đề dài hoặc màn hẹp; chấm giữ
-            `shrink-0` để không bao giờ bị bóp méo.
-            Hàng này KHÔNG dùng `gap`: gap chèn khoảng trống giữa MỌI cặp con nên
-            vạch bị tách khỏi chấm, nhìn ra một đoạn hở rồi mới tới chấm. Khoảng
-            cách chỉ đặt bằng lề ngang của chính tiêu đề — 10px, 12px từ `md`.
+
+            Vạch phải ngang DÒNG ĐẦU của tiêu đề, không phải giữa cả khối chữ:
+            tiêu đề có hai dòng ("Put a dollar to work" / "in <Sản phẩm>."), để
+            `items-center` thì hai vạch tụt xuống khe giữa hai dòng. Cách làm:
+            hàng `items-start`, và mỗi bên bọc trong một ô cao đúng `1.2em` —
+            bằng `leading-[1.2]` của tiêu đề — rồi canh giữa trong ô đó. Hàng
+            mang luôn cỡ chữ của tiêu đề để `em` tính ra đúng số.
+
+            Hàng KHÔNG dùng `gap`: gap chèn khoảng trống giữa MỌI cặp con nên
+            vạch bị tách khỏi chấm. Khoảng cách chỉ đặt bằng lề ngang của chính
+            tiêu đề — 20px, 40px từ `md`.
+
             Màu lấy `--accent` — token này ở `:root` lật theo trang đang mở nên
             Alpha ra xanh lá, Prime nâu vàng, Marketplace tím. Pha trong suốt vì
-            2px nguyên độ màu brand là quá gắt. */}
-        <div className="flex items-center">
-          <span
-            aria-hidden
-            className="h-[2px] min-w-6 flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
-            }}
-          />
-          <span
-            aria-hidden
-            className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]"
-          />
-          <h2 className="mx-2.5 max-w-[520px] text-balance text-center text-3xl font-bold leading-[1.2] tracking-tight text-foreground md:mx-3 md:text-[38px]">
+            3px nguyên độ màu brand là quá gắt. */}
+        <div className="flex items-start text-3xl leading-[1.2] md:text-[38px]">
+          <span aria-hidden className="flex h-[1.2em] min-w-6 flex-1 items-center">
+            <span
+              className="h-[3px] flex-1"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 55%, transparent))",
+              }}
+            />
+            <span className="size-2 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
+          </span>
+
+          {/* `w-max`: bề rộng bằng dòng DÀI NHẤT của chính nó. Trước đây để
+              `max-w-[520px]` thì hai ô vạch hai bên (`flex-1`, basis 0) chia đều
+              chỗ còn lại và bóp tiêu đề xuống 341px — "Put a dollar to work" bị
+              ngắt thành hai dòng, tổng ba dòng. `max-w-full` để trên màn hẹp nó
+              vẫn co lại được chứ không tràn ra ngoài. */}
+          <h2 className="mx-5 w-max max-w-full text-balance text-center font-bold tracking-tight text-foreground md:mx-10">
             <ClosingTitle title={closing.title} />
           </h2>
-          <span
-            aria-hidden
-            className="size-2.5 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]"
-          />
-          <span
-            aria-hidden
-            className="h-[2px] min-w-6 flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
-            }}
-          />
+
+          <span aria-hidden className="flex h-[1.2em] min-w-6 flex-1 items-center">
+            <span className="size-2 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--accent)_70%,transparent)]" />
+            <span
+              className="h-[3px] flex-1"
+              style={{
+                background:
+                  "linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), transparent)",
+              }}
+            />
+          </span>
         </div>
 
         <div className={cn("mx-auto mt-6 flex max-w-5xl flex-col items-center gap-6 text-center", PAD)}>
@@ -710,7 +756,7 @@ export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
           <div className="flex flex-col items-center gap-3 sm:flex-row">
             <a href={closing.primary.href} className={BTN_PRIMARY}>
               {closing.primary.label}
-              <ArrowRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
+              <ArrowUpRight className={cn(CTA_ARROW, "h-[18px] w-[18px]")} />
             </a>
             <a href={closing.secondary.href} className={BTN_GHOST}>
               {closing.secondary.label}

@@ -128,14 +128,14 @@ export function HeroBall({ id }: { id: ProductPage["id"] }) {
             mép nhau, cái trước đè lên cái sau.
             Bề rộng cụm và mức chồng đều tính bằng % của khung nên tự co theo quả
             cầu (200px dưới `sm`, 225px từ `sm`), khỏi phải gán cứng px. Cụm ba
-            rộng 48% thay vì 52%: ba huy hiệu cạnh nhau đã nặng hơn một icon đơn,
-            để 52% là chạm sát vành sáng. */}
+            rộng 60%: to hơn mức 48% ban đầu nhưng vẫn còn 20% bán kính hở tới
+            vành sáng ở hai đầu. */}
         {icons.length === 1 ? (
           <div className="absolute left-1/2 top-1/2 h-[52%] w-[52%] -translate-x-1/2 -translate-y-1/2">
             <img src={asset(icons[0])} alt="" className="size-full object-contain" />
           </div>
         ) : (
-          <div className="absolute left-1/2 top-1/2 flex w-[48%] -translate-x-1/2 -translate-y-1/2 items-center">
+          <div className="absolute left-1/2 top-1/2 flex w-[60%] -translate-x-1/2 -translate-y-1/2 items-center">
             {icons.map((src, i) => (
               <img
                 key={src}

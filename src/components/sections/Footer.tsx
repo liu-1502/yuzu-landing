@@ -73,22 +73,16 @@ function JuiceWordmark() {
 }
 
 export function Footer() {
+  /* Mép trên footer: một nét kẻ 1px XÁM TRUNG TÍNH, mảnh và nhạt — chỉ để tách
+     footer khỏi section CTA phía trên, không cạnh tranh với cặp vạch màu brand ở
+     đầu section đó. Dùng mã xám 50% pha trong suốt thay vì `--line-solid`: token
+     kia ngả theo tông sản phẩm nên sẽ ra viền tím/nâu. */
   return (
-    <footer className="relative overflow-hidden bg-surface pb-0 pt-8 md:pt-16">
-      {/* Vạch kẻ mép trên: dày 2px, đậm ở giữa và mờ dần ra CẢ HAI mép màn hình.
-          Khác cặp vạch có chấm ở đầu section CTA — chỗ này chỉ một đường liền,
-          không chấm, không chữ.
-          `absolute top-0` để nó nằm đúng mép footer, không ăn vào `pt-8 md:pt-16`
-          của phần nội dung — layout footer giữ nguyên. Màu theo `--accent` nên
-          Alpha xanh lá, Prime nâu vàng, Marketplace tím. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[2px]"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 45%, transparent) 25%, color-mix(in srgb, var(--accent) 45%, transparent) 75%, transparent)",
-        }}
-      />
+    /* KHÔNG đặt `bg-surface` ở đây: nền footer khác nhau giữa trang chủ (xanh
+       nhạt như thân trang) và trang sản phẩm (trắng), mà utility của Tailwind
+       thắng mọi selector phần tử nên không ghi đè được từ CSS. Màu nền khai trong
+       `index.css`, xem rule `footer`. */
+    <footer className="relative overflow-hidden border-t border-[rgba(128,128,128,0.22)] pb-0 pt-8 md:pt-16">
       <div className="relative px-6 md:px-[60px]">
         <div className="mx-auto max-w-[1024px]">
           {/* Trái: 3 logomark liên hệ. Phải: hàng text link. */}

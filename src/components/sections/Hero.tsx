@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { hero, stats, statsFootnote } from "@/data/content";
-import { ArrowRight } from "@/components/ui/Icons";
+import { ArrowUpRight } from "@/components/ui/Icons";
 import { OrbitVisual } from "@/components/ui/OrbitVisual";
 import { StatBox } from "@/components/ui/StatBox";
 import UnderlineToBackground from "@/components/fancy/text/underline-to-background";
@@ -54,7 +54,7 @@ export function Hero() {
                   className="group inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-foreground px-[18px] text-[13.5px] font-semibold text-background outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--foreground)_86%,var(--background))] focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   {hero.primary.label}
-                  <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
                 <a
                   href={hero.secondary.href}

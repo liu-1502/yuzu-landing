@@ -371,6 +371,24 @@ main > .mkt-scope {
 }
 
 /**
+ * Nền footer: TRANG CHỦ giữ xanh nhạt như thân trang (`--background`), còn ba
+ * trang sản phẩm thì trắng (`--surface`). Phải khai ở CSS chứ không phải utility
+ * `bg-surface` trên chính thẻ: utility là class (0,1,0) nên thắng mọi selector
+ * phần tử, không ghi đè lại được cho riêng trang chủ.
+ *
+ * `main > .x-scope` (con TRỰC TIẾP) để section Products ngoài trang chủ — cũng
+ * mang class scope để đổi màu theo tab — không khớp.
+ */
+footer {
+  background: var(--background);
+}
+:root:has(main > .alpha-scope) footer,
+:root:has(main > .prime-scope) footer,
+:root:has(main > .mkt-scope) footer {
+  background: var(--surface);
+}
+
+/**
  * Header và footer nằm NGOÀI `<main>` nên cũng ngoài div scope: chúng đọc token
  * của `:root`, tức bảng màu Alpha — nền footer ở trang Marketplace vì thế ra
  * XANH LÁ giữa một trang tím, rõ nhất ở dark mode.

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { asset, products, productsHeading, type Product } from "@/data/content";
-import { ArrowRight, ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
+import { ArrowUpRight, ExitIcon, LockIcon, ShieldIcon } from "@/components/ui/Icons";
 import { CitrusChart, SliceDetail } from "@/components/ui/CitrusChart";
 import { cn } from "@/lib/utils";
 import { isChoreographyOn } from "@/lib/useChoreography";
@@ -86,7 +86,7 @@ function Cta({ p }: { p: Product }) {
         style={{ background: p.color, color: p.ink }}
       >
         {p.cta.label}
-        <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+        <ArrowUpRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </a>
     </div>
   );
