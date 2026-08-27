@@ -155,7 +155,9 @@ function SliceCard({
 }
 
 /** Số nhịp cuộn: một nhịp phóng to quả chanh, rồi mỗi múi một nhịp. */
-const ZOOM_FROM = 0.55;
+const ZOOM_FROM = 1;
+/** Cỡ lớn nhất khi cuộn hết nhịp phóng to. */
+const ZOOM_TO = 1.18;
 
 /** Làm mượt hai đầu — vào và ra đều, không giật như tuyến tính. */
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -220,7 +222,7 @@ function SliceArt({ p }: { p: Product }) {
      không kịp thấy nó. */
   const beat = clamp01(prog / 0.92) * beats;
 
-  const scale = on ? ZOOM_FROM + (1 - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
+  const scale = on ? ZOOM_FROM + (ZOOM_TO - ZOOM_FROM) * smooth(clamp01(beat)) : 1;
   /** Độ hiện của thẻ thứ k: 0 → 1 trong đúng nhịp của nó. */
   const reveal = (k: number) => (on ? smooth(clamp01(beat - 1 - k)) : 1);
   /** Múi đang được nhấn: múi của nhịp hiện tại, giữ tới khi nhịp sau tiếp quản. */
@@ -277,16 +279,19 @@ function SliceArt({ p }: { p: Product }) {
   return (
     <div ref={wrap} className="mt-9 h-[500svh]">
       <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center justify-center">
-        <div className="relative mx-auto h-[460px] w-full max-w-5xl">
-          {/* KHÔNG dùng class `-translate-x-1/2`: Tailwind v4 biên dịch nó thành
-              thuộc tính `translate` RIÊNG chứ không phải `transform`, nên nó cộng
-              dồn với `transform` inline bên dưới và quả chanh bị đẩy lệch hẳn nửa
-              bề rộng. Gộp cả căn giữa lẫn phóng to vào một `transform`. */}
-          <div
-            className="absolute top-1/2 left-1/2 w-[360px] max-w-full"
-            style={{ transform: `translate(-50%, -50%) scale(${scale})`, willChange: "transform" }}
-          >
-            {chart}
+        <div className="relative mx-auto h-[520px] w-full max-w-6xl">
+          {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
+              `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
+              đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
+              `-translate-x-1/2` thành thuộc tính `translate` RIÊNG, cộng dồn với
+              `transform` inline — từng làm nó lệch hẳn nửa bề rộng.) */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div
+              className="w-[420px] max-w-full"
+              style={{ transform: `scale(${scale})`, transformOrigin: "center", willChange: "transform" }}
+            >
+              {chart}
+            </div>
           </div>
 
           {cho.map(({ i, right, hang, trong }) => {
@@ -294,7 +299,11 @@ function SliceArt({ p }: { p: Product }) {
             return (
               <div
                 key={p.slices[i].label}
-                className="absolute w-[300px]"
+                /* Bề rộng thẻ TỰ CO theo chỗ trống hai bên: chừa 540px ở giữa
+                   cho quả chanh lúc phóng to hết (496px + hở 22px mỗi bên), phần
+                   còn lại chia đôi, tối đa 300px. Để cứng 300px thì ở khung hẹp
+                   hơn 1152px thẻ sẽ chạm vào chanh. */
+                className="absolute w-[min(300px,calc((100%-540px)/2))]"
                 style={{
                   /* Góc của múi chỉ dùng để CHỌN BÊN. Độ cao thì xếp chồng theo
                      thứ tự góc trong cùng bên, cách nhau 108px — nếu lấy thẳng
@@ -365,10 +374,12 @@ export function Composition({
               </Reveal>
             ))}
           </div>
-        ) : (
-          <SliceArt p={p} />
-        )}
+        ) : null}
       </div>
+
+      {/* SliceArt nằm NGOÀI khối `max-w-5xl` của phần chữ: màn dàn dựng cần rộng
+          hơn 1024px thì quả chanh lúc phóng to mới không chạm vào hai cột thẻ. */}
+      {!vaults && <SliceArt p={p} />}
     </section>
   );
 }
