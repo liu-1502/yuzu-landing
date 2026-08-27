@@ -76,7 +76,7 @@ export function Footer() {
   /* Mép trên footer KHÔNG còn kẻ nét nào: bỏ cả `border-t` lẫn sợi gradient
      accent `h-px` từng nằm đè lên nó — để lại một trong hai thì vẫn thấy vạch. */
   return (
-    <footer className="relative overflow-hidden pb-0 pt-8 md:pt-16">
+    <footer className="relative overflow-hidden bg-surface pb-0 pt-8 md:pt-16">
 
       <div className="relative px-6 md:px-[60px]">
         <div className="mx-auto max-w-[1024px]">
