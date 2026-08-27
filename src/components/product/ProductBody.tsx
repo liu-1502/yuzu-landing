@@ -574,9 +574,9 @@ export function Terms({
          nó cũng chính là lớp đục che quả chanh phía sau, khỏi cần `bg-background`
          riêng. */
       className={cn(
-        /* `border-t` chứ không `border-y`: nền trắng của section đã tự tách nó khỏi
-           nền trang ở phía dưới, thêm một nét kẻ nữa là thừa. */
-        "border-t border-line-solid bg-surface",
+        /* Không kẻ nét nào: nền trắng của section đã tự tách nó khỏi nền trang
+           ở cả hai phía. */
+        "bg-surface",
         trot && "relative z-10 -mt-[100svh]",
         SECTION,
         PAD,

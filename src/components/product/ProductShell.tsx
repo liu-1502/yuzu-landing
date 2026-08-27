@@ -364,16 +364,17 @@ function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
       className={cn(
         /* Nếp home: nền xanh nhạt, không stroke. Thẻ đỡ (yzPP) giữ nhấn bằng
            một vệt accent ở viền TRÊN — đó là thứ nói nó đứng dưới hai thẻ kia. */
-        "flex h-full items-start gap-3 rounded-lg bg-surface-2 p-4 transition-colors duration-300",
+        /* Logo TRÊN, chữ DƯỚI, cả khối canh giữa. */
+        "flex h-full flex-col items-center gap-3 rounded-lg bg-surface-2 p-5 text-center transition-colors duration-300",
         base && "border-t-2 border-t-[color-mix(in_srgb,var(--accent)_55%,transparent)]",
       )}
     >
       {token.icon && (
-        <img src={asset(token.icon)} alt="" className="size-8 shrink-0 rounded-full" />
+        <img src={asset(token.icon)} alt="" className="size-12 shrink-0 rounded-full" />
       )}
       <div className="min-w-0">
-        <p className="font-mono text-[13px] font-semibold text-foreground">{token.name}</p>
-        <p className="mt-0.5 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
+        <p className="font-mono text-[15px] font-semibold text-foreground">{token.name}</p>
+        <p className="mt-1 text-[13.5px] leading-[1.5] text-muted-foreground">{token.desc}</p>
       </div>
     </div>
   );
@@ -391,7 +392,10 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
 
   return (
     <div className="mt-9">
-      <div className="grid gap-4 md:grid-cols-2">
+      {/* Số cột theo SỐ THẺ: bộ ba (Marketplace) dàn hàng ngang ba cột; bộ có
+          lớp đỡ (Alpha) chỉ còn hai thẻ ở trên nên giữ hai cột, đặt ba cột thì
+          hụt một ô trống. */}
+      <div className={cn("grid gap-4", upper.length === 3 ? "sm:grid-cols-3" : "md:grid-cols-2")}>
         {upper.map((t, i) => (
           <Reveal key={t.name} delay={i * 0.08}>
             <TokenRow token={t} />
@@ -483,7 +487,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-t border-line-solid bg-surface",
+        "relative overflow-hidden bg-surface",
         SECTION,
         PAD,
       )}
@@ -497,23 +501,24 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
         <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {steps.map((s, i) => (
             <Reveal key={s.label} y={16} delay={i * 0.07}>
-              <li className="path-step relative h-full overflow-hidden rounded-lg bg-surface-2 p-5">
-                {/* Số thứ tự to nằm sau chữ, màu accent nhạt — cùng mô-típ với con
-                    số khổng lồ ở section Security của trang chủ. Nằm GỌN trong
-                    thẻ chứ không tràn mép: tràn ra thì phần bị `overflow-hidden`
-                    cắt mất làm con số đọc không ra. */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute right-3 bottom-1 select-none text-[68px] font-bold leading-none tracking-tight"
-                  style={{ color: "var(--accent)", opacity: 0.2 }}
-                >
-                  {i + 1}
-                </span>
-                <span className="relative z-10 block">
+              {/* Số thứ tự ĐỨNG CẠNH chữ chứ không nằm chồng lên: xếp bằng flex
+                  nên chữ tự xuống dòng trước con số, không bao giờ đè nhau — đặt
+                  absolute thì mỗi lần chữ dài thêm một dòng là lại dính vào số.
+                  Cũng nhờ vậy bỏ được `overflow-hidden`, trả lại mũi tên nối
+                  `-right-6` vốn thò ra ngoài thẻ. */}
+              <li className="path-step relative flex h-full items-center gap-2 rounded-lg bg-surface-2 p-5">
+                <span className="min-w-0 flex-1">
                   <span className="microlabel">{s.label}</span>
                   <p className="mt-1.5 text-[15px] font-medium leading-[1.4] text-foreground">
                     {s.value}
                   </p>
+                </span>
+                <span
+                  aria-hidden
+                  className="shrink-0 select-none text-[64px] font-bold leading-none tracking-tight"
+                  style={{ color: "var(--accent)", opacity: 0.2 }}
+                >
+                  {i + 1}
                 </span>
                 {i < steps.length - 1 && (
                   <span
@@ -543,7 +548,7 @@ export function PathIn({ kicker, steps, note }: { kicker: string; steps: Step[];
  * thẻ chứ không phải cả section. */
 export function ClosingCta({ closing }: { closing: ProductPage["closing"] }) {
   return (
-    <section className={cn(SECTION, PAD)}>
+    <section className={cn("bg-surface", SECTION, PAD)}>
       <Reveal>
         {/* Thẻ nền MÀU BRAND (`--accent` của từng scope) thay vì trắng. Cả chữ
             lẫn nút bên trong phải lật theo `--accent-foreground`, không thì mất
