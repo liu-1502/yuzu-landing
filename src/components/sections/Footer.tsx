@@ -73,16 +73,15 @@ function JuiceWordmark() {
 }
 
 export function Footer() {
-  /* Mép trên footer: một nét kẻ 1px XÁM TRUNG TÍNH, mảnh và nhạt — chỉ để tách
-     footer khỏi section CTA phía trên, không cạnh tranh với cặp vạch màu brand ở
-     đầu section đó. Dùng mã xám 50% pha trong suốt thay vì `--line-solid`: token
-     kia ngả theo tông sản phẩm nên sẽ ra viền tím/nâu. */
+  /* Mép trên footer KHÔNG có nét kẻ: section CTA phía trên đã đổi sang nền tint
+     nên ranh giới hiện ra bằng màu, thêm một đường nữa là thừa. `--line-neutral`
+     giờ chỉ còn dùng cho dòng chia phía trên phần bản quyền. */
   return (
     /* KHÔNG đặt `bg-surface` ở đây: nền footer khác nhau giữa trang chủ (xanh
        nhạt như thân trang) và trang sản phẩm (trắng), mà utility của Tailwind
        thắng mọi selector phần tử nên không ghi đè được từ CSS. Màu nền khai trong
        `index.css`, xem rule `footer`. */
-    <footer className="relative overflow-hidden border-t border-[var(--line-neutral)] pb-0 pt-8 md:pt-16">
+    <footer className="relative overflow-hidden pb-0 pt-8 md:pt-16">
       <div className="relative px-6 md:px-[60px]">
         {/* Footer là ngoại lệ DUY NHẤT còn giữ 1280: mọi section khác đã gom về
             1024 cho đồng bộ, riêng đây rộng hơn theo yêu cầu. */}

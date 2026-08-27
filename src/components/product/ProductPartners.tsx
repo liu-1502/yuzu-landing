@@ -68,7 +68,7 @@ export function ProductPartners() {
   return (
     <section
       aria-label={partnerHeading}
-      className="flex flex-col items-center gap-8 bg-surface py-14"
+      className="flex flex-col items-center gap-8 border-t border-line-solid bg-surface py-14"
     >
       {/* Cùng dạng với kicker của các section: IN HOA, giãn chữ, màu brand —
           `.kicker` tự đọc `--accent` trong scope sản phẩm nên Alpha ra xanh lá,
