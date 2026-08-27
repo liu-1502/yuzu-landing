@@ -209,10 +209,7 @@ function useScrollBeat(ref: React.RefObject<HTMLDivElement | null>, on: boolean)
  * lúc đó bỏ hẳn phần ghim, xếp quả chanh trên rồi bốn thẻ dưới, hiện sẵn tất cả —
  * màn dàn dựng này cần cả chiều ngang lẫn chiều cao mới chạy được.
  */
-function SliceArt({ p }: { p: Product }) {
-  const on = useChoreography();
-  const wrap = useRef<HTMLDivElement>(null);
-  const prog = useScrollBeat(wrap, on);
+function SliceArt({ p, on, prog }: { p: Product; on: boolean; prog: number }) {
   const [hover, setHover] = useState<number | null>(null);
 
   const goc = sliceAngles(p.slices);
@@ -277,9 +274,12 @@ function SliceArt({ p }: { p: Product }) {
   }
 
   return (
-    <div ref={wrap} className="mt-9 h-[500svh]">
-      <div className="sticky top-16 flex h-[calc(100svh-4rem)] items-center justify-center">
-        <div className="relative mx-auto h-[520px] w-full max-w-6xl">
+    /* Chiều cao đúng bằng quả chanh lúc nghỉ (420 × 116/176 ≈ 277) cộng chút lề,
+       KHÔNG phải một khung cao bằng màn hình: có vậy quả chanh mới nằm ngay dưới
+       tiêu đề như lúc chưa có dàn dựng. Thẻ và phần chanh phóng to tràn ra ngoài
+       khung này, nên section để `overflow-visible`. */
+    <div className="mt-9">
+        <div className="relative mx-auto h-[320px] w-full max-w-6xl">
           {/* Căn giữa bằng FLEX chứ không phải `top-1/2 left-1/2` + translate:
               `transform` ở đây chỉ còn đúng `scale`, nên quả chanh không thể trôi
               đi đâu khi phóng to. (Ngoài ra Tailwind v4 biên dịch
@@ -323,7 +323,6 @@ function SliceArt({ p }: { p: Product }) {
             );
           })}
         </div>
-      </div>
     </div>
   );
 }
@@ -337,9 +336,12 @@ export function Composition({
   head: ProductPage["composition"];
   vaults?: Vault[];
 }) {
-  return (
-    <section className={cn("relative overflow-hidden", SECTION, PAD)}>
-      <div className={cn("relative", WRAP)}>
+  const on = useChoreography() && !vaults;
+  const track = useRef<HTMLDivElement>(null);
+  const prog = useScrollBeat(track, on);
+
+  const head_ = (
+    <div className={cn("relative", WRAP)}>
         {/* Khối tiêu đề canh GIỮA — nếp của web này, bản dev canh trái. */}
         <Reveal>
           <div className="flex flex-col items-center text-center">
@@ -375,11 +377,34 @@ export function Composition({
             ))}
           </div>
         ) : null}
-      </div>
+    </div>
+  );
 
-      {/* SliceArt nằm NGOÀI khối `max-w-5xl` của phần chữ: màn dàn dựng cần rộng
-          hơn 1024px thì quả chanh lúc phóng to mới không chạm vào hai cột thẻ. */}
-      {!vaults && <SliceArt p={p} />}
+  /* SliceArt nằm NGOÀI khối `max-w-5xl` của phần chữ: màn dàn dựng cần rộng hơn
+     1024px thì quả chanh lúc phóng to mới không chạm vào hai cột thẻ. */
+  const art = !vaults ? <SliceArt p={p} on={on} prog={prog} /> : null;
+
+  if (!on) {
+    return (
+      <section className={cn("relative", SECTION, PAD)}>
+        {head_}
+        {art}
+      </section>
+    );
+  }
+
+  return (
+    /* GHIM CẢ TIÊU ĐỀ LẪN QUẢ CHANH cùng một khối. Trước đây chỉ ghim riêng quả
+       chanh trong một khung cao bằng màn hình nên nó bị đẩy xuống giữa màn, cách
+       tiêu đề một khoảng trống lớn. Ghim chung thì tiêu đề đứng yên phía trên và
+       quả chanh nằm ngay dưới nó, đúng như lúc chưa có dàn dựng. */
+    <section className={cn("relative", PAD)}>
+      <div ref={track} className="h-[500svh]">
+        <div className={cn("sticky top-16", SECTION)}>
+          {head_}
+          {art}
+        </div>
+      </div>
     </section>
   );
 }
