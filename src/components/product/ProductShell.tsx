@@ -358,7 +358,7 @@ export function KpiRow({ items }: { items: Kpi[] }) {
 
 /* --------------------------------- token ---------------------------------- */
 
-function TokenRow({ token, delay, base }: { token: TokenCard; delay: number; base?: boolean }) {
+function TokenRow({ token, base }: { token: TokenCard; base?: boolean }) {
   return (
     <div
       className={cn(
@@ -369,12 +369,7 @@ function TokenRow({ token, delay, base }: { token: TokenCard; delay: number; bas
       )}
     >
       {token.icon && (
-        <img
-          src={asset(token.icon)}
-          alt=""
-          className="citrus-bob-fast size-8 shrink-0 rounded-full"
-          style={{ animationDelay: `${delay}s` }}
-        />
+        <img src={asset(token.icon)} alt="" className="size-8 shrink-0 rounded-full" />
       )}
       <div className="min-w-0">
         <p className="font-mono text-[13px] font-semibold text-foreground">{token.name}</p>
@@ -399,7 +394,7 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
       <div className="grid gap-4 md:grid-cols-2">
         {upper.map((t, i) => (
           <Reveal key={t.name} delay={i * 0.08}>
-            <TokenRow token={t} delay={i * 0.7} />
+            <TokenRow token={t} />
           </Reveal>
         ))}
       </div>
@@ -416,7 +411,7 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
             <ChevronUp className="size-4" />
             <ChevronUp className="size-4" />
           </div>
-          <TokenRow token={base} delay={1.4} base />
+          <TokenRow token={base} base />
           <p className="mt-2 text-center text-[13px] leading-[1.5] text-muted-foreground">
             {note}
           </p>

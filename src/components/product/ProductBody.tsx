@@ -22,7 +22,7 @@ const FACT_ICONS = { lock: LockIcon, exit: ExitIcon, shield: ShieldIcon } as con
 /** Thẻ vault của bản dev: viền, hover NHẤC LÊN 4px kèm bóng accent, icon tròn
  * nhấp lệch pha, và bảng chỉ số 2 CỘT dính đáy thẻ (`mt-auto`) để mọi thẻ trong
  * hàng có chân bảng thẳng nhau. */
-function VaultCard({ v, i }: { v: Vault; i: number }) {
+function VaultCard({ v }: { v: Vault }) {
   return (
     /* Nếp home: nền xanh nhạt, KHÔNG stroke. Hover chỉ nhấc thẻ lên 1 nấc —
        bỏ hẳn viền đổi màu và vệt đổ bóng màu accent. Kẻ ngang trong `dl` bên
@@ -35,12 +35,7 @@ function VaultCard({ v, i }: { v: Vault; i: number }) {
     >
       <div className="flex items-center gap-2.5">
         {v.icon && (
-          <img
-            src={asset(v.icon)}
-            alt=""
-            className="citrus-bob-fast size-7 shrink-0 rounded-full"
-            style={{ animationDelay: `${i * 0.9}s` }}
-          />
+          <img src={asset(v.icon)} alt="" className="size-7 shrink-0 rounded-full" />
         )}
         <h3 className="text-[17px] font-semibold text-foreground">{v.name}</h3>
       </div>
@@ -496,7 +491,7 @@ export function Composition({
                 delay={i * 0.08}
                 className={v.upcoming ? "md:col-span-3" : undefined}
               >
-                <VaultCard v={v} i={i} />
+                <VaultCard v={v} />
               </Reveal>
             ))}
           </div>
