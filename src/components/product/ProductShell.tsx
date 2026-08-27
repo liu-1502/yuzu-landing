@@ -482,8 +482,19 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
     <div className="mt-9">
       {/* Số cột theo SỐ THẺ: bộ ba (Marketplace) dàn hàng ngang ba cột; bộ có
           lớp đỡ (Alpha) chỉ còn hai thẻ ở trên nên giữ hai cột, đặt ba cột thì
-          hụt một ô trống. */}
-      <div className={cn("grid gap-4", upper.length === 3 ? "sm:grid-cols-3" : "md:grid-cols-2")}>
+          hụt một ô trống.
+          Cột KHÔNG phải `1fr` mà `minmax(0, 360px)` + `justify-center`: khổ nội
+          dung 1024px chia hai thì mỗi thẻ ra 504px, chỉ có tên và một dòng mô tả
+          nên nhìn dài thượt. Chốt trần 360px rồi canh giữa cả lưới; bộ ba thì
+          1024px vẫn chưa đủ 3×360 nên chúng tự co còn ~331px như trước. */}
+      <div
+        className={cn(
+          "grid justify-center gap-4",
+          upper.length === 3
+            ? "sm:grid-cols-[repeat(3,minmax(0,360px))]"
+            : "md:grid-cols-[repeat(2,minmax(0,360px))]",
+        )}
+      >
         {upper.map((t, i) => (
           <Reveal key={t.name} delay={i * 0.08}>
             <TokenRow token={t} />
@@ -492,7 +503,9 @@ export function TokenSet({ tokens, note }: { tokens: TokenCard[]; note?: string 
       </div>
 
       {base && (
-        <Reveal className="relative mt-6" delay={0.16}>
+        /* Thẻ đỡ rộng bằng ĐÚNG hàng trên (2×360 + 16px khe) và canh giữa, để hai
+           mũi tên chỉ lên vẫn nằm dưới hai thẻ trên. */
+        <Reveal className="relative mx-auto mt-6 max-w-[736px]" delay={0.16}>
           {/* Bản dev không soi mũi tên theo lưới: hai mũi tên đặt giữa, cách nhau
               28% bề rộng — nên cả ở cột đơn vẫn thấy hai mũi. Và khoảng hở là
               mt-6 / mt-2, không phải mt-8 / mt-3 (mình từng để cao hơn 12px). */}
