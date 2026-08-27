@@ -125,7 +125,7 @@ function SliceCard({
       data-slice-card
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className="flex items-start gap-3 rounded-lg bg-surface px-3.5 py-3 transition-transform duration-300"
+      className="flex items-start gap-3 rounded-md bg-surface px-3.5 py-3 transition-transform duration-300"
       style={{
         transform: on ? "translateY(-2px)" : undefined,
         minHeight: minH || undefined,
