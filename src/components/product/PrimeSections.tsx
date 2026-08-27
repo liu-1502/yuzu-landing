@@ -491,9 +491,9 @@ export function Clo({ data }: { data: PrimePage["clo"] }) {
 
         {/* Timeline rộng hết khổ max-w-5xl như bản dev, không bó vào max-w-5xl:
             đường cong cần cả bề ngang mới ra hình chữ S. */}
-        {/* `mt-10` cộng với `gap-10` của cột thành đúng 80px giữa cụm vòng tròn
-            CLOs và dòng thời gian bên dưới. */}
-        <div className="mt-10 w-full">
+        {/* `mt-30` (120px) cộng với `gap-10` của cột thành đúng 160px giữa cụm
+            vòng tròn CLOs và dòng thời gian bên dưới. */}
+        <div className="mt-30 w-full">
           <Timeline eras={data.timeline} />
         </div>
 
