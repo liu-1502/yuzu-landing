@@ -599,7 +599,7 @@ export function Terms({
                 <div
                   key={f.label}
                   className={cn(
-                    "flex items-center gap-3.5 px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center",
+                    "terms-fact flex items-center gap-3.5 px-3.5 py-3 sm:min-h-[132px] sm:flex-col sm:items-center sm:justify-center sm:gap-0 sm:py-3.5 sm:text-center",
                     i < p.facts.length - 1 &&
                       "border-b border-line-solid sm:border-r sm:border-b-0",
                   )}
@@ -618,7 +618,7 @@ export function Terms({
                   </div>
                   <div className="min-w-0">
                     <div className="microlabel microlabel-muted">{f.label}</div>
-                    <div className="mt-1 text-[12.5px] font-medium leading-[1.4] text-foreground">
+                    <div className="mt-1 text-[14px] font-medium leading-[1.4] text-foreground">
                       {f.value}
                     </div>
                   </div>
